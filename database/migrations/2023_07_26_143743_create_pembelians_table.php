@@ -3,9 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use App\Models\Apoteker;
-use App\Models\Supplier;
-use App\Models\Produk;
+use App\Models\User;
 
 return new class extends Migration
 {
@@ -17,9 +15,9 @@ return new class extends Migration
         Schema::create('pembelians', function (Blueprint $table) {
             $table->id();
             $table->string('noFaktur', 50);
-            $table->foreignIdFor(Apoteker::class, 'apotekerId')->default(null);
-            $table->foreignIdFor(Supplier::class, 'supplierId')->default(null);
-            $table->foreignIdFor(Produk::class, 'produkId')->default(null);
+            $table->foreignIdFor(User::class);
+            $table->foreignIdFor(App\Models\Supplier::class);
+            $table->foreignIdFor(App\Models\Produk::class);
             $table->integer('harga')->default(null);
             $table->integer('jumlah')->default(null);
             $table->integer('subtotal')->default(null);

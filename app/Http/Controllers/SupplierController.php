@@ -11,9 +11,11 @@ class SupplierController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function apotekerIndex()
     {
-        //
+        return view('apoteker.pemasok.list', [
+            'title' => 'Daftar Pemasok'
+        ]);
     }
 
     /**
