@@ -68,50 +68,38 @@
                                 class="mtext">Kasir</span>
                         </a>
                     </li>
-                    <li class="dropdown">
-                        <a href="javascript:;"
-                            class="dropdown-toggle {{ $title == 'Tambah Dokter' || $title == 'Daftar Dokter' ? 'active' : '' }}">
-                            <span class="micon icon-copy dw dw-user"></span><span class="mtext">Dokter</span>
+                    {{-- <li class="drowpdown">
+                        <a href="/apoteker/dokter/list"
+                            class="dropdown-toggle no-arrow {{ $title == 'Daftar Dokter' ? 'active' : '' }}">
+                            <span class="micon icon-copy dw dw-user"></span><span
+                                class="mtext">Dokter</span>
                         </a>
-                        <ul class="submenu">
-                            <li>
-                                <a href="#" class="{{ $title === 'Tambah Dokter' ? 'active' : '' }}">Tambah Dokter</a>
-                            </li>
-                            <li>
-                                <a href="/apoteker/dokter/list" class="{{ $title === 'Daftar Dokter' ? 'active' : '' }}">Daftar Dokter</a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class="dropdown">
-                        <a href="javascript:;" class="dropdown-toggle">
-                            <span class="micon icon-copy dw dw-deal"></span><span class="mtext">Kerjasama</span>
+                    </li> --}}
+                    <li class="drowpdown">
+                        <a href="/apoteker/user/list"
+                            class="dropdown-toggle no-arrow {{ $title == 'Daftar User' ? 'active' : '' }}">
+                            <span class="micon icon-copy fa fa-address-book-o"></span><span
+                                class="mtext">User</span>
                         </a>
-                        <ul class="submenu">
-                            <li>
-                                <a href="#" class="{{ $title === 'Kerjasama Dokter' ? 'active' : '' }}">Dokter</a>
-                            </li>
-                        </ul>
                     </li>
-                    <li class="dropdown">
-                        <a href="javascript:;" class="dropdown-toggle {{ $title == 'Tambah Pemasok' || $title == 'Daftar Pemasok' ? 'active' : '' }}">
+                    <li class="drowpdown">
+                        <a href="/apoteker/pemasok/list"
+                            class="dropdown-toggle no-arrow {{ $title == 'Daftar Pemasok' ? 'active' : '' }}">
                             <span class="micon icon-copy dw dw-delivery-truck-2"></span><span
                                 class="mtext">Pemasok</span>
                         </a>
-                        <ul class="submenu">
-                            <li><a href="basic-table.html" class="{{ $title == 'Tambah Pemasok' ? 'active' : '' }}" >Tambah Pemasok</a></li>
-                            <li><a href="/apoteker/pemasok/list" class="{{ $title == 'Daftar Pemasok' ? 'active' : '' }}">Daftar Pemasok</a></li>
-                        </ul>
                     </li>
                     <li class="dropdown">
                         <a href="javascript:;" class="dropdown-toggle {{ $title == 'Transaksi' || $title == 'Produk' || $title == 'Struk' || $title == 'Penerimaan Barang' || $title == 'Resep' ? 'active' : '' }}">
                             <span class="micon icon-copy dw dw-file"></span><span class="mtext">Laporan</span>
                         </a>
                         <ul class="submenu">
-                            <li><a href="basic-table.html" class="{{ $title == 'Transaksi' ? 'active' : '' }}">Transaksi</a></li>
-                            <li><a href="datatable.html" class="{{ $title == 'Produk' ? 'active' : '' }}">Produk</a></li>
-                            <li><a href="datatable.html" class="{{ $title == 'Struk' ? 'active' : '' }}">Struk</a></li>
-                            <li><a href="datatable.html" class="{{ $title == 'Penerimaan Barang' ? 'active' : '' }}">Penerimaan Barang</a></li>
-                            <li><a href="datatable.html" class="{{ $title == 'Resep' ? 'active' : '' }}">Resep</a></li>
+                            <li>
+                                <a href="/apoteker/laporan/penjualan" class="{{ $title == 'Laporan Penjualan' ? 'active' : '' }}">Penjualan</a>
+                            </li>
+                            <li>
+                                <a href="basic-table.html" class="{{ $title == 'Laporan Keuangan' ? 'active' : '' }}">Keuangan</a>
+                            </li>
                         </ul>
                     </li>
                 </ul>

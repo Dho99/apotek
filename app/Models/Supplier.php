@@ -14,6 +14,7 @@ class Supplier extends Model
         'kode',
         'nama',
         'alamat',
-        'noTel'
+        'perwakilan',
+        'noTelp'
     ];
 }

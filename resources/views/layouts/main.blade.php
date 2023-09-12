@@ -35,15 +35,13 @@
 </head>
 
 <body class="">
-
     @include('partials.navbar')
-
     @include('partials.sidebar')
     @include('partials.notification-bar')
     <div class="mobile-menu-overlay"></div>
 
 
-    <div class="main-container">
+    <div class="main-container noprint">
         @yield('content')
 
         <div class="container">
@@ -90,21 +88,17 @@
     <script src="{{ asset('vendors/scripts/core.js') }}"></script>
     <script src="{{ asset('vendors/scripts/script.min.js') }}"></script>
     <script src="{{ asset('vendors/scripts/layout-settings.js') }}"></script>
-    {{-- <script src="{{ asset('src/plugins/select2/dist/js/select2.min.js') }}"></script> --}}
-    {{-- Swiper --}}
-
-    {{-- Data Tables --}}
     <script src="{{ asset('src/plugins/datatables/js/jquery.dataTables.min.js') }}"></script>
     <script src="{{ asset('src/plugins/datatables/js/dataTables.bootstrap4.min.js') }}"></script>
     <script src="{{ asset('src/plugins/datatables/js/dataTables.responsive.min.js') }}"></script>
     <script src="{{ asset('src/plugins/datatables/js/responsive.bootstrap4.min.js') }}"></script>
-    <!-- buttons for Export datatable -->
     <script src="{{ asset('src/plugins/datatables/js/dataTables.buttons.min.js') }}"></script>
     <script src="{{ asset('src/plugins/datatables/js/buttons.bootstrap4.min.js') }}"></script>
     <script src="{{ asset('src/plugins/datatables/js/buttons.print.min.js') }}"></script>
     <script src="{{ asset('src/plugins/datatables/js/buttons.html5.min.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
     <script src="{{ asset('src/plugins/sweetalert2/sweetalert2.all.js') }}"></script>
+    <script src="{{ asset('src/plugins/apexcharts/apexcharts.min.js') }}"></script>
 
     <script>
         $('document').ready(function() {
@@ -130,9 +124,6 @@
                 },
             });
 
-
-
-
         });
 
         function successAlert(message) {
@@ -146,6 +137,103 @@
             });
         }
     </script>
+
+    @if ($title === 'Dashboard' || $title === 'Laporan Penjualan')
+        <script>
+            let year = new Date().getFullYear();
+            $('document').ready(function() {
+                getDataPenjualan(year);
+            });
+            let serverData = {};
+            let options3 = {
+                series: [],
+                chart: {
+                    type: 'bar',
+                    height: 350,
+                    toolbar: {
+                        show: false,
+                    },
+                },
+                plotOptions: {
+                    bar: {
+                        horizontal: false,
+                    },
+                },
+                noData: {
+                    text: 'Loading...'
+                },
+                dataLabels: {
+                    enabled: false
+                },
+                stroke: {
+                    show: true,
+                    width: 2,
+                    colors: ['transparent']
+                },
+                xaxis: {
+                    categories: []
+                },
+                fill: {
+                    opacity: 1
+                },
+            };
+            let chart = new ApexCharts(document.querySelector("#chart3"), options3);
+            chart.render();
+
+            function getDataPenjualan(year) {
+                let getDataByYear = year;
+                $.ajax({
+                    url: '/apoteker/laporan/penjualan/get/' + getDataByYear,
+                    method: 'GET',
+                    success: function(response) {
+                        serverData = ({
+                            bulan: Object.keys(response.data),
+                            data: Object.values(response.data),
+                        });
+
+
+                        let serverDataExtracted = ({
+                            jumlah: {},
+                            subtotal: {}
+                        });
+
+                        for (let i = 0; i < serverData.data.length; i++) {
+                            const dataForMonth = serverData.data[i];
+                            const month = serverData.bulan[i];
+
+                            const subtotal = dataForMonth.reduce((acc, item) => acc + item.subtotal, 0);
+
+                            serverDataExtracted.jumlah[month] = dataForMonth.length;
+                            serverDataExtracted.subtotal[month] = subtotal;
+                        }
+                        console.log(serverDataExtracted);
+                        chart.updateSeries([{
+                            name: 'Penjualan',
+                            data: Object.values(serverDataExtracted.jumlah)
+                        }]);
+                        chart.updateOptions({
+                            xaxis: {
+                                categories: Object.keys(serverDataExtracted.jumlah)
+                            }
+                        });
+
+                    },
+                    error: function(error, xhr) {
+                        console.error(error);
+                        console.log(xhr.responseText);
+                    }
+                });
+            }
+        </script>
+    @endif
+
+
+    @if ($title === 'Kasir')
+        <script>
+            filterKatalog('Semua');
+            // refreshTable();
+        </script>
+    @endif
 
     @if ($title === 'Daftar Obat')
         <script>

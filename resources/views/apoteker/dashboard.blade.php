@@ -14,7 +14,7 @@
                                 Diagram Penjualan
                             </div>
                         </div>
-                        <div id="activities-chart" class="w-100 m-0"></div>
+                        <div id="chart3" class="container"></div>
                         <a href="#" class="text-dark mb-3 px-4">Lihat Selengkapnya</a>
                     </div>
                 </div>
@@ -68,7 +68,7 @@
                                                         Stok Habis
                                                     </div>
                                                 @else
-                                                    <div class="small bg-success text-light rounded-lg p-2">
+                                                    <div class="small bg-success text-light rounded-lg p-1">
                                                         Stok Tersedia
                                                     </div>
                                                 @endif
@@ -282,5 +282,5 @@
         </div>
 
     </div>
-    <script src="{{ asset('vendors/scripts/dashboard3.js') }}"></script>
+
 @endsection

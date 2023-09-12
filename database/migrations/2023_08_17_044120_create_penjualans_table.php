@@ -14,13 +14,13 @@ return new class extends Migration
         Schema::create('penjualans', function (Blueprint $table) {
             $table->id()->uniqid();
             $table->string('kodePenjualan');
-            $table->foreignIdFor(App\Models\Produk::class);
+            $table->json('produk_id');
             $table->foreignId('apoteker_id');
             $table->foreignId('dokter_id');
             $table->foreignId('pasien_id');
             $table->string('kategoriPenjualan');
-            $table->integer('harga')->default(null);
-            $table->integer('jumlah')->default(null);
+            $table->json('harga');
+            $table->json('jumlah');
             $table->integer('subtotal')->default(null);
             $table->timestamps();
         });

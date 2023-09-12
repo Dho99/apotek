@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('alamat', 100);
             $table->string('status', 10);
             $table->integer('level')->default(null);
+            $table->dateTime('tanggal_lahir')->default(null);
             $table->string('profile')->default(null);
             $table->string('kategoriDokter', 50)->default(null);
             $table->boolean('isPresent')->nullable();

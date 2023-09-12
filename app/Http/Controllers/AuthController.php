@@ -8,44 +8,43 @@ use App\Models\User;
 
 class AuthController extends Controller
 {
-    public function login(){
+    public function login()
+    {
         return view('login.index', [
-            'title' => 'Login'
+            'title' => 'Login',
         ]);
     }
 
-    public function authenticate(Request $request){
+    public function authenticate(Request $request)
+    {
         $request->flashOnly('email');
-
 
         $credentials = $request->validate([
             'email' => 'required | email',
-            'password' => 'required'
+            'password' => 'required',
         ]);
 
         // $user = User::where(['email' => $request->email, 'password' => bcrypt($request->password)])->first();
         // dd($credentials);
-        if(Auth::attempt($credentials)){
-            if(auth()->user()->level == 'Apoteker'){
+        if (Auth::attempt($credentials)) {
+            User::where('id', auth()->user()->id)->update(['isPresent' => '1']);
+            if (auth()->user()->level == 'Apoteker') {
                 $request->session()->regenerate();
                 return redirect()->intended('/apoteker/dashboard');
-            }
-            elseif(auth()->user()->level == 'Dokter'){
+            } elseif (auth()->user()->level == 'Dokter') {
                 $request->session()->regenerate();
                 return redirect()->intended('/dokter/dashboard');
-                User::where(auth()->user()->id)->update('isPresent', 1);
-            }
-            elseif(auth()->user()->level == 'Kasir'){
+            } elseif (auth()->user()->level == 'Kasir') {
                 $request->session()->regenerate();
                 return redirect()->intended('/kasir/dashboard');
             }
         }
         return back()->with('email', 'Masukkan Password anda dengan Benar');
-
     }
 
-    public function logout(Request $request){
-        User::where(['level' => 0, 'id' => auth()->user()->id])->update(['isPresent' => '0']);
+    public function logout(Request $request)
+    {
+        User::where('id', auth()->user()->id)->update(['isPresent' => '0']);
         $request->session()->invalidate();
         $request->session()->regenerateToken();
         return redirect('/');

@@ -15,10 +15,11 @@ class Produk extends Model
         'namaProduk',
         'satuan',
         'stok',
+        'harga',
         'supplier_id',
         'golongan_id',
         'expDate',
-        'image'
+        'image',
     ];
 
 

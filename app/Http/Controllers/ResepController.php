@@ -38,11 +38,22 @@ class ResepController extends Controller
     public function apotekerIndex(){
         return view('apoteker.kasir.list', [
             'title' => 'Kasir',
+            'produks' => Produk::all()
         ]);
     }
 
-    public function apotekerIndexFilter($satuan){
-
+    public function apotekerIndexFilter(Request $request,$satuan){
+        if($request->ajax()){
+            if($satuan === 'Semua'){
+                $data = Produk::get();
+                return response()->json(['data' => $data]);
+            }else{
+                $data = Produk::where('satuan', '=', $satuan)->get();
+                return response()->json(['data' => $data]);
+            }
+            $data = Produk::all();
+            return response()->json(['data' => $data]);
+        }
     }
 
 

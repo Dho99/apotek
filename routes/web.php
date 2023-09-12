@@ -2,12 +2,14 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\KasirController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\ProdukController;
-use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ResepController;
+use App\Http\Controllers\ProdukController;
+use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\PenjualanController;
+
+
 
 /*
 |--------------------------------------------------------------------------
@@ -67,7 +69,12 @@ Route::controller(ProdukController::class)->group(function() {
 
 Route::controller(SupplierController::class)->group(function() {
     Route::middleware(['auth', 'user-access:Apoteker'])->group(function () {
+        Route::get('/apoteker/pemasok/get', 'apotekerGetSupplier');
         Route::get('/apoteker/pemasok/list', 'apotekerIndex');
+        Route::get('/apoteker/pemasok/get/{kode}', 'apotekerFindSupplier');
+        Route::post('/apoteker/pemasok/update/{kode}', 'apotekerUpdateSupplier');
+        Route::post('/apoteker/pemasok/create/', 'apotekerCreateSupplier');
+        Route::get('/apoteker/pemasok/delete/{kode}', 'apotekerDeleteSupplier');
     });
 
     // Route::middleware(['auth', 'user-access:Dokter'])->group(function () {
@@ -82,6 +89,7 @@ Route::controller(SupplierController::class)->group(function() {
 Route::controller(ResepController::class)->group(function() {
     Route::middleware(['auth', 'user-access:Apoteker'])->group(function () {
         Route::get('/apoteker/resep/antrian', 'apotekerIndex');
+        Route::get('/apoteker/resep/katalog/filter/{satuan}', 'apotekerIndexFilter');
         Route::post('/apoteker/resep/proses/{kode}', 'apotekerProsesResep');
 
     });
@@ -94,16 +102,46 @@ Route::controller(ResepController::class)->group(function() {
 
 Route::controller(UserController::class)->group(function() {
     Route::middleware(['auth', 'user-access:Apoteker'])->group(function () {
-        Route::get('/apoteker/dokter/list', 'apotekerIndex');
+        // Manage dokter
+        // Route::get('/apoteker/dokter/get', 'apotekerGetAllDokterAjax');
+        // Route::get('/apoteker/dokter/get/{kategori}', 'apotekerFilterDokterByCategory');
+        // Route::get('/apoteker/dokter/list', 'apotekerIndex');
+        // Route::get('/apoteker/dokter/{kode}', 'apotekerShowDokter');
+
+
+
+        // Manage pasien
+        Route::get('/apoteker/user/list', 'apotekerListPasien');
+        Route::get('/apoteker/user/get/{level}', 'apotekerGetUserByLevel');
+        Route::get('/apoteker/user/show/get/{kode}', 'apotekerGetUser');
+        Route::post('/apoteker/user/update/', 'apotekerUpdateUser');
+
+
         Route::get('/apoteker/account/manage/{kode}', 'apotekerShow');
         Route::get('/apoteker/account/edit/{kode}', 'apotekerEdit');
         Route::post('/apoteker/account/update/{kode}', 'apotekerUpdate');
+        Route::get('/apoteker/user/delete/{kode}', 'apotekerDeleteUser');
+// Route for Dokter Data
+
+
+
+
     });
 
 
 
     Route::middleware(['auth', 'user-access:Kasir'])->group(function () {
         Route::get('/kasir/dashboard', 'kasirIndex');
+    });
+});
+
+
+Route::controller(PenjualanController::class)->group(function() {
+    Route::middleware(['auth','user-access:Apoteker'])->group(function () {
+        Route::post('/apoteker/resep/antrian/proses/', 'store');
+        Route::get('/apoteker/laporan/penjualan', 'index');
+        Route::get('/apoteker/laporan/penjualan/get/{year}', 'getDataPenjualan');
+        Route::get('/apoteker/laporan/penjualan/inovice/{kode}', 'apotekerGetInvoice');
     });
 });
 

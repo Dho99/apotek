@@ -1,18 +1,38 @@
-.container-slider{
+.container-slider {
     height: auto;
     width: auto;
     margin: 0 auto;
     display: flex;
     transition: all 0.2s;
-    box-shadow: 3px 3px 12px 0px rgba(0, 0, 0, 0.20);
+    box-shadow: 3px 3px 12px 0px rgba(0, 0, 0, 0.2);
 }
 
-
-.text-lightgreen{
-    color: #50D890;
+.checkout-bar {
+    position: fixed;
+    right: 0px;
+    top: 0;
+    width: 400px;
+    overflow: auto;
+    height: 100%;
+    z-index: 100;
+    background: #fff;
+    box-shadow: 0 0 18px rgba(0, 0, 0, 0.08);
 }
 
-.container-slider:hover{
+#obatCart {
+    height: 400px;
+    overflow-y: scroll;
+}
+
+.checkout-bar-top {
+    margin-top: 60px;
+}
+
+.text-lightgreen {
+    color: #50d890;
+}
+
+.container-slider:hover {
     border: 2px solid #00e091 !important;
     transition: all 0.2s;
 }
@@ -28,17 +48,15 @@
     transition: all 0.2s;
 }
 
-.swiper-slide a:hover{
+.swiper-slide a:hover {
     color: #000;
 }
 
-
-
-.top-right-sidebar{
+.top-right-sidebar {
     height: 71px;
 }
 
-.top-sidebar-right-image-wrapper{
+.top-sidebar-right-image-wrapper {
     width: 100%;
     position: absolute;
     z-index: 1000;
@@ -47,52 +65,49 @@
     text-align: center;
 }
 
-.top-sidebar-right-image-wrapper img{
+.invoice-img, .top-sidebar-right-image-wrapper img {
     width: 100px;
     height: 100px;
 }
 
-
-.account-img{
+.account-img {
     height: 200px;
     width: 200px;
 }
 
-
-.bg-light-secondary{
-    background-color: #EDEDED;
+.bg-light-secondary {
+    background-color: #ededed;
 }
 
-.login-title-image{
+.login-title-image {
     display: none;
 }
 
-.active-bar-notif{
+.active-bar-notif {
     width: 15px;
     height: 15px;
 }
 
-.bg-lightgreen-sidebar{
+.bg-lightgreen-sidebar {
     background-color: #b8ffc0 !important;
     color: #fff !important;
 }
 
-.right-sidebar-profile{
+.right-sidebar-profile {
     width: 100px;
     height: 70px;
 }
 
-.bg-lightgreen{
-    background-color: #EFFFFB !important;
+.bg-lightgreen {
+    background-color: #effffb !important;
 }
 
-
-.login-image-left img{
+.login-image-left img {
     width: auto;
     height: auto;
 }
 
-.input-group.floating>label {
+.input-group.floating > label {
     bottom: 5px;
     left: 8px;
     position: absolute;
@@ -107,30 +122,30 @@
     z-index: 10;
 }
 
-.form-control.floating:focus~label{
+.form-control.floating:focus ~ label {
     display: flex;
     margin-bottom: 10px;
-    transform: translate(1px,-90%) scale(0.80);
-    opacity: .8;
+    transform: translate(1px, -90%) scale(0.8);
+    opacity: 0.8;
     color: #00e091;
 }
 
-.form-control.floating:valid~label{
+.form-control.floating:valid ~ label {
     transform-origin: bottom left;
-    transform: translate(1px,-85%) scale(0.80);
-    opacity: .8;
+    transform: translate(1px, -85%) scale(0.8);
+    opacity: 0.8;
     margin-bottom: 10px;
     color: #00e091;
 }
 
-.login-left{
-    background-color: #50D890 !important;
+.login-left {
+    background-color: #50d890 !important;
     width: 100%;
     height: 100%;
     margin: 0 auto;
 }
 
-.border-bottom-success{
+.border-bottom-success {
     border: 1px solid #00e091;
     width: 100px;
     margin: 0 auto;
@@ -138,28 +153,28 @@
     margin-bottom: -20px;
 }
 
-.bg-green{
-    background-color: #50D890;
+.bg-green {
+    background-color: #50d890;
     color: #fff;
 }
 
-.btn-bg-green{
-    background-color: #50D890;
+.btn-bg-green {
+    background-color: #50d890;
     color: #fff;
 }
 
-.btn-bg-green:hover{
+.btn-bg-green:hover {
     background-color: #1adb74;
     color: #fff;
 }
 
-.font-green{
-    color: #50D890;
+.font-green {
+    color: #50d890;
 }
-.mtext:hover{
+.mtext:hover {
     color: #fff !important;
 }
-.text-light{
+.text-light {
     color: #fff !important;
 }
 
@@ -169,7 +184,6 @@ html {
     width: 100%;
     height: 100%;
     background-color: #fff !important;
-
 }
 html {
     -webkit-text-size-adjust: none;
@@ -617,10 +631,10 @@ p {
     color: #a683eb;
 }
 .bg-orange {
-    background-color: #F68731;
+    background-color: #f68731;
 }
 .text-orange {
-    color: #F68731;
+    color: #f68731;
 }
 .text-yellow {
     color: #ecc72f;
@@ -679,6 +693,11 @@ p {
     -webkit-box-shadow: 0 0 28px rgba(0, 0, 0, 0.08);
     box-shadow: 0 0 28px rgba(0, 0, 0, 0.08);
 }
+
+.card-box:hover {
+    cursor: pointer;
+}
+
 .card-img-top {
     border-radius: 10px 10px 0 0;
     height: 190px;
@@ -738,7 +757,6 @@ p {
     background-color: transparent;
     border-color: #d4d4d4;
 }
-
 
 .dropdown-toggle::after {
     content: "\f007";
@@ -1133,12 +1151,12 @@ textarea.form-control {
 }
 .bootstrap-select .dropdown-menu li .dropdown-item.active:hover,
 .select2-container--default .select2-results__option[aria-selected="true"] {
-    background-color: #1b00ff;
+    background-color: #00e091 !important;
     color: #fff;
 }
 .select2-container--default
     .select2-results__option--highlighted[aria-selected] {
-    background-color: #1b00ff;
+    background-color: #00e091 !important;
 }
 .bootstrap-select.btn-group .dropdown-menu.inner,
 table.dataTable > tbody > tr.child ul.dtr-details .dtr-title {
@@ -1230,7 +1248,7 @@ table.dataTable > tbody > tr.child ul.dtr-details .dtr-title {
     border-bottom: 0;
     padding-left: 1rem;
     background-color: #effffb;
-    color: #5C5C5C;
+    color: #5c5c5c;
 }
 .table td,
 .table th {
@@ -1270,7 +1288,7 @@ table.dataTable thead .sorting_desc:after,
 table.dataTable thead .sorting_desc:before,
 table.dataTable thead .sorting_desc_disabled:after,
 table.dataTable thead .sorting_desc_disabled:before {
-    font-family: "dropways";
+font-family: "dropways";
 } */
 table.dataTable thead .sorting:before,
 table.dataTable thead .sorting_asc:before,
@@ -1292,7 +1310,7 @@ table.dataTable thead .sorting_desc_disabled:after {
 .fontawesome-icon-list .fa-hover:hover a,
 table.dataTable thead .sorting_asc:before,
 table.dataTable thead .sorting_desc:after {
-    color: #5C5C5C;
+    color: #5c5c5c;
 }
 table.dataTable > tbody > tr.child ul.dtr-details {
     white-space: normal;
@@ -1369,7 +1387,9 @@ div.dataTables_wrapper div.dataTables_paginate {
     max-width: 100%;
 }
 .apexcharts-svg * {
-    font-family: Inter, sans-serif !important;
+    font-family: dropways;
+    font-weight: bold;
+    /* font-size: 10px; */
 }
 table.dataTable.dtr-inline.collapsed
     > tbody
@@ -1514,14 +1534,14 @@ table.dataTable.dtr-inline.collapsed
     display: none;
 }
 /* .user-info-dropdown {
-    background-color: #00e091;
+background-color: #00e091;
 } */
 .user-info-dropdown .dropdown-toggle {
     display: block;
     padding: 5px 0;
     font-size: 16px;
 }
-.user-info-dropdown  .user-icon {
+.user-info-dropdown .user-icon {
     width: 52px;
     height: 52px;
     font-size: 24px;
@@ -1533,7 +1553,6 @@ table.dataTable.dtr-inline.collapsed
     vertical-align: middle;
     border-radius: 100%;
 }
-
 
 .user-info-dropdown .dropdown-toggle .user-name {
     font-weight: 500;
@@ -1682,7 +1701,7 @@ table.dataTable.dtr-inline.collapsed
     height: 47px;
     font-size: 28px;
     line-height: 1;
-    color: #50D890;
+    color: #50d890;
     display: -webkit-box;
     display: -ms-flexbox;
     display: flex;
@@ -1713,7 +1732,7 @@ table.dataTable.dtr-inline.collapsed
     position: relative;
     height: 100%;
     font-size: 22px;
-   background-color: #EFFFFB;
+    background-color: #effffb;
     letter-spacing: 0.05em;
     font-weight: 500;
     line-height: 45px;
@@ -1723,7 +1742,7 @@ table.dataTable.dtr-inline.collapsed
 .brand-logo a .light-logo,
 .sidebar-light .brand-logo a .dark-logo {
     display: block;
-    color: #50D890;
+    color: #50d890;
 }
 .brand-logo a span {
     display: block;
@@ -1768,11 +1787,11 @@ table.dataTable.dtr-inline.collapsed
 .left-side-bar .menu-block {
     height: calc(100vh - 70px);
     padding: 6px 0;
-    background-color: #EFFFFB;
+    background-color: #effffb;
 }
 .left-side-bar .close-sidebar {
     font-size: 18px;
-    color: #50D890;;
+    color: #50d890;
     cursor: pointer;
     position: absolute;
     right: 10px;
@@ -1856,7 +1875,7 @@ table.dataTable.dtr-inline.collapsed
     -webkit-box-pack: center;
     -ms-flex-pack: center;
     justify-content: center;
-    color: #50D890;
+    color: #50d890;
     background-color: transparent;
     top: 50%;
     text-align: center;
@@ -1981,7 +2000,7 @@ table.dataTable.dtr-inline.collapsed
     background-color: rgba(236, 240, 244, 0.19);
 }
 .sidebar-light .sidebar-menu > ul > li > .dropdown-toggle.active {
-    background-color: #50D890;
+    background-color: #50d890;
     color: #fff;
 }
 .sidebar-light .sidebar-menu .dropdown-toggle:hover .micon,
@@ -2004,17 +2023,17 @@ table.dataTable.dtr-inline.collapsed
     display: none;
 }
 .sidebar-light .left-side-bar {
-    background: #EFFFFB;
+    background: #effffb;
 }
 .sidebar-light .sidebar-menu .dropdown-toggle {
-    color: #50D890;
+    color: #50d890;
     font-weight: 500;
 }
 .sidebar-light .sidebar-menu .dropdown-toggle .micon {
-    color: #50D890
+    color: #50d890;
 }
 .sidebar-light .sidebar-menu .submenu li a {
-    color: #50D890;
+    color: #50d890;
     font-weight: 400;
 }
 .sidebar-light .sidebar-menu .submenu {
@@ -2025,10 +2044,10 @@ table.dataTable.dtr-inline.collapsed
 .sidebar-light .sidebar-menu .submenu li a.active,
 .sidebar-light .sidebar-menu .submenu li a:hover {
     color: #fff;
-    background-color: #50D890;
+    background-color: #50d890;
 }
 .sidebar-light .menu-block .mCS-dark-2.mCSB_scrollTools .mCSB_draggerRail {
-    background-color: #50D890;
+    background-color: #50d890;
     /* width: 5px; */
 }
 .sidebar-menu .dropdown-divider {
@@ -2050,7 +2069,7 @@ table.dataTable.dtr-inline.collapsed
 .sidebar-light .sidebar-menu .sidebar-small-cap {
     color: #1502bd;
 }
-.login-page{
+.login-page {
     width: 100%;
     height: 100%;
 }
@@ -2097,7 +2116,7 @@ body.IE .register-page-wrap .container {
     width: 100%;
     border-radius: 30px;
     margin: 5px auto;
-    background-color: #F5F5F5;
+    background-color: #f5f5f5;
 }
 .select-role {
     margin-bottom: 25px;
@@ -2154,8 +2173,8 @@ body.IE .register-page-wrap .container {
 .login-box .login-title {
     padding: 20px 0;
     /* padding: 0 0 10px; */
-    border-radius: 30px 30px 0 0 ;
-    background-color: #F5F5F5;
+    border-radius: 30px 30px 0 0;
+    background-color: #f5f5f5;
 }
 
 .login-box .login-title h2 {
@@ -2163,11 +2182,10 @@ body.IE .register-page-wrap .container {
     font-weight: 700;
 }
 
-.login-body{
+.login-body {
     background-color: #fff;
     border-radius: 30px 30px;
 }
-
 
 .login-box .login-img {
     display: block;
@@ -2742,9 +2760,9 @@ body.IE .register-page-wrap .container {
 }
 .nav-tabs.customtab .nav-item.show .nav-link,
 .nav-tabs.customtab .nav-link.active {
-    color: #50D890;
+    color: #50d890;
     border: 0;
-    border-bottom: 2px solid #50D890;
+    border-bottom: 2px solid #50d890;
 }
 .nav-tabs.customtab .nav-item {
     margin-bottom: 0;
@@ -2758,9 +2776,10 @@ body.IE .register-page-wrap .container {
 }
 .nav-tabs.customtab .nav-link:focus,
 .nav-tabs.customtab .nav-link:hover {
-    color: #50D890;
+    color: #50d890;
     border: 0;
-    border-bottom: 2px solid #50D890;
+    border-bottom: 2px solid #50d890;
+    cursor: pointer;
 }
 .nav.vtabs {
     border-bottom: 0;
@@ -4042,7 +4061,7 @@ body.IE .register-page-wrap .container {
 }
 .right-sidebar .close-sidebar {
     font-size: 18px;
-    color: #50D890;
+    color: #50d890;
     cursor: pointer;
     /* display: block; */
 }
@@ -4224,6 +4243,15 @@ body.IE .register-page-wrap .container {
 .welcome-modal-btn i {
     margin-top: 6px;
 }
+
+@media print{
+    .noprint{
+        display: none;
+    }
+
+}
+
+
 @media (min-width: 1301px) and (max-width: 1400px) {
     .header {
         width: calc(100% - 250px);
@@ -4271,7 +4299,7 @@ body.IE .register-page-wrap .container {
     }
     .left-side-bar .close-sidebar {
         display: block;
-        color: #50D890;
+        color: #50d890;
     }
     .left-side-bar:before {
         display: block;
@@ -4355,30 +4383,28 @@ body.IE .register-page-wrap .container {
         width: 100%;
     }
 
-
-    .border-bottom-success{
+    .border-bottom-success {
         margin-top: 5px;
     }
 
-    .login-image-left{
+    .login-image-left {
         display: none !important;
     }
 
-    .login-title-image{
+    .login-title-image {
         display: flex;
         text-align: center;
     }
 
-    .login-box .login-title{
+    .login-box .login-title {
         padding: 0;
         margin-top: -20px;
         margin-bottom: 20px;
     }
 
-    .login-box .login-title h2{
+    .login-box .login-title h2 {
         display: none !important;
     }
-
 }
 @media (max-width: 767px) {
     .header {

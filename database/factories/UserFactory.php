@@ -28,7 +28,8 @@ class UserFactory extends Factory
                 'alamat' => fake()->address(),
                 'status' => 'Aktif',
                 'level' => mt_rand(0,3),
-                'profile' => 'default'
+                'profile' => 'default',
+                'tanggal_lahir' => fake()->dateTimeThisDecade()
         ];
     }
 }

@@ -47,8 +47,9 @@ class ProdukController extends Controller
         }
 
         if ($request->ajax()) {
-            if ($filter === 'Semua') {
+            if ($filter === 'Semua' || $filter === '') {
                 $data = $relationedData;
+                return response()->json(['data' => $data]);
             } else {
                 if ($filter !== "") {
                     $filterKategori = Kategori::where('golongan', 'like', '%' . $filter . '%')->pluck('id');
@@ -73,6 +74,7 @@ class ProdukController extends Controller
                             'golongan' => $golonganObatFiltered,
                             'satuan' => $item->satuan,
                             'stok' => $item->stok,
+                            'harga' => $item->harga,
                             'expDate' => $item->expDate,
                             'diprosesPada' => $item->created_at->format('d-m-Y'),
                             'supplier' => $supplier[0],
@@ -82,8 +84,6 @@ class ProdukController extends Controller
                     return response()->json(['data' => $onlyFiltered]);
                 }
             }
-
-            return response()->json(['data' => $data]);
         } else {
             abort(400);
         }
@@ -113,6 +113,7 @@ class ProdukController extends Controller
             'namaProduk' => $request->namaProduk,
             'satuan' => $request->satuan,
             'stok' => $request->stok,
+            'harga' => $request->harga,
             'supplier_id' => $request->supplier,
             'golongan_id' => $request->golongan,
             'expDate' => $request->expDate,
@@ -124,6 +125,7 @@ class ProdukController extends Controller
             'namaProduk' => 'required',
             'satuan' => 'required',
             'stok' => 'required',
+            'harga' => 'required',
             'supplier_id' => 'required',
             'golongan_id' => 'required|json',
             'expDate' => 'required',

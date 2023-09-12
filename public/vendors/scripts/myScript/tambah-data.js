@@ -2,7 +2,7 @@ function submitNewObat(event, url) {
     event.preventDefault();
     const csrfToken = $('meta[name="csrf-token"]').attr("content");
 
-    var fileInput = document.getElementById("image");
+    var fileInput = $("#image");
     var formData = new FormData();
     formData.append("kode", $("#kodeObat").val());
     formData.append("namaProduk", $("#namaObat").val());
@@ -31,10 +31,10 @@ function submitNewObat(event, url) {
         processData: false,
         success: function (response) {
             $("#createNewObatForm")[0].reset();
+            $("#golongan").val(null).trigger("change");
+            $("#golongan").select2();
             successAlert("Data Produk Berhasil disimpan");
             undoChanges();
-            previewImage();
-
         },
         error: function (xhr, status, error) {
             console.error("Error:", error);
@@ -46,17 +46,18 @@ function submitNewObat(event, url) {
 function randomized(event) {
     event.preventDefault();
     const kode = Math.floor(Math.random() * 99999);
-    const kodeObat = $("#kodeObat").val(`PRD-${kode}`);
+    $("#kodeObat").val(`PRD-${kode}`);
 }
 
 function undoChanges() {
-    const myProfileImage = document.getElementById("myProfile");
-    document.getElementById("image").value = "";
-    document.querySelector(".img-preview").style.display = "none";
+    $('#image').val("");
+    $('.img-preview').hide();
+    // document.getElementById("image").value = "";
+    // document.querySelector(".img-preview").style.display = "none";
 }
 
 function previewImage() {
-    document.querySelector(".img-preview").classList.remove("d-none");
+    $(".img-preview").removeClass("d-none");
     const image = document.querySelector("#image");
     const imgPreview = document.querySelector(".img-preview");
 

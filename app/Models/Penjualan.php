@@ -18,6 +18,7 @@ class Penjualan extends Model
         'pasien_id',
         'kategoriPenjualan',
         'harga',
+        'dsc',
         'jumlah',
         'subtotal'
     ];

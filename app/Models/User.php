@@ -29,8 +29,11 @@ class User extends Authenticatable
         'telp',
         'alamat',
         'status',
+        'kategoriDokter',
         'level',
         'profile',
+        'tanggal_lahir',
+        'isPresent'
     ];
 
     /**

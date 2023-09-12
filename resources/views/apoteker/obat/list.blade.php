@@ -99,7 +99,7 @@
             url: url,
             type: 'GET',
             success: function(response) {
-                console.log(response.data);
+                // console.log(response.data);
                 myTable.clear().destroy();
                 myTable = $('#myObatTable').DataTable({
                     "language": {

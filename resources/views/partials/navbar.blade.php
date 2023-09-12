@@ -1,4 +1,4 @@
-<div class="header px-4 bg-lightgreen">
+<div class="header px-4 bg-lightgreen noprint">
     <div class="header-left">
         <div class="menu-icon bi bi-list"></div>
 
