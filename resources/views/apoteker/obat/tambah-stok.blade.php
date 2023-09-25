@@ -68,8 +68,8 @@
                                 <span class="float-right" data-toggle="tooltip"
                                     title="Digunakan Untuk Identifier Sebuah Produk"><i
                                         class="icon-copy dw dw-question font-20"></i></span>
-                                <input class="form-control date-picker" placeholder="Exp Date" required type="text" id="expDate"/>
-                                <p class='text-danger d-none' id="cekExpDate">Jumlah stok tidak boleh Kosong</p>
+                                <input class="form-control" placeholder="Exp Date" required type="date" id="expDate"/>
+                                <p class='text-danger d-none' id="cekExpDate">Exp date tidak boleh kosong</p>
                             </div>
                         </div>
                         <div class="row my-3">
@@ -111,24 +111,12 @@
             myForm.append("kode", kode);
             myForm.append("stok", stock);
             myForm.append("expDate", expDate);
-            $.ajax({
-                url: '/apoteker/obat/add/update/stock/' + kode,
-                headers: {
-                    "X-CSRF-TOKEN": csrfToken
-                },
-                contentType: false,
-                processData: false,
-                method: 'POST',
-                data: myForm,
-                success: function(response) {
-                    successAlert(response.message);
-                    $('#kodeProduk').val(null).trigger('change');
-                },
-                error: function(error, xhr) {
-                    console.log(error.message);
-                    console.log(xhr.responseText);
-                }
-            });
+
+            const url = '/apoteker/obat/add/update/stock/' + kode;
+            ajaxUpdate(url, 'POST', myForm);
+            setTimeout(() => {
+                $('#kodeProduk').val(null).trigger('change');
+            }, 1000);
         }
     }
 </script>

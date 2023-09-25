@@ -20,6 +20,7 @@ return new class extends Migration
             $table->foreignId('pasien_id');
             $table->string('kategoriPenjualan');
             $table->json('harga');
+            $table->integer('dsc');
             $table->json('jumlah');
             $table->integer('subtotal')->default(null);
             $table->timestamps();

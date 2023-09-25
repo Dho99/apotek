@@ -17,6 +17,8 @@ class Resep extends Model
         'gejala',
         'jumlah',
         'dokter_id',
+        'apoteker_id',
+        'isSuccess',
         'catatan',
         'isProceed',
         'keteranganResep'

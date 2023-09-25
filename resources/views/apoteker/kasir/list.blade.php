@@ -1,14 +1,20 @@
 @extends('layouts.main')
+<style>
+    #togglerbar:hover{
+        background-color: #50D890 !important;
+        color: #fff;
+    }
+</style>
 @section('content')
     <div class="xs-pd-20-10 pd-ltr-20">
         <div class="checkout-bar d-none">
+            <div id="pasientopwrapper">
+
+            </div>
             <div class="bg-lightgreen py-3 px-2 border-bottom checkout-bar-top align-items-center d-flex">
                 <button class="font-weight-bold btn btn-sm btn-outline-secondary " onclick="closeCheckout()">
                     Tutup
                 </button>
-                {{-- <button class="font-weight-bold btn btn-sm btn-outline-danger " onclick="emptyCart()">
-                    Clear
-                </button> --}}
                 <span class="font-weight-bold ml-auto" id="trxCode"></span>
             </div>
             <div id="obatCart" class="px-3">
@@ -53,48 +59,17 @@
             </div>
         </div>
 
-
-
         <div class="title pb-20">
-            <h2 class="h3 mb-0">{{ $title }}</h2>
+            <h2 class="h3 mb-0 d-flex">{{ $title }}
+                <button class="btn ml-auto bg-lightgreen shadow-sm text-green" id="togglerbar" onclick="openCheckoutBar()"><i class="icon-copy dw dw-open-book font-30 font-weight-bold"></i></button>
+            </h2>
             <p class="font-weight-bold font-20 mt-2">Antrian Resep</p>
         </div>
 
-        <div class="container-fluid py-3 px-0 h-25">
+        <div class="container-fluid px-0 h-25">
             <div class="swiper mySwiper">
                 <div class="swiper-wrapper">
-                    {{-- @foreach ($produk as $item)
-                        <div class="swiper-slide mx-1">
-
-                            <a href="#" onclick="togglemodal(this)" data-toggle="modal" data-target="#create-resep-modal"
-                                data-nama="{{ $item->pasien->nama }}" data-gejala="{{ $item->gejala }}"
-                                data-kode="{{ $item->kode }}" data-createdat="{{ $item->created_at->format('H:i') }}">
-                                <div class="container-slider border rounded-lg px-3 py-2">
-
-                                    <div class="row d-flex align-items-center">
-
-                                        <div class="col-4 slider-number">
-                                            <div class="bg-secondary rounded-circle text-white">
-                                                <p class="p-3 font-weight-bold font-20">{{ $loop->iteration }}</p>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-8 text-left">
-                                            <p class="font-weight-bold mb-1">
-                                                {{ $item->id }}
-                                            </p>
-                                            <p class="">
-                                                {{ $item }} Tahun
-                                            </p>
-                                        </div>
-
-                                    </div>
-
-                                </div>
-
-                                </a>
-                        </div>
-                    @endforeach --}}
+                    {{-- @dd($datas) --}}
 
                 </div>
             </div>
@@ -139,7 +114,7 @@
                         Lain</a>
                 </li>
                 <li class="nav-item ml-auto mb-2">
-                    <input type="text" name="" id="" placeholder="Search Item" class="form-control">
+                    <input type="text" name="" id="searchProduct" placeholder="Search Item" class="form-control">
                 </li>
 
             </ul>
@@ -153,65 +128,45 @@
 
 
         </div>
+        <script>
+            $().ready(function() {
+                filterKatalog('Semua');
+                refreshTable();
+                let swiper = new Swiper(".mySwiper", {});
+            });
+
+            $('#searchProduct').on('input', function(){
+                let val = $(this).val();
+                if(val){
+                    $('.col-lg-3.col-md-6.col-sm-12.mb-30').each(function(){
+                        let text = $(this).text().toLowerCase();
+                        if(text.includes(val)){
+                            $(this).show();
+                        }else{
+                            $(this).hide();
+                        }
+                    });
+                }else{
+                    $('.col-lg-3.col-md-6.col-sm-12.mb-30').show();
+                }
+            });
+        </script>
     @endsection
     <script>
-        function emptyCart() {
-            $('#obatCart').empty();
-            cartItems = [];
-            randCodeCollector = undefined;
-            $('#trxCode').text('');
-            $('#subtotal').text(0);
-            calculateGrandTotal();
-            filterKatalog('Semua');
-            $('.nav.nav-tabs.customtab').html(`
-            <ul class="nav nav-tabs customtab border-0" role="tablist">
-                <li class="nav-item">
-                    <a class="nav-link active" data-toggle="tab" onclick="filterKatalog('Semua')" role="tab"
-                        aria-selected="true">Semua</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" role="tab" onclick="filterKatalog('Tablet')"
-                        aria-selected="false">Tablet</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" role="tab" onclick="filterKatalog('Kapsul')"
-                        aria-selected="false">Kapsul</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" role="tab" onclick="filterKatalog('Pill')"
-                        aria-selected="false">Pill</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" role="tab" onclick="filterKatalog('Obat Cair')"
-                        aria-selected="false">Obat
-                        Cair</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" role="tab" onclick="filterKatalog('Oles')"
-                        aria-selected="false">Oles</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" onclick="filterKatalog('Injeksi')" role="tab"
-                        aria-selected="false">Injeksi</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" onclick="filterKatalog('Lain - Lain')" data-toggle="tab" role="tab"
-                        aria-selected="false">Lain -
-                        Lain</a>
-                </li>
-                <li class="nav-item ml-auto mb-2">
-                    <input type="text" name="" id="" placeholder="Search Item" class="form-control">
-                </li>
+        let cartItems = {};
+        let randCodeCollector;
+        let proccessed = 0;
 
-            </ul>
-            `);
+        function openCheckoutBar(){
+            $('.checkout-bar').removeClass('d-none');
+
         }
 
-        function filterKatalog(satuan) {
 
+        function filterKatalog(satuan) {
             const hasil = `${satuan}`;
             $.ajax({
-                url: '/apoteker/resep/katalog/filter/' + hasil,
+                url: '/katalog/filter/' + hasil,
                 method: 'GET',
                 success: function(response) {
                     const hasil = response.data;
@@ -238,17 +193,17 @@
                                     <div class="card card-box p-0 shadow">
                                         <img class="card-img-top img-fluid w-100" style="height: 210px;"
                                             src="${flagsUrl}" alt="Card image cap" />
-                                        <div class="card-body">
+                                        <div class="card-body bg-lightgreen-sidebar text-dark">
+                                            <span class="text-dark font-weight-bold">${kode}</span>
                                             <h5 class="card-title weight-500">${namaProduk}
-                                                <span class="float-right">${harga}</span>
-                                            </h5>
-                                            <p class="card-text">
-                                                <span class="float-left">
-                                                    ${satuan}
-                                                </span>
                                                 <span class="float-right" id="stokProduk${kode}">
                                                     ${stok}
                                                 </span>
+
+                                            </h5>
+                                            <p class="card-text text-dark d-flex">
+                                                <span class="">${formatCurrency(harga)}</span>
+                                                <span class="ml-auto">${produk.satuan}</span>
                                             </p>
                                         </div>
                                     </div>
@@ -258,18 +213,70 @@
                     }
                 },
                 error: function(xhr, textStatus, errorThrown) {
-                    console.log(xhr.responseText); // Perbaikan di sini: menggunakan xhr.responseText
+                    console.log(xhr.responseText);
                     console.log(textStatus);
                     console.log(errorThrown);
                 }
             });
         }
 
-        let cartItems = {};
-        let randCodeCollector;
+        function prosesResep(kode) {
+            let collecteditems = {};
+            if(proccessed == 0){
+            $.ajax({
+                url: '/apoteker/resep/proses/transaksi/' + kode,
+                method: 'GET',
+                success: function(response) {
+                    cartItems[`${kode}`] = 1;
+                    const hasil = response.data[0];
+                    $('#pasientopwrapper').append(`
+                    <div class="row container" style="margin-top: 80px; margin-bottom: -40px;">
+                        <div class="col-12">
+                            <div>Nama Pasien : <span class="font-weight-bold" id="namaPasien">${hasil.namaPasien}</span></div>
+                            <div>Diproses Pada : <span class="font-weight-bold">${hasil.created_at}</span></div>
+                            <div>Dokter Resep : <span class="font-weight-bold" id="namaDokter">${hasil.namaDokter}</span></div>
+                            <div>Kode Resep : <span class="font-weight-bold" id="kodeResep">${hasil.kode}</span></div>
+                        </div>
+                    </div>
+                    `);
+
+                    const datas = {
+                        kodeProduk: hasil.kodeProduk,
+                        imageProduk: hasil.image,
+                        namaProduk: hasil.namaProduk,
+                        hargaProduk: hasil.harga,
+                        stokProduk: hasil.stok
+                    }
+
+                    for (let i = 0; i < datas.kodeProduk.length; i++) {
+                        let kode = datas.kodeProduk[i];
+                        let image = datas.imageProduk[i];
+                        let name = datas.namaProduk[i];
+                        let price = datas.hargaProduk[i];
+                        let stock = datas.stokProduk[i];
+
+                        checkout(kode, image, name, price, stock);
+                    }
+
+                    $(`#daftarResep${kode}`).hide();
+
+                },
+                error: function(response, error, xhr) {
+                    errorAlert(response.responseText)
+                    console.log(error.message);
+                    console.log(xhr.responseText);
+                }
+
+            });
+        }else{
+            errorAlert('Tidak bisa memproses dua resep Sekaligus');
+        }
+        }
 
         function checkout(kode, image, name, price, stock) {
             const stokString = parseInt($(`#stokProduk${kode}`).text());
+            proccessed+=1;
+            if(proccessed < 2){
             if (stokString > 0) {
                 $('.checkout-bar').removeClass('d-none');
                 if (randCodeCollector === undefined) {
@@ -299,11 +306,15 @@
                                     <a href="${imageUrl}">Detail / Deskripsi</a>
                                 </span>
                                 <div class="counter-bar font-20 pt-2 d-flex m-auto text-green align-items-center">
-                                    <button class="rounded-circle bg-transparent border border-success px-2"
+                                    ${ proccessed == 1 ? `
+
+                                    <span class="mx-3 text-dark" id="counted${kode}">0</span><span class="text-dark">Buah</span>
+
+                                    `: ` <button class="rounded-circle bg-transparent border border-success px-2"
                                         onclick="counter('tambah','${kode}', '${price}')">+</button>
                                     <span class="mx-3 text-dark" id="counted${kode}">0</span>
                                     <button class="rounded-circle border bg-transparent border-success px-2"
-                                        onclick="counter('kurang','${kode}', '${price}','${stock}')">-</button>
+                                        onclick="counter('kurang','${kode}', '${price}','${stock}')">-</button>`}
                                 </div>
                             </div>
                             <div class="col-lg-3 font-weight-bold font-20 text-right">
@@ -315,8 +326,11 @@
                 `);
                     counter('tambah', kode, price, stock);
                 }
-            } else {
-                alert(`Stok produk ${name} adalah ` + stokString);
+                } else {
+                    alert(`Stok produk ${name} adalah ` + stokString);
+                }
+            }else{
+                errorAlert('Tidak dapat menambahkan obat, Selesaikan dahulu proses Resep');
             }
         }
 
@@ -364,15 +378,20 @@
         }
 
         function deleteItem(kode, price, stok) {
-            let cartKode = kode.toString();
-            let current = parseInt($(`#counted${cartKode}`).text());
-            let harga = parseInt(price);
-            let total = parseInt($('#subtotal').text());
-            $('#subtotal').text(total -= current * harga);
-            $(`#stokProduk${kode}`).text(parseInt(`${stok}`));
-            calculateGrandTotal();
-            $(`#list${cartKode}`).remove();
-            delete cartItems[cartKode];
+            console.log(proccessed);
+            if(proccessed >= 1){
+                errorAlert('Selesaikan proses resep terlebih dahulu');
+            }else{
+                let cartKode = kode.toString();
+                let current = parseInt($(`#counted${cartKode}`).text());
+                let harga = parseInt(price);
+                let total = parseInt($('#subtotal').text());
+                $('#subtotal').text(total -= current * harga);
+                $(`#stokProduk${kode}`).text(parseInt(`${stok}`));
+                calculateGrandTotal();
+                $(`#list${cartKode}`).remove();
+                delete cartItems[cartKode];
+            }
         }
 
         function calculateGrandTotal() {
@@ -415,49 +434,50 @@
 
         function closeCheckout() {
             $('.checkout-bar').addClass('d-none');
+            // $('.row.container').remove();
         }
 
         function prosesPesanan() {
+            let kategoriPenjualan;
             const kode = collectedItems.kode;
-            const jumlah = collectedItems.jumlah;
+            let jumlah = collectedItems.jumlah;
             const total = collectedItems.total;
             const kodePenjualan = $('#trxCode').text();
+            let kodeResep = $('#kodeResep').text();
 
             let userId = '';
             let dokterId = '';
-            let kategoriPenjualan = 'Non Resep';
 
-            if ($('#userCode').text() !== undefined && $('#dokterCode').text() !== undefined) {
-                userId = $('#userCode').text();
-                dokterId = $('#dokterCode').text();
-                let kategoriPenjualan = 'Resep';
+            if ($('#namaPasien').text() !== '' && $('#namaDokter').text() !== '') {
+                pasienId = $('#namaPasien').text();
+                dokterId = $('#namaDokter').text();
+                kategoriPenjualan = 'Resep';
             }
 
             const gt = parseInt($('#grandTotal').text());
 
+            let dscVal = $('#dsc').val();
             let dscField;
 
-            let dscVal = parseInt($('#dsc').text());
-
-            if (dscVal = "") {
+            if (dscVal === "") {
                 dscField = 0;
             } else {
                 dscField = dscVal;
             }
 
-
             $.ajax({
-                url: '/apoteker/resep/antrian/proses/',
+                url: '/resep/antrian/proses/',
                 method: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
                 data: {
                     kode: kode,
+                    kodeResep: kodeResep,
                     jumlah: jumlah,
                     total: total,
                     kodePenjualan: kodePenjualan,
-                    userId: userId,
+                    pasienId: pasienId,
                     dsc: dscField,
                     dokterId: dokterId,
                     kategoriPenjualan: kategoriPenjualan,
@@ -465,10 +485,10 @@
                 },
                 success: function(response) {
                     successAlert(response.message);
-                    console.log(response.data);
-                    emptyCart();
-                    closeCheckout();
                     emptyCollectedItems();
+                    closeCheckout();
+                    $('.row.container').remove();
+                    $('#daftarResep').show();
                 },
                 error: function(xhr, status, error) {
                     console.error("Error:", error);
@@ -477,11 +497,59 @@
             });
         }
 
-        function emptyCollectedItems(){
+        function emptyCollectedItems() {
             collectedItems = {
                 kode: [],
                 jumlah: [],
                 total: 0
             }
+            jenisTransaksi = '';
+        }
+
+        function refreshTable() {
+            $.ajax({
+                url: '/apoteker/resep/not-processed',
+                method: 'GET',
+                success: function(response){
+                    const hasil = response.data;
+                    let number = 0;
+                    hasil.forEach(item => {
+                        number++;
+                        console.log(item);
+                        $('.swiper-wrapper').append(`
+                        <div class="swiper-slide mx-1">
+                            <a href="#" id="daftarResep${item.kode}" onclick="prosesResep('${item.kode}')" data-toggle="modal">
+                                <div class="container-slider border rounded-lg px-3">
+
+                                    <div class="row d-flex">
+                                        <div class="col-4 text-light d-flex justify-content-center align-items-center">
+                                            <div class="font-24 font-weight-bold bg-secondary rounded-circle px-4 py-3">
+                                                    ${number}
+                                            </div>
+                                        </div>
+                                        <div class="col-8 text-left py-2">
+                                            <p class="font-weight-bold mb-1">
+                                                ${item.pasien_id}
+                                            </p>
+                                            <p class="">
+                                                ${item.obat_id} Items
+                                            </p>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                                </a>
+                            </div>
+
+                        `);
+                    });
+                },
+                error: function(error, xhr){
+                    errorAlert(error.responseText);
+                    console.log(error);
+                    console.log(xhr.responseText);
+                }
+            });
         }
     </script>

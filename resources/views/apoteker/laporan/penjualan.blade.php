@@ -91,16 +91,14 @@
                         <div>Nama Dokter : <span id="namaDokter" class="font-weight-bold"></span></div>
                         <div>Nama Apoteker : <span id="namaApoteker" class="font-weight-bold"></span></div>
                         <div>Nama Pasien : <span id="namaPasien" class="font-weight-bold"></span></div>
-                        <div>Kategori : <span id="kategori" class="font-weight-bold"></span></div>
-                        <div>Deskripsi : <span id="deskripsi" class="font-weight-bold"></span></div>
                     </div>
                 </div>
                 <div id="table-invoice-wrapper" class="my-4">
 
                 </div>
-                <div class="text-center mb-4">
+                {{-- <div class="text-center mb-4">
                     <h5>Semoga lekas sembuh </h5>
-                </div>
+                </div> --}}
                 <button class="btn btn-secondary noprint" onclick="emptyModal()">Tutup</button>
                 <button class="btn btn-success float-right noprint" onclick="printInvoice()"> <span
                         class="icon-copy dw dw-print"></span> Print</button>
@@ -110,11 +108,6 @@
 </div>
 
 <script>
-    function printInvoice() {
-        const modal = $('.modal-content');
-        window.print(modal);
-        emptyModal();
-    }
 
     function emptyModal() {
         $('#table-invoice-wrapper').empty();
@@ -122,10 +115,10 @@
     }
 
     function modalShow(kode, kategori, namaApoteker, namaDokter, namaPasien, namaProduk, subtotal, kategori, harga,
-        deskripsi, jumlah, created_at) {
+        deskripsi, jumlah, created_at, isSuccess) {
 
         const table = $('<table class="table table-bordered"></table>');
-        const thead = $('<thead><tr><th>No</th><th>Nama Produk</th><th>Harga</th></tr></thead>');
+        const thead = $('<thead><tr><th>No</th><th>Nama Produk</th><th>Jumlah</th><th>Harga</th></tr></thead>');
         const tbody = $('<tbody></tbody>');
 
         // Loop melalui array nomorProduk dan tambahkan nomor ke dalam tabel
@@ -142,8 +135,14 @@
             const cell2 = $('<td></td>').text(namaProduk[i]);
             row1.append(cell2);
 
-            const cell3 = $('<td></td>').text(harga[i]);
+
+
+            const cell3 = $('<td></td>').text(jumlah[i]);
             row1.append(cell3);
+
+
+            const cell4 = $('<td></td>').text(formatCurrency(harga[i]));
+            row1.append(cell4);
 
 
 
@@ -151,22 +150,18 @@
 
         }
         const row2 = $('<tr></tr>');
-        const cell4 = $('<td colspan="2"><div class="font-weight-bold font-18 text-right">Total</div></td>');
-        const cell5 = $('<td></td>').text(subtotal);
+        const cell4 = $('<td colspan="3"><div class="font-weight-bold font-18 text-right">Total</div></td>');
+        const cell5 = $('<td></td>').text(formatCurrency(subtotal));
         row2.append(cell4, cell5);
         tbody.append(row2);
 
-        // Menambahkan thead dan tbody ke dalam tabel
         table.append(thead);
         table.append(tbody);
 
-        // Menambahkan tabel ke dalam elemen dengan ID "table-invoice-wrapper"
 
 
         $('.modal-title').text('Invoice Transaksi ' + kode);
         $('#createdAt').text(created_at);
-        $('#deskripsi').text(deskripsi);
-        $('#kategori').text(kategori);
         if (`${namaDokter}` !== '') {
             $('#namaDokter').text(`${namaDokter}`);
         } else {
@@ -205,16 +200,14 @@
 
 
     function invoiceModal(kode) {
-        // console.log(kode);
         $.ajax({
             url: '/apoteker/laporan/penjualan/inovice/' + kode,
             method: 'GET',
             success: function(response) {
                 const hasil = response.data[0];
-                // console.log(hasil);
                 modalShow(hasil.kode, hasil.kategori, hasil.namaApoteker, hasil.namaDokter, hasil
                     .namaPasien, hasil.namaProduk, hasil.subtotal, hasil.kategori, hasil.harga, hasil
-                    .deskripsi, hasil.jumlah, hasil.created_at);
+                    .deskripsi, hasil.jumlah, hasil.created_at, hasil.isSuccess);
             },
             error: function(error, xhr) {
                 console.error(error);

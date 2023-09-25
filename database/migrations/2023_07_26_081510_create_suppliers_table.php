@@ -16,7 +16,8 @@ return new class extends Migration
             $table->string('kode', 50);
             $table->string('nama', 50);
             $table->string('alamat', 50);
-            $table->string('noTel', 50);
+            $table->string('noTel', 50)->nullable();
+            $table->string('perwakilan', 50)->nullable();
             $table->timestamps();
         });
     }

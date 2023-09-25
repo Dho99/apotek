@@ -6,7 +6,7 @@
         </div>
 
         <div class="row pb-10">
-            <div class="col-xl-6 col-lg-6 col-md-12 mb-20">
+            <div class="col-xl-6 col-lg-6 col-md-12 mb-20 ">
                 <div class="card-box height-100-p widget-style3">
                     <div class="d-flex flex-wrap">
                         <div class="widget-data">
@@ -15,14 +15,14 @@
                             </div>
                         </div>
                         <div id="chart3" class="container"></div>
-                        <a href="#" class="text-dark mb-3 px-4">Lihat Selengkapnya</a>
+                        <a href="/apoteker/laporan/penjualan" class="text-dark mb-3 px-4">Lihat Selengkapnya</a>
                     </div>
                 </div>
 
             </div>
 
             <div class="col-xl-6 col-lg-6 col-md-12 mb-20">
-                <div class="card-box height-100-p widget-style3">
+                <div class="card-box widget-style3" style="height: 70%;">
                     <div class="d-flex flex-wrap">
                         <div class="widget-data w-100">
                             <div class="font-20 text-secondary weight-500">
@@ -77,9 +77,20 @@
                                     </div>
                                 @endforeach
                             @endif
-                            <a href="#" class="px-3 mb-4 text-dark">Lihat Selengkapnya</a>
+                            <a href="/apoteker/obat/list" class="px-3 mb-4 text-dark">Lihat Selengkapnya</a>
                         </div>
 
+                    </div>
+                </div>
+                <div class="card-box widget-style3 my-3">
+                    <div class="d-flex flex-wrap">
+                        <div class="widget-data w-100">
+                            <div class="font-20 text-secondary weight-500">
+                                Saldo Kas
+                                <div class="font-24 text-dark my-1 font-weight-bold">@currency($kas)</div>
+                            </div>
+                            <a href="/apoteker/laporan/keuangan">Lihat Selengkapnya</a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -95,7 +106,7 @@
                             </div>
 
                             {{-- @dd($data) --}}
-                            @foreach ($data as $item)
+                            @forelse ($dataProcessed as $item)
                                 <div class="bg-lightgreen my-3 rounded-lg">
                                     <div class="row py-1 w-100 m-auto text-center align-items-center">
                                         <div class="col-xl-1 col-md-4 col-sm-6">
@@ -105,17 +116,17 @@
                                         </div>
                                         <div class="col-xl-3 col-md-4 col-sm-6">
                                             <div class="rounded-lg px-0 py-0">
-                                                {{ $item->created_at->format('d-m-Y') }}
+                                                {{ $item['created_at']->format('h:i d/m/y') }}
                                             </div>
                                         </div>
                                         <div class="col-xl-4 col-md-4 col-sm-6">
                                             <div class="rounded-lg py-2">
-                                                {{ $item->pasien->nama }}
+                                                {{ $item['pasien_id'] }}
                                             </div>
                                         </div>
 
                                         <div class="col-xl-3 col-md-4 col-sm-6 text-center small align-items-center d-flex">
-                                            @if ($item->isProceedByApoteker = 1)
+                                            @if ($item['isProceedByApoteker'] = 1)
                                                 <div class="rounded-lg text-light bg-success p-2 m-auto">
                                                     Sudah Dibuat
                                                 </div>
@@ -128,37 +139,37 @@
                                         <div class="col-xl-1 col-md-4 col-sm-6 ">
                                             <button class="border-0 mt-1 bg-transparent text-center text-danger font-24"
                                                 data-toggle="modal"
-                                                data-target="#daftar-resep-dashboard-modal-{{ $item->kode }}" type="button">
+                                                data-target="#daftar-resep-dashboard-modal-{{ $item['kode'] }}"
+                                                type="button">
                                                 <i class="icon-copy dw dw-edit"></i>
                                             </button>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="modal fade bs-example-modal-lg"
-                                    id="daftar-resep-dashboard-modal-{{ $item->kode }}" tabindex="-1" role="dialog"
+                                    id="daftar-resep-dashboard-modal-{{ $item['kode'] }}" tabindex="-1" role="dialog"
                                     aria-labelledby="myLargeModalLabel" aria-hidden="true">
                                     <div class="modal-dialog modal-dialog-centered">
                                         <div class="modal-content">
                                             <div class="modal-body">
                                                 <div class="row border-bottom">
                                                     <div class="col-lg-6">
-                                                        <p class="mb-1 font-18">Dr. {{ $item->dokter->nama }}</p>
-                                                        <p>{{ $item->dokter->kategoriDokter }}</p>
+                                                        <p class="mb-1 font-18">Dr. {{ $item['dokter_id'] }}</p>
+                                                        <p>{{ $item['dokter_id'] }}</p>
                                                     </div>
                                                     <div class="col-lg-6 text-right">
-                                                        <p>{{ $item->created_at->format('d:m:Y H:i') }}</p>
+                                                        <p>{{ $item['created_at']->format('d:m:Y H:i') }}</p>
                                                     </div>
                                                 </div>
-                                                {{-- <div class="dropdown-divider"></div> --}}
                                                 <div class="row my-2 border-bottom">
                                                     <div class="col-lg-6">
-                                                        <p class="font-18">{{ $item->pasien->nama }}</p>
+                                                        <p class="font-18">{{ $item['pasien_id'] }}</p>
                                                     </div>
                                                     <div class="col-lg-6 text-right">
-                                                        <p>{{ $item->umur }}</p>
+                                                        <p>{{ $item['umur'] }}</p>
                                                     </div>
                                                     <div class="col-lg-12">
-                                                        <p>{{ $item->gejala }}</p>
+                                                        <p>{{ $item['gejala'] }}</p>
                                                     </div>
                                                 </div>
                                                 <div class="row d-flex font-weight-bold">
@@ -172,22 +183,20 @@
                                                         Satuan
                                                     </div>
                                                 </div>
-                                                @foreach ($resepMasuk as $index => $item)
-                                                    @foreach ($item['namaProduk'] as $namaObatIndex => $namaObat)
-                                                        <div class="row py-2 border-bottom">
-                                                            <div class="col-6">
-                                                                {{ $namaObat }} <br>
-                                                                {{ $item['catatan'][$namaObatIndex] }}
-                                                            </div>
-                                                            <div class="col-3">
-                                                                {{ $item['jumlah'][$namaObatIndex] }} <br>
-
-                                                            </div>
-                                                            <div class="col-3">
-                                                                {{ $item['satuan'][$namaObatIndex] }}
-                                                            </div>
+                                                @foreach ($item['namaProduk'] as $namaObatIndex => $namaObat)
+                                                    <div class="row py-2 border-bottom">
+                                                        <div class="col-6">
+                                                            {{ $namaObat }} <br>
+                                                            {{ $item['catatan'][$namaObatIndex] }}
                                                         </div>
-                                                    @endforeach
+                                                        <div class="col-3">
+                                                            {{ $item['jumlah'][$namaObatIndex] }} <br>
+
+                                                        </div>
+                                                        <div class="col-3">
+                                                            {{ $item['satuan'][$namaObatIndex] }}
+                                                        </div>
+                                                    </div>
                                                 @endforeach
                                             </div>
 
@@ -195,15 +204,11 @@
                                                 <form action="/apoteker/resep/proses/{{ $item['kode'] }}" method="POST"
                                                     class="w-100 d-flex">
                                                     @csrf
-                                                    @if ($item['isProceedByAdmin'] = 1)
-                                                        <button type="button" class="btn btn-secondary disabled w-75 m-auto"
+                                                    @if ($item['isProceedByApoteker'] = '1')
+                                                        <button type="button"
+                                                            class="btn btn-secondary disabled w-75 m-auto"
                                                             data-dismiss="modal">
                                                             Resep Sudah Diproses
-                                                        </button>
-                                                    @else
-                                                        <button type="submit"
-                                                            class="btn btn{{ $item['proceedByApoteker'] = 1 ? '-outline' : '-btn' }}-success w-75 m-auto">
-                                                            Proses Resep Sekarang
                                                         </button>
                                                     @endif
                                                 </form>
@@ -211,7 +216,42 @@
                                         </div>
                                     </div>
                                 </div>
+                            @empty
+                            @endforelse
+
+                            @foreach ($dataNotProceed as $item)
+                                <div class="bg-lightgreen my-3 rounded-lg">
+                                    <div class="row py-1 w-100 m-auto text-center align-items-center">
+                                        <div class="col-xl-1 col-md-4 col-sm-6">
+                                            <div class="rounded-lg py-2">
+                                                {{ count($dataProcessed) + $loop->iteration }}
+                                            </div>
+                                        </div>
+                                        <div class="col-xl-3 col-md-4 col-sm-6">
+                                            <div class="rounded-lg px-0 py-0">
+                                                {{ $item->created_at->format('h:i d/m/y') }}
+                                            </div>
+                                        </div>
+                                        <div class="col-xl-4 col-md-4 col-sm-6">
+                                            <div class="rounded-lg py-2">
+                                                {{ $item->pasien->nama }}
+                                            </div>
+                                        </div>
+
+                                        <div class="col-xl-3 col-md-4 col-sm-6 text-center small align-items-center d-flex">
+                                                <div class="rounded-lg text-light bg-danger p-2 m-auto">
+                                                    Belum dibuat
+                                                </div>
+                                        </div>
+                                        <div class="col-xl-1 col-md-4 col-sm-6 ">
+                                            <button class="border-0 mt-1 bg-transparent text-center text-danger font-24" onclick="if (confirm('Lanjut ke halaman proses resep?')) window.location.href='/apoteker/resep/list';">
+                                                <i class="icon-copy dw dw-edit"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
                             @endforeach
+                            {{-- @empty --}}
 
 
 

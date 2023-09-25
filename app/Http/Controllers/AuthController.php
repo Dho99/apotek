@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use App\Events\UserNotification;
 
 class AuthController extends Controller
 {
@@ -28,15 +29,18 @@ class AuthController extends Controller
         // dd($credentials);
         if (Auth::attempt($credentials)) {
             User::where('id', auth()->user()->id)->update(['isPresent' => '1']);
+            // event(new UserNotification(auth()->user()->level, auth()->user()->nama, auth()->user()->nama.' is logged on',''));
+
             if (auth()->user()->level == 'Apoteker') {
                 $request->session()->regenerate();
                 return redirect()->intended('/apoteker/dashboard');
             } elseif (auth()->user()->level == 'Dokter') {
                 $request->session()->regenerate();
-                return redirect()->intended('/dokter/dashboard');
+                return redirect()->intended('/dokter/resep/create');
             } elseif (auth()->user()->level == 'Kasir') {
                 $request->session()->regenerate();
-                return redirect()->intended('/kasir/dashboard');
+                return redirect()->intended('/kasir/pasien/list');
+
             }
         }
         return back()->with('email', 'Masukkan Password anda dengan Benar');

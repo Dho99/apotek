@@ -38,7 +38,7 @@
                                     title="Digunakan Untuk Identifier Sebuah Produk"><i
                                         class="icon-copy dw dw-question font-20"></i></span>
                                 <select class="custom-select2 form-control" name="golongan" id="golongan"
-                                    multiple="multiple" style="width: 100%" required disabled>
+                                    multiple="multiple" style="width: 100%" disabled>
                                     @foreach ($golongan as $golonganItem)
                                         <option value="{{ $golonganItem->id }}"
                                             @if (in_array($golonganItem->id, json_decode($item['golongan_id']))) selected @endif>
@@ -53,8 +53,8 @@
                                 <span class="float-right" data-toggle="tooltip"
                                     title="Digunakan Untuk Identifier Sebuah Produk">
                                     <i class="icon-copy dw dw-question font-20"></i></span>
-                                <input class="form-control date-picker" id="expDate" placeholder="Exp Date" name="expdate" required disabled value="{{$item->expDate}}"
-                                    type="text" />
+                                <input class="form-control" id="expDate" placeholder="Exp Date" name="expdate" required disabled value="{{$item->expDate}}"
+                                    type="date" />
                             </div>
                         </div>
                         <div class="row my-3">
@@ -97,6 +97,10 @@
                             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-3">
                                 <img src="{{asset('storage/'.$item->image)}}" class="img-preview rounded img-fluid border border-success">
                             </div>
+                            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-3">
+                                <label for="">Harga</label>
+                                <input type="text" name="" value="{{$item->harga}}" id="harga" class="form-control" disabled>
+                            </div>
                         </div>
                         <div class="row mt-4">
                             <div class="col-xl-2 col-lg-6 col-md-6 col-sm-6 mb-3">
@@ -113,15 +117,21 @@
             @endforeach
         </div>
     </div>
+    <script>
+        $().ready(function(){
+            $('#harga').mask('000,000,000', {reverse: true});
+        });
+    </script>
     <script src="{{ asset('vendors/scripts/myScript/tambah-data.js') }}"></script>
+    <script>
+        function changeMode(){
+            const changer = $('#changeModeBtn').addClass('d-none');
+            const changed = $('#submitBtn').removeClass('d-none');
+            const title = $('#title').text('Edit Data Obat');
+            const myForm = $('#createNewObatForm input, #createNewObatForm select').removeAttr('disabled');
+            $('html, body').animate({ scrollTop: 0 }, 800);
+            $('#backToListBtn').attr('onclick', "alert('Perubahan yang anda Lakukan tidak Akan Disimpan !')");
+        }
+    </script>
+
 @endsection
-<script>
-    function changeMode(){
-        const changer = $('#changeModeBtn').addClass('d-none');
-        const changed = $('#submitBtn').removeClass('d-none');
-        const title = $('#title').text('Edit Data Obat');
-        const myForm = $('#createNewObatForm input, #createNewObatForm select').removeAttr('disabled');
-        $('html, body').animate({ scrollTop: 0 }, 800);
-        $('#backToListBtn').attr('onclick', "alert('Perubahan yang anda Lakukan tidak Akan Disimpan !')");
-    }
-</script>

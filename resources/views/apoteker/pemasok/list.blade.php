@@ -22,33 +22,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($data as $item)
-                            <tr>
-                                <td class="table-plus">{{ $item->kode }}</td>
-                                <td>{{ $item->nama }}</td>
-                                <td>{{ $item->alamat }}</td>
-                                <td>{{ $item->perwakilan }}</td>
-                                <td>{{ $item->noTelp }}</td>
-                                <td>
-                                    <div class="dropdown">
-                                        <a class="btn btn-link font-24 p-0 line-height-1 no-arrow dropdown-toggle"
-                                            href="#" role="button" data-toggle="dropdown">
-                                            <i class="dw dw-more"></i>
-                                        </a>
-                                        <div class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list">
-                                            <a class="dropdown-item" href="#"
-                                                onclick="showSupplier('{{ $item->kode }}')"><i class="dw dw-eye"></i>
-                                                View</a>
-                                            <a class="dropdown-item text-danger" onclick="deleteItem('{{ $item->kode }}')"
-                                                href="#">
-                                                <i class="dw dw-delete-3"></i>
-                                                Delete
-                                            </a>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                        @endforeach
+
                     </tbody>
                 </table>
             </div>
@@ -96,6 +70,11 @@
             </div>
         </div>
     </div>
+    <script>
+        $().ready(function() {
+            refreshTable();
+        });
+    </script>
 @endsection
 <style>
     #codeGenerator:hover {
@@ -112,44 +91,34 @@
     }
 
     function refreshTable() {
-        let myTable = $('#supplierTable').DataTable();
         $.ajax({
             url: '/apoteker/pemasok/get',
             method: 'GET',
             success: function(response) {
-                myTable.clear().destroy();
-                myTable = $('#supplierTable').DataTable({
-                    "language": {
-                        searchPlaceholder: 'Cari apa saja disini'
+                updateTable('#supplierTable', response.data, [{
+                        title: 'Kode',
+                        data: 'kode'
                     },
-                    autoWidth: false,
-                    responsive: true,
-                    destroy: true,
-                    data: response.data,
-                    columns: [{
-                            title: 'Kode',
-                            data: 'kode'
-                        },
-                        {
-                            title: 'Nama Supplier',
-                            data: 'nama'
-                        },
-                        {
-                            title: 'Alamat',
-                            data: 'alamat'
-                        },
-                        {
-                            title: 'Perwakilan Perusahaan',
-                            data: 'perwakilan'
-                        },
-                        {
-                            title: 'No Telp',
-                            data: 'noTelp'
-                        },
-                        {
-                            title: 'Action',
-                            render: function(data, type, row) {
-                                return `
+                    {
+                        title: 'Nama Supplier',
+                        data: 'nama'
+                    },
+                    {
+                        title: 'Alamat',
+                        data: 'alamat'
+                    },
+                    {
+                        title: 'Perwakilan Perusahaan',
+                        data: 'perwakilan'
+                    },
+                    {
+                        title: 'No Telp',
+                        data: 'noTel'
+                    },
+                    {
+                        title: 'Action',
+                        render: function(data, type, row) {
+                            return `
                             <div class="dropdown">
                                 <a class="btn btn-link font-24 p-0 line-height-1 no-arrow dropdown-toggle"
                                     href="#" role="button" data-toggle="dropdown">
@@ -167,10 +136,9 @@
                                 </div>
                             </div>
                             `;
-                            }
-                        }
-                    ],
-                });
+                        },
+                    },
+                ]);
             },
             error: function(error, xhr) {
                 console.error(error);
@@ -180,8 +148,7 @@
     }
 
     function randomSupplierCode() {
-        const randomCode = Math.floor(Math.random() * 9999);
-        $('#kode').val('SPL-' + randomCode);
+        $('#kode').val('SPL-' + randomString());
     }
 
     function emptyModal() {
@@ -189,19 +156,13 @@
         $('#kode').attr('disabled', 'disabled');
         $('.btn.btn-info.ml-auto').removeClass('d-none');
         $('#updateBtn, #createBtn, #codeGenerator').addClass('d-none');
-    }
-
-    function changeToEdit() {
-        $('.btn.btn-info.ml-auto').addClass('d-none');
-        $('#updateBtn').removeClass('d-none');
-        $('#dataSupplierForm input').removeAttr('readonly');
+        $('#showSupplier').modal('hide');
     }
 
     function showModalSupplier(kode, nama, alamat, perwakilan, telp) {
         $('#dataSupplierForm input').attr('readonly', 'readonly');
         $('#showSupplier').modal('show');
         let modalTitle = $('#nama');
-        // let mode =
         if (kode !== undefined) {
             modalTitle.text(kode);
             $('#mode').text('Detail');
@@ -235,53 +196,53 @@
     function updateDataSupplier(event) {
         event.preventDefault();
         let supplierTable = $('#supplierTable').DataTable();
-        const kode = $('#kode').val();
         const title = $('#mode').text();
-        let url;
-        if (title === 'Detail') {
-            url = '/apoteker/pemasok/update/' + kode;
-        } else {
-            url = '/apoteker/pemasok/create';
-        }
         let myForm = new FormData();
         myForm.append('kode', $('#kode').val());
         myForm.append('namaSupplier', $('#namaSupplier').val());
         myForm.append('alamat', $('#alamat').val());
         myForm.append('perwakilan', $('#perwakilan').val());
         myForm.append('noTelp', $('#noTelp').val());
-        $.ajax({
-            url: url,
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr("content")
-            },
-            processData: false,
-            contentType: false,
-            cache: false,
-            data: myForm,
-            success: function(response) {
-                successAlert(response.message);
-                refreshTable();
-                emptyModal();
-                $('#showSupplier').modal('hide');
-            },
-            error: function(error, xhr) {
-                console.error(error);
-                console.log(xhr.responseText);
-            }
-        });
+
+        const url = '/apoteker/pemasok/update';
+        const method = 'POST';
+        const dataForm = myForm;
+
+        ajaxUpdate(url, method, dataForm)
+        // $.ajax({
+        //     url: '/apoteker/pemasok/update',
+        //     method: 'POST',
+        //     headers: {
+        //         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr("content")
+        //     },
+        //     processData: false,
+        //     contentType: false,
+        //     cache: false,
+        //     data: myForm,
+        //     success: function(response) {
+        //         successAlert(response.message);
+        //         console.log(response.data);
+        //         refreshTable();
+        //         emptyModal();
+        //         $('#showSupplier').modal('hide');
+        //     },
+        //     error: function(error, xhr) {
+        //         console.error(error);
+        //         console.log(xhr.responseText);
+        //     }
+        // });
     }
 
     function deleteItem(kode) {
         $.ajax({
             url: '/apoteker/pemasok/delete/' + kode,
             method: 'GET',
-            success: function(response){
+            success: function(response) {
                 successAlert(response.message);
                 refreshTable();
                 emptyModal();
             },
-            error: function(error,xhr){
+            error: function(error, xhr) {
                 console.error(error);
                 console.log(xhr.responseText);
             }

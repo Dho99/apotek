@@ -1,9 +1,7 @@
 function submitNewObat(event, url) {
     event.preventDefault();
-    const csrfToken = $('meta[name="csrf-token"]').attr("content");
-
-    var fileInput = $("#image");
-    var formData = new FormData();
+    let fileInput = $("#createNewObatForm input[type=file]").get(0);
+    let formData = new FormData();
     formData.append("kode", $("#kodeObat").val());
     formData.append("namaProduk", $("#namaObat").val());
     formData.append("golongan", JSON.stringify($("#golongan").val()));
@@ -11,6 +9,7 @@ function submitNewObat(event, url) {
     formData.append("stok", $("#stok").val());
     formData.append("supplier", $("#supplier").val());
     formData.append("expDate", $("#expDate").val());
+    formData.append("harga", $("#harga").cleanVal());
 
     if (fileInput.files.length > 0) {
         formData.append("image", fileInput.files[0]);
@@ -18,42 +17,25 @@ function submitNewObat(event, url) {
         const existingImageUrl = $("#previewImg").attr("src");
         formData.append("image", existingImageUrl);
     }
+    ajaxUpdate(url, "POST", formData);
 
-    $.ajax({
-        url: url,
-        method: "POST",
-        data: formData,
-        headers: {
-            "X-CSRF-TOKEN": csrfToken,
-        },
-        contentType: false, // Set contentType ke false
-        cache: false,
-        processData: false,
-        success: function (response) {
-            $("#createNewObatForm")[0].reset();
-            $("#golongan").val(null).trigger("change");
-            $("#golongan").select2();
-            successAlert("Data Produk Berhasil disimpan");
-            undoChanges();
-        },
-        error: function (xhr, status, error) {
-            console.error("Error:", error);
-            console.log("Response:", xhr.responseText);
-        },
-    });
+    $("#createNewObatForm input").val('');
+    $("#golongan").val(null).trigger("change");
+    $("#golongan").select2();
+    undoChanges();
+    setTimeout(function() {
+        window.location.href = "/apoteker/obat/list";
+    }, 1500);
 }
 
 function randomized(event) {
     event.preventDefault();
-    const kode = Math.floor(Math.random() * 99999);
-    $("#kodeObat").val(`PRD-${kode}`);
+    $("#kodeObat").val('PRD-'+randomString());
 }
 
 function undoChanges() {
-    $('#image').val("");
-    $('.img-preview').hide();
-    // document.getElementById("image").value = "";
-    // document.querySelector(".img-preview").style.display = "none";
+    $("#image").val("");
+    $(".img-preview").hide();
 }
 
 function previewImage() {

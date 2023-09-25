@@ -20,9 +20,10 @@ return new class extends Migration
             $table->string('gejala', 255);
             $table->json('jumlah')->default(null);
             $table->foreignId('dokter_id');
-            $table->integer('umur')->default(null);
             $table->text('catatan', 1000)->default(null);
             $table->boolean('isProceed')->default(0);
+            $table->foreignId('apoteker_id');
+            $table->boolean('isSuccess')->default(0);
             $table->boolean('isProceedByApoteker')->default(0);
             $table->json('satuan')->default(null);
             $table->timestamps();

@@ -1,123 +1,118 @@
 @extends('layouts.main')
 @section('content')
-
-
     <div class="xs-pd-20-10 pd-ltr-20 pb-5">
 
         @foreach ($data as $item)
-            @if (auth()->user()->level === 'Apoteker')
-                <form action="/apoteker/account/update/{{ $item->kode }}" method="POST" enctype="multipart/form-data" >
-                @elseif (auth()->user()->level === 'Dokter')
-                    <form action="/dokter/account/update/{{ $item->kode }}" method="POST" enctype="multipart/form-data">>
-                    @else
-                        <form action="/apoteker/account/update/{{ $item->kode }}" method="POST"
-                            enctype="multipart/form-data">>
-            @endif
-            @csrf
-            <div class="card-box shadow-lg w-75 m-auto">
+            <form action="/account/update/{{ $item->kode }}" method="POST" enctype="multipart/form-data">
 
-                <div class="modal fade bs-example-modal-lg" id="edit-image-account-modal" tabindex="-1" role="dialog"
-                    aria-labelledby="myLargeModalLabel" aria-hidden="true">
+                @csrf
+                <div class="card-box shadow-lg w-75 m-auto">
 
-                    <div class="modal-dialog modal-lg modal-dialog-centered">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h4 class="modal-title" id="myLargeModalLabel">
-                                    Edit Foto Profil
-                                </h4>
-                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
-                                    ×
-                                </button>
-                            </div>
-                            <div class="modal-body d-flex">
-                                <div class="container row m-auto">
-                                    <div class="col-xl-12 mb-3">
-                                        <input type="file" src="" alt="" id="image"
-                                            class="form-control" name="profile" onchange="previewImage()" value="">
-                                    </div>
-                                    <img src=""
-                                        class="img-preview rounded-circle img-fluid account-img border border-success d-none">
+                    <div class="modal fade bs-example-modal-lg" id="edit-image-account-modal" tabindex="-1" role="dialog"
+                        aria-labelledby="myLargeModalLabel" aria-hidden="true">
+
+                        <div class="modal-dialog modal-lg modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h4 class="modal-title" id="myLargeModalLabel">
+                                        Edit Foto Profil
+                                    </h4>
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                        ×
+                                    </button>
                                 </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal"
-                                    onclick="undoChanges()">
-                                    Batal
-                                </button>
-                                <button type="button" class="btn btn-primary" data-dismiss="modal">
-                                    Simpan
-                                </button>
+                                <div class="modal-body d-flex">
+                                    <div class="container row m-auto">
+                                        <div class="col-xl-12 mb-3">
+                                            <input type="file" src="" alt="" id="image"
+                                                class="form-control" name="profile" onchange="previewImage()"
+                                                value="">
+                                        </div>
+                                        <img src=""
+                                            class="img-preview rounded-circle img-fluid account-img border border-success d-none">
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                                        onclick="undoChanges()">
+                                        Batal
+                                    </button>
+                                    <button type="button" class="btn btn-primary" data-dismiss="modal">
+                                        Simpan
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="container p-5 m-auto row">
-                    <div class="col-xl-6 d-flex">
-                        <div class="da-card m-auto rounded-circle border border-success">
-                            <div class="da-card-photo">
-                                <div class="account-img">
-                                    <img src="{{ asset('storage/' . $item->profile) }}" class="w-100 h-100"
-                                        id="myProfile" />
-                                </div>
-                                <div class="da-overlay">
-                                    <div class="da-social">
-                                        <ul class="clearfix">
-                                            <li>
-                                                <a href="#" data-toggle="modal"
-                                                    data-target="#edit-image-account-modal" type="button"
-                                                    class="text-decoration-none d-flex">
-                                                    <i class="icon-copy dw dw-pencil-1 border-light m-auto"></i>
-                                                </a>
-                                            </li>
-                                        </ul>
+                    <div class="container p-5 m-auto row">
+                        <div class="col-xl-6 d-flex">
+                            <div class="da-card m-auto rounded-circle border border-success">
+                                <div class="da-card-photo">
+                                    <div class="account-img">
+                                        <img src="{{ asset('storage/' . $item->profile) }}" class="w-100 h-100"
+                                            id="myProfile" />
+                                    </div>
+                                    <div class="da-overlay">
+                                        <div class="da-social">
+                                            <ul class="clearfix">
+                                                <li>
+                                                    <a href="#" data-toggle="modal"
+                                                        data-target="#edit-image-account-modal" type="button"
+                                                        class="text-decoration-none d-flex">
+                                                        <i class="icon-copy dw dw-pencil-1 border-light m-auto"></i>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="my-3 col-xl-6">
-                        <div class="col-xl-12 my-3">
-                            <label for="username" class="font-weight-bold">Username</label>
-                            <span><i class="icon-copy bi bi-info-circle float-right font-20 mb-2" data-toggle="tooltip"
-                                    title="Tooltip on top"></i></span>
-                            <input type="text" class="form-control" value="{{ $item->username }}" name="username"
-                                required>
-                        </div>
-                        <div class="col-xl-12 my-3">
-                            <label for="nama" class="font-weight-bold">Nama Lengkap</label>
-                            <span><i class="icon-copy bi bi-info-circle float-right font-20 mb-2" data-toggle="tooltip"
-                                    title="Tooltip on top"></i></span>
-                            <input type="text" class="form-control" name="nama" value="{{ $item->nama }}" required>
-                        </div>
-                        <div class="col-xl-12 my-3">
-                            <label for="nama" class="font-weight-bold">Email</label>
-                            <span><i class="icon-copy bi bi-info-circle float-right font-20 mb-2" data-toggle="tooltip"
-                                    title="Tooltip on top"></i></span>
-                            <input type="text" class="form-control" name="email" value="{{ $item->email }}" required>
-                        </div>
-                        <div class="col-xl-12 my-3">
-                            <label for="nama" class="font-weight-bold">Level</label>
-                            <span><i class="icon-copy bi bi-info-circle float-right font-20 mb-2" data-toggle="tooltip"
-                                    title="Tooltip on top"></i></span>
-                            <input type="text" class="form-control" name="level" value="{{ $item->level }}"
-                                required>
-                        </div>
-                        <div class="col-xl-12 my-3">
-                            <label for="nama" class="font-weight-bold">Password</label>
-                            <span><i class="icon-copy bi bi-info-circle float-right font-20 mb-2" data-toggle="tooltip"
-                                    title="Tooltip on top"></i></span>
-                            <input type="password" class="form-control" name="password" id="pass1" required
-                                oninput="validate1()" onblur="cancelValidate()">
-                            <p id="vpass1" class="text-danger font-14"></p>
-                        </div>
-                        <div class="col-xl-12 mt-4 d-flex">
-                            <button type="submit" class="btn btn-success w-75 m-auto" id="submitBtn"
-                                disabled>Simpan</button>
+                        <div class="my-3 col-xl-6">
+                            <div class="col-xl-12 my-3">
+                                <label for="username" class="font-weight-bold">Username</label>
+                                <span><i class="icon-copy bi bi-info-circle float-right font-20 mb-2" data-toggle="tooltip"
+                                        title="Tooltip on top"></i></span>
+                                <input type="text" class="form-control" value="{{ $item->username }}" name="username"
+                                    required>
+                            </div>
+                            <div class="col-xl-12 my-3">
+                                <label for="nama" class="font-weight-bold">Nama Lengkap</label>
+                                <span><i class="icon-copy bi bi-info-circle float-right font-20 mb-2" data-toggle="tooltip"
+                                        title="Tooltip on top"></i></span>
+                                <input type="text" class="form-control" name="nama" value="{{ $item->nama }}"
+                                    required>
+                            </div>
+                            <div class="col-xl-12 my-3">
+                                <label for="nama" class="font-weight-bold">Email</label>
+                                <span><i class="icon-copy bi bi-info-circle float-right font-20 mb-2" data-toggle="tooltip"
+                                        title="Tooltip on top"></i></span>
+                                <input type="text" class="form-control" name="email" value="{{ $item->email }}"
+                                    required>
+                            </div>
+                            <div class="col-xl-12 my-3">
+                                <label for="nama" class="font-weight-bold">Level</label>
+                                <span><i class="icon-copy bi bi-info-circle float-right font-20 mb-2" data-toggle="tooltip"
+                                        title="Tooltip on top"></i></span>
+                                <input type="text" class="form-control" name="level" value="{{ $item->level }}"
+                                    required>
+                            </div>
+                            <div class="col-xl-12 my-3">
+                                <label for="nama" class="font-weight-bold">Password</label>
+                                <span><i class="icon-copy bi bi-info-circle float-right font-20 mb-2"
+                                        data-toggle="tooltip" title="Tooltip on top"></i></span>
+                                <input type="password" class="form-control" name="password" id="pass1" required
+                                    oninput="validate1()" onblur="cancelValidate()">
+                                <p id="vpass1" class="text-danger font-14"></p>
+                            </div>
+                            <div class="col-xl-12 mt-4 d-flex">
+                                <button type="submit" class="btn btn-success w-75 m-auto" id="submitBtn"
+                                    disabled>Simpan</button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
             </form>
         @endforeach
     </div>
@@ -179,5 +174,4 @@
             myProfileImage.style.width = '155px';
         }
     }
-
 </script>

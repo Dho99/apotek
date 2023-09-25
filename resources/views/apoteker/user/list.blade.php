@@ -17,7 +17,7 @@
                     <div class="col-lg-5"> </div>
                     <div class="col-lg-4">
                         <select name="" id="level" style="width: 100%;" class="custom-select2 form-control"
-                            onchange="getUserByLevel()">
+                            onchange="refreshTable()">
                             <option value="">Semua</option>
                             @foreach ($kategoriUser as $key => $item)
                                 <option value="{{ $key }}">{{ $item->level }}</option>
@@ -119,8 +119,9 @@
                         <div class="form-group last">
                             <label class="font-weight-bold">Level</label>
                             <select id="uLevel" class="form-control" onchange="randomDokterKode()" disabled>
+                                <option>Pilih Kategori User</option>
                                 <option value="0">Dokter</option>
-                                <option value="1" selected>Apoteker</option>
+                                <option value="1">Apoteker</option>
                                 <option value="2">Kasir</option>
                                 <option value="3">Pasien</option>
                             </select>
@@ -129,7 +130,7 @@
                         <div class="mt-4 mb-2 d-flex">
                             <button class="btn btn-secondary" type="button" onclick="emptyModal()">Kembali</button>
                             <button class="btn btn-info ml-auto d-none" type="button"
-                                onclick="changeToEdit()">Edit</button>
+                                onclick="changeToEdit('#dataUserForm')">Edit</button>
                             <button class="btn btn-success ml-auto d-none" id="updateBtn" type="submit">Update</button>
                             <button class="btn btn-success ml-auto d-none" id="createBtn" type="submit">Simpan</button>
                         </div>
@@ -146,26 +147,19 @@
                 autoWidth: false,
             });
         });
-    </script>
-@endsection
-<script>
-    function randomString() {
-        const randomNum = Math.floor(Math.random() * 9999);
-        return randomNum;
-    }
 
-    function randomDokterKode() {
+        function randomDokterKode() {
         let levelInt = $('#uLevel').val();
         const kodeVal = levelInt === '0' ? 'DOK-' : levelInt === '1' ? 'APT-' : levelInt === '2' ? 'KSR-' : 'PSN-';
         let kode = $('#kode').val(kodeVal + randomString());
-        if(levelInt === '0'){
+        if (levelInt === '0') {
             $('.form-group.last').append(`
             <div class="form-group mb-2" id="kategoriSelect">
                 <label class="font-weight-bold">Kategori Dokter</label>
                 <input class="form-control" name="kategori" type="text" value="" id="kategori" required/>
             </div>
             `);
-        }else{
+        } else {
             $('#kategoriSelect').remove();
         }
     }
@@ -193,7 +187,7 @@
                 method: 'GET',
                 success: function(response) {
                     successAlert(response.message);
-                    getUserByLevel();
+                    refreshTable();
                 },
                 error: function(error, xhr) {
                     console.error(error);
@@ -204,9 +198,8 @@
 
     }
 
-    function getUserByLevel() {
+    function refreshTable() {
         const level = $('#level').val();
-        let userTable = $('#userTable').DataTable();
         let url;
         if (level !== '') {
             url = '/apoteker/user/get/' + level;
@@ -222,35 +215,22 @@
                 } else {
                     $('#cardTitle').text(response.data[0].level);
                 }
-                userTable.clear().destroy();
-                userTable = $('#userTable').DataTable({
-                    autoWidth: false,
-                    responsive: true,
-                    columnDefs: [{
-                        targets: "datatable-nosort",
-                        orderable: false,
-                    }],
-                    "lengthMenu": [
-                        [10, 25, 50, -1],
-                        [10, 25, 50, "All"]
-                    ],
-                    data: response.data,
-                    columns: [{
-                        title: 'Kode',
-                        data: 'kode'
-                    }, {
-                        title: 'Nama',
-                        data: 'nama'
-                    }, {
-                        title: 'Email / No Telp',
-                        data: 'email'
-                    }, {
-                        title: 'Level',
-                        data: 'level'
-                    }, {
-                        title: 'Action',
-                        render: function(data, type, row) {
-                            return `
+                updateTable('#userTable', response.data, [{
+                    title: 'Kode',
+                    data: 'kode'
+                }, {
+                    title: 'Nama',
+                    data: 'nama'
+                }, {
+                    title: 'Email / No Telp',
+                    data: 'email'
+                }, {
+                    title: 'Level',
+                    data: 'level'
+                }, {
+                    title: 'Action',
+                    render: function(data, type, row) {
+                        return `
                                 <div class="dropdown">
                                     <a class="btn btn-link font-24 p-0 line-height-1 no-arrow dropdown-toggle"
                                         href="#" role="button" data-toggle="dropdown">
@@ -264,16 +244,11 @@
                                             Delete</a>
                                     </div>
                                 </div>
-                                `
-                        }
-                    }],
-                    destroy: true,
-                }, );
+                                `;
+                    },
+                }], );
             },
-            error: function(error, xhr) {
-                console.error(error);
-                console.log(xhr.responseText);
-            }
+
         });
     }
 
@@ -281,10 +256,9 @@
         $('#dataUserForm input').val('');
         $('#showUserModal').modal('hide');
         $('#createBtn, #updateBtn, .btn.btn-info.ml-auto').addClass('d-none');
-        $('#dataUserForm input').attr('readonly', 'readonly');
-        $('#dataUserForm select').attr('disabled', 'disabled');
-        $('#joined').remove();
-        $('#kategoriSelect').remove();
+        $('#dataUserForm input').attr('readonly','readonly');
+        $('#dataUserForm select').attr('disabled','disablef');
+        $('#joined, #userage ,#kategoriSelect').remove();
     }
 
 
@@ -314,15 +288,20 @@
         const tl = new Date(umur).getFullYear();
         const age = current - tl;
 
-        $('#age').val(age);
+        // $('#age').val(age);
         const joinedDate = new Date(joined).toISOString().substring(0, 10);
         $('#joinedAt').val(joinedDate);
 
         const curr = new Date().toISOString().substring(0, 10);
         $('.form-group.last').after(`
-            <div class="form-group" id="joined">
+            <div class="form-group mb-2" id="joined">
                 <label class="font-weight-bold">Tanggal Bergabung</label>
                 <input class="form-control" name="usia" value="${joinedDate}" type="date"
+                    disabled required />
+            </div>
+            <div class="form-group mb-2" id="userage">
+                <label class="font-weight-bold">Usia</label>
+                <input class="form-control" name="usia" value="${age} Tahun" type="text"
                     disabled required />
             </div>
             `);
@@ -353,33 +332,11 @@
         formData.append('tanggal_lahir', $('#bornAt').val());
         formData.append('level', $('#uLevel').val());
 
-        $.ajax({
-            url: '/apoteker/user/update/',
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr("content")
-            },
-            processData: false,
-            contentType: false,
-            cache: false,
-            data: formData,
-            success: function(response) {
-                successAlert(response.message);
-                $('#showDokter').modal("hide");
-                getUserByLevel();
-                emptyModal();
-            },
-            error: function(xhr, status, error) {
-                console.error("Error:", error);
-                console.log("Response:", xhr.responseText);
-            },
-        });
-    }
+        const url = '/apoteker/user/update/';
+        const method = 'POST';
+        const dataForm = formData;
 
-    function changeToEdit() {
-        $('#dataUserForm input').removeAttr('readonly');
-        $('#dataUserForm select').removeAttr('disabled');
-        $('#updateBtn').removeClass('d-none');
-        $('.btn.btn-info.ml-auto').addClass('d-none');
+        ajaxUpdate(url, method, dataForm);
     }
-</script>
+    </script>
+@endsection

@@ -8,7 +8,7 @@
             <div class="dropdown">
                 <a class="dropdown-toggle no-arrow text-dark" href="javascript:;" data-toggle="right-sidebar">
                     <i class="icon-copy dw dw-notification"></i>
-                    <span class="{{ session('notification') ? 'badge notification-active' : '' }}"></span>
+                    {{-- <span class="{{ session('notification') ? 'badge notification-active' : '' }}"></span> --}}
                 </a>
             </div>
         </div>
@@ -25,12 +25,12 @@
                         <div class="bg-light-secondary top-right-sidebar">
                         </div>
                         <div class="top-sidebar-right-image-wrapper">
-                            <img src="{{ asset('src/images/photo1.jpg') }}"
+                            <img src="{{ auth()->user()->profile !== 'default' ? asset('/storage/' . auth()->user()->profile) : asset('src/images/photo1.jpg') }}"
                                 class="rounded-circle border border-success" alt="">
                             <div class="mt-1 font-weight-bold">
                                 {{ auth()->user()->nama }}
                             </div>
-                            <a href="/apoteker/account/manage/{{ auth()->user()->kode }}"
+                            <a href="/account/manage/{{ auth()->user()->kode }}"
                                 class="btn btn-outline-secondary p-2 mt-3 w-75">
                                 Kelola Akun anda
                             </a>

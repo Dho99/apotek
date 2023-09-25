@@ -6,7 +6,8 @@
         </div>
 
         <div class="card-box mb-30">
-            <form id="createNewObatForm" onsubmit="submitNewObat(event, '/apoteker/obat/create/store')" enctype="multipart/form-data">
+            <form id="createNewObatForm" onsubmit="submitNewObat(event, '/apoteker/obat/create/store')"
+                enctype="multipart/form-data">
                 <div class="p-5">
                     <div class="row my-3">
                         <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-3">
@@ -34,8 +35,8 @@
                             <span class="float-right" data-toggle="tooltip"
                                 title="Digunakan Untuk Identifier Sebuah Produk"><i
                                     class="icon-copy dw dw-question font-20"></i></span>
-                            <select class="custom-select2 form-control" name="golongan_id" id="golongan" multiple="multiple"
-                                style="width: 100%">
+                            <select class="custom-select2 form-control" name="golongan_id" id="golongan"
+                                multiple="multiple" style="width: 100%">
                                 @foreach ($golongan as $item)
                                     <option value="{{ $item->id }}">{{ $item->golongan }}</option>
                                 @endforeach
@@ -48,8 +49,8 @@
                             <span class="float-right" data-toggle="tooltip"
                                 title="Digunakan Untuk Identifier Sebuah Produk">
                                 <i class="icon-copy dw dw-question font-20"></i></span>
-                            <input class="form-control date-picker" id="expDate" placeholder="Exp Date" name="expdate"
-                                type="text" />
+                            <input class="form-control" id="expDate" placeholder="Exp Date" name="expdate"
+                                type="date" />
                         </div>
                     </div>
                     <div class="row my-3">
@@ -91,6 +92,10 @@
                             <label for="">Satuan</label>
                             <input type="text" name="" id="satuan" class="form-control">
                         </div>
+                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-3">
+                            <label for="">Harga</label>
+                            <input type="text" name="" id="harga" class="form-control">
+                        </div>
                     </div>
                     <div class="row mt-4">
                         <div class="col-xl-2 col-lg-6 col-md-6 col-sm-6 mb-3">
@@ -107,4 +112,12 @@
         </div>
     </div>
     <script src="{{ asset('vendors/scripts/myScript/tambah-data.js') }}"></script>
+
+    <script>
+        $().ready(function() {
+            $('#harga').mask('000.000.000', {
+                reverse: true
+            });
+        });
+    </script>
 @endsection

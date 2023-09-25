@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Supplier;
 use Illuminate\Http\Request;
+use App\Events\UserNotification;
 
 class SupplierController extends Controller
 {
@@ -28,17 +29,30 @@ class SupplierController extends Controller
         }
     }
 
-    public function apotekerUpdateSupplier(Request $request, $kode)
+    public function apotekerUpdateSupplier(Request $request)
     {
         if ($request->ajax()) {
-            Supplier::where('kode', $kode)->update([
+            $kode = $request->kode;
+            $data = [
                 'kode' => $request->kode,
                 'nama' => $request->namaSupplier,
-                'perwakilan' => $request->perwakilan,
                 'alamat' => $request->alamat,
-                'noTelp' => $request->noTelp,
-            ]);
-            return response()->json(['message' => 'Data Supplier ' . $kode . ' berhasil diperbarui']);
+                'perwakilan'=> $request->perwakilan,
+                'noTel' => $request->noTelp
+            ];
+            $kodeFromServer = Supplier::where('kode', $kode)->first();
+            if(isset($kodeFromServer)){
+                Supplier::where('kode', $kode)->update($data);
+                $action = 'Memperbarui';
+                return response()->json(['message' => 'Data supplier '.$data['nama'].' berhasil di Perbarui']);
+            }else{
+                Supplier::create($data);
+                $action = 'Membuat';
+                return response()->json(['message' => 'Data Supplier '.$data['nama'].' berhasil di Simpan']);
+            }
+
+            event(new UserNotification('Apoteker telah berhasil '.$action.' data Supplier '.$data['nama'], auth()->user()));
+
         } else {
             abort(400);
         }
@@ -57,21 +71,6 @@ class SupplierController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function apotekerCreateSupplier(Request $request)
-    {
-        if ($request->ajax()) {
-            Supplier::create([
-                'kode' => $request->kode,
-                'nama' => $request->namaSupplier,
-                'alamat' => $request->alamat,
-                'perwakilan' => $request->perwakilan,
-                'noTelp' => $request->noTelp,
-            ]);
-            return response()->json(['message' => 'Data Supplier '.$request->nama. ' berhasil ditambahkan']);
-        } else {
-            abort(400);
-        }
-    }
 
     /**
      * Store a newly created resource in storage.
@@ -113,11 +112,14 @@ class SupplierController extends Controller
         //
     }
 
-    public function apotekerDeleteSupplier(Request $request, $kode){
-        if($request->ajax()){
+    public function apotekerDeleteSupplier(Request $request, $kode)
+    {
+        if ($request->ajax()) {
+            event(new UserNotification('Apoteker berhasil menghapus data Supplier '.Supplier::where('kode', $kode)->pluck('nama')->first(), auth()->user()));
             Supplier::where('kode', $kode)->delete();
-            return response()->json(['message' => 'Data supplier '.$kode. ' berhasil dihapus']);
-        }else{
+            //event for all users
+            return response()->json(['message' => 'Data supplier ' . $kode . ' berhasil dihapus']);
+        } else {
             abort(400);
         }
     }

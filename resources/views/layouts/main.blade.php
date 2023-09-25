@@ -2,13 +2,9 @@
 <html>
 
 <head>
-    <!-- Basic Page Info -->
     <meta charset="utf-8" />
     <title>PharmaPal | {{ $title }}</title>
-
     <meta name="csrf-token" content="{{ csrf_token() }}">
-
-    <!-- Mobile Specific Metas -->
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
 
     <!-- Google Font -->
@@ -31,10 +27,12 @@
     {{-- <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" /> --}}
     {{-- SwiperCDN --}}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
-
+    {{-- @vite('resources/css/app.css') --}}
 </head>
 
-<body class="">
+
+<body class="body">
+
     @include('partials.navbar')
     @include('partials.sidebar')
     @include('partials.notification-bar')
@@ -42,12 +40,12 @@
 
 
     <div class="main-container noprint">
+        {{-- @dd(auth()->user()) --}}
         @yield('content')
 
         <div class="container">
         </div>
     </div>
-
 
 
 
@@ -83,8 +81,6 @@
     </div>
 
 
-
-    {{-- Base Script Components --}}
     <script src="{{ asset('vendors/scripts/core.js') }}"></script>
     <script src="{{ asset('vendors/scripts/script.min.js') }}"></script>
     <script src="{{ asset('vendors/scripts/layout-settings.js') }}"></script>
@@ -99,8 +95,200 @@
     <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
     <script src="{{ asset('src/plugins/sweetalert2/sweetalert2.all.js') }}"></script>
     <script src="{{ asset('src/plugins/apexcharts/apexcharts.min.js') }}"></script>
+    <script src="{{ asset('vendors/scripts/myScript/jquery.mask.min.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+    <link rel="stylesheet" href="{{ asset('vendors/styles/pagination.css') }}">
+    @vite('resources/js/bootstrap.js')
+    @php
+        $level = \App\Models\User::where('id', auth()->user()->id)
+            ->pluck('level')
+            ->first();
+    @endphp
+    <script>
+        $().ready(function() {
+            let level = '{{ $level }}';
+
+            const public = Echo.channel('public-notif');
+
+            public.subscribed(() => {
+                console.log('yahh');
+            }).listen('.notif-msg', (event) => {
+                console.log(event);
+                appendNotif(event.user.nama, event.message);
+            });
+
+
+
+            const channel = Echo.private('private.notif.' + level);
+
+            channel.subscribed(() => {
+                console.log('Cyka Blyat');
+            }).listen('.notif-msg', (event) => {
+                console.log(event);
+                const user = event.user;
+                const message = event.message;
+                const link = event.links;
+                const linkPlchdr = event.linkPlaceholder;
+                switch (event.level) {
+                    case '0':
+                        appendNotif(user.nama, message, link, linkPlchdr);
+                        break;
+                    case '1':
+                        appendNotif(user.nama, message, link, linkPlchdr);
+                        break;
+                    case '2':
+                        appendNotif(user.nama, message, link, linkPlchdr);
+                        break;
+                    default:
+                        console.log('You aren' / 't the member!');
+                }
+                refreshTable();
+            });
+
+            function appendNotif(name, message, link, plchldr) {
+                const notifwrapper = $('#sidebarWrapper');
+                notifwrapper.append(`
+            <div class="container-fluid bg-light py-2 my-1 text-dark">
+                <div class="row d-flex py-2 px-3">
+                    <div class="col-xl-12 col-md-12">
+                        <p class="font-weight-bold font-18 mb-0">${name}</p>
+                        <p class="mb-1">${message}</p>
+                        ${
+                            link !== undefined ?
+                            `<a class="btn btn-sm btn-success mt-1" href="${link}">${plchldr}</a>` :
+                            ''
+                        }
+                        </div>
+                        </div>
+            </div>
+            `);
+            }
+
+
+        });
+    </script>
+
+
+
+
+
+    {{-- <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
+    @php
+        $userlevel = auth()->check() ? auth()->user()->level : 0;
+    @endphp
+    <script>
+        // Enable pusher logging - don't include this in production
+        Pusher.logToConsole = true;
+
+        var pusher = new Pusher('{{ env('PUSHER_APP_KEY') }}', {
+            cluster: 'ap1'
+        });
+
+        var usrlvl = @json($userlevel);
+        var channel = pusher.subscribe('popup-channel');
+        channel.bind('user-register', function(data) {
+            // console.log(data);
+
+            if (data.user_level == usrlvl) {
+                $('#sidebarWrapper').append(`
+                <div class="container-fluid bg-light py-2 my-2 text-dark">
+                    <div class="row d-flex py-2">
+                        <div class="col-xl-12 col-md-12">
+                            <p class="font-weight-bold font-18 mb-0">${data.user_nama}</p>
+                            <p class="mb-2">${data.message}</p>
+                            ${data.links !== "" ? `<a class="btn btn-sm btn-success text-light" href="${data.links}">Proses Resep</a>` : ''}
+                        </div>
+                    </div>
+                </div>
+                `);
+            }
+            refreshTable();
+        });
+    </script> --}}
 
     <script>
+        function updateTable(table, data, column) {
+            $(table).empty();
+            $(table).DataTable({
+                data: data,
+                responsive: true,
+                searching: true,
+                destroy: true,
+                columns: column,
+                autoWidth: false,
+                "language": {
+                    paginate: {
+                        next: '<i class="ion-chevron-right"></i>',
+                        previous: '<i class="ion-chevron-left"></i>'
+                    }
+                },
+                error: function(error, xhr) {
+                    console.error(error);
+                    console.log(xhr.responseText);
+                }
+            }).draw();
+        }
+
+        function ajaxUpdate(url, method, dataForm) {
+            $.ajax({
+                url: url,
+                method: method,
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr("content")
+                },
+                processData: false,
+                contentType: false,
+                cache: false,
+                data: dataForm,
+                success: function(response) {
+                    console.log(response.data);
+                    if (response.fail) {
+                        errorAlert(response.fail);
+                    }
+                    successAlert(response.message);
+                    emptyModal();
+                    refreshTable();
+
+                },
+                error: function(error, xhr) {
+                    errorAlert(error.responseText);
+                    console.error(error);
+                    console.log(xhr.responseText);
+                }
+            });
+        }
+
+        function formatCurrency(angka) {
+            return new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR'
+            }).format(angka);
+        }
+
+        function inputMaskFormat(el) {
+            $(el).mask('000,000,000', {
+                reverse: true
+            });
+        }
+
+        function changeToEdit(arg) {
+            $('.btn.btn-info.ml-auto').addClass('d-none');
+            $('#updateBtn').removeClass('d-none');
+            $(`${arg} input`).removeAttr('readonly');
+            $(`${arg} select`).removeAttr('disabled');
+        }
+
+        function randomString() {
+            const randomNum = Math.floor(Math.random() * 9999);
+            return randomNum;
+        }
+
+        function printInvoice() {
+            const modal = $('.modal-content');
+            window.print(modal);
+            emptyModal();
+        }
+
         $('document').ready(function() {
             $('.data-table').DataTable({
                 scrollCollapse: true,
@@ -136,130 +324,123 @@
                 });
             });
         }
-    </script>
 
-    @if ($title === 'Dashboard' || $title === 'Laporan Penjualan')
-        <script>
-            let year = new Date().getFullYear();
-            $('document').ready(function() {
-                getDataPenjualan(year);
-            });
-            let serverData = {};
-            let options3 = {
-                series: [],
-                chart: {
-                    type: 'bar',
-                    height: 350,
-                    toolbar: {
-                        show: false,
-                    },
-                },
-                plotOptions: {
-                    bar: {
-                        horizontal: false,
-                    },
-                },
-                noData: {
-                    text: 'Loading...'
-                },
-                dataLabels: {
-                    enabled: false
-                },
-                stroke: {
-                    show: true,
-                    width: 2,
-                    colors: ['transparent']
-                },
-                xaxis: {
-                    categories: []
-                },
-                fill: {
-                    opacity: 1
-                },
-            };
-            let chart = new ApexCharts(document.querySelector("#chart3"), options3);
-            chart.render();
-
-            function getDataPenjualan(year) {
-                let getDataByYear = year;
-                $.ajax({
-                    url: '/apoteker/laporan/penjualan/get/' + getDataByYear,
-                    method: 'GET',
-                    success: function(response) {
-                        serverData = ({
-                            bulan: Object.keys(response.data),
-                            data: Object.values(response.data),
-                        });
-
-
-                        let serverDataExtracted = ({
-                            jumlah: {},
-                            subtotal: {}
-                        });
-
-                        for (let i = 0; i < serverData.data.length; i++) {
-                            const dataForMonth = serverData.data[i];
-                            const month = serverData.bulan[i];
-
-                            const subtotal = dataForMonth.reduce((acc, item) => acc + item.subtotal, 0);
-
-                            serverDataExtracted.jumlah[month] = dataForMonth.length;
-                            serverDataExtracted.subtotal[month] = subtotal;
-                        }
-                        console.log(serverDataExtracted);
-                        chart.updateSeries([{
-                            name: 'Penjualan',
-                            data: Object.values(serverDataExtracted.jumlah)
-                        }]);
-                        chart.updateOptions({
-                            xaxis: {
-                                categories: Object.keys(serverDataExtracted.jumlah)
-                            }
-                        });
-
-                    },
-                    error: function(error, xhr) {
-                        console.error(error);
-                        console.log(xhr.responseText);
-                    }
+        function errorAlert(message) {
+            $('#sa-error', function() {
+                swal({
+                    type: 'error',
+                    title: 'Oops...',
+                    text: `${message}`,
+                    confirmButtonClass: 'btn bg-danger',
                 });
-            }
-        </script>
-    @endif
-
-
-    @if ($title === 'Kasir')
-        <script>
-            filterKatalog('Semua');
-            // refreshTable();
-        </script>
-    @endif
-
-    @if ($title === 'Daftar Obat')
-        <script>
-            $(function() {
-                getData('Semua');
             });
-        </script>
-    @endif
+        }
 
-    @if (session()->has('success'))
-        <script>
-            const message = '{{ session('success') }}';
-            successAlert(message);
-        </script>
-    @endif
-
-
-
-
-    <script>
-        $('document').ready(function() {
-            var swiper = new Swiper(".mySwiper", {});
-        });
+        function deleteData(url, arg) {
+            $.ajax({
+                url: url + arg,
+                method: 'GET',
+                success: function(response) {
+                    successAlert(response.message);
+                    refreshTable();
+                },
+                error: function(error, xhr) {
+                    console.log(error);
+                    console.log(xhr.responseText);
+                },
+            });
+        }
     </script>
+    @if (auth()->user()->level == '1')
+        @if ($title === 'Dashboard' || $title === 'Laporan Penjualan')
+            <script>
+                let year = new Date().getFullYear();
+                $().ready(function() {
+                    getDataPenjualan(year);
+                });
+                let serverData = {};
+                let options3 = {
+                    series: [],
+                    chart: {
+                        type: 'bar',
+                        height: 350,
+                        toolbar: {
+                            show: false,
+                        },
+                    },
+                    plotOptions: {
+                        bar: {
+                            horizontal: false,
+                        },
+                    },
+                    noData: {
+                        text: 'Loading...'
+                    },
+                    dataLabels: {
+                        enabled: false
+                    },
+                    stroke: {
+                        show: true,
+                        width: 2,
+                        colors: ['transparent']
+                    },
+                    xaxis: {
+                        categories: []
+                    },
+                    fill: {
+                        opacity: 1
+                    },
+                };
+                let chart = new ApexCharts(document.querySelector("#chart3"), options3);
+                chart.render();
+
+                function getDataPenjualan(year) {
+                    let getDataByYear = year;
+                    $.ajax({
+                        url: '/apoteker/laporan/penjualan/get/' + getDataByYear,
+                        method: 'GET',
+                        success: function(response) {
+                            serverData = ({
+                                bulan: Object.keys(response.data),
+                                data: Object.values(response.data),
+                            });
 
 
+                            let serverDataExtracted = ({
+                                jumlah: {},
+                                subtotal: {}
+                            });
+
+                            for (let i = 0; i < serverData.data.length; i++) {
+                                const dataForMonth = serverData.data[i];
+                                const month = serverData.bulan[i];
+
+                                const subtotal = dataForMonth.reduce((acc, item) => acc + item.subtotal, 0);
+
+                                serverDataExtracted.jumlah[month] = dataForMonth.length;
+                                serverDataExtracted.subtotal[month] = subtotal;
+                            }
+                            console.log(serverDataExtracted);
+                            chart.updateSeries([{
+                                name: 'Penjualan',
+                                data: Object.values(serverDataExtracted.jumlah)
+                            }]);
+                            chart.updateOptions({
+                                xaxis: {
+                                    categories: Object.keys(serverDataExtracted.jumlah)
+                                }
+                            });
+
+                        },
+                        error: function(error, xhr) {
+                            console.error(error);
+                            console.log(xhr.responseText);
+                        }
+                    });
+                }
+            </script>
+        @endif
+    @endif
 
 </body>
 

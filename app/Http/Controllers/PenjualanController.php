@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Penjualan;
-use App\Models\Produk;
 use App\Models\User;
+use App\Models\Resep;
+use App\Models\Produk;
+use App\Models\Keuangan;
+use App\Models\Penjualan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use App\Events\UserNotification;
 
 class PenjualanController extends Controller
 {
@@ -50,13 +53,29 @@ class PenjualanController extends Controller
     public function store(Request $request)
     {
         if (request()->ajax()) {
-            if (isset($request->kodeDokter) && !isset($request->kodePasien)) {
-                $dokter_id = $request->kodeDokter;
-                $pasien_id = $request->kodePasien;
+            if (isset($request->dokterId) && isset($request->pasienId)) {
+                $dokter_id = User::where('nama', $request->dokterId)->pluck('id')->first();
+                $pasien_id = User::where('nama', $request->pasienId)->pluck('id')->first();
             } else {
                 $dokter_id = 0;
                 $pasien_id = 0;
             }
+
+            if($request->kategoriPenjualan === 'Resep'){
+                $dataResep = Resep::where('kode', $request->kodeResep);
+                if(isset($dataResep)){
+                    $dataResep->update([
+                        'isProceedByApoteker' => '1',
+                        'apoteker_id' => auth()->user()->id,
+                        'updated_at' => Carbon::now()
+                    ]);
+
+                    event(new UserNotification('Apoteker telah selesai memproses Resep '.$request->kodeResep, auth()->user(), '/kasir/resep/konfirmasi', '2', 'Selesaikan Resep'));
+                }else{
+                    return response('Data resep tidak ditemukan', 404);
+                }
+            }
+
             $dataProduk = Produk::whereIn('kode', $request->kode)->get(['id', 'harga']);
             $produk_id = [];
             $hargaProduk = [];
@@ -64,38 +83,16 @@ class PenjualanController extends Controller
                 $produk_id[] = $item->id;
                 $hargaProduk[] = $item->harga;
             }
-            // $stokProduk = Produk::whereIn('kode', $request->kode)->get();
-            // $hasilPengurangan = [];
-
-            // foreach ($stokProduk as $produk) {
-            //     $pengurangan = $produk->stok;
-            // }
-            // foreach ($request->jumlah as $jumlahProduk) {
-            //     $hasilPengurangan[] = $pengurangan - $jumlahProduk;
-            // }
-
-            // foreach($hasilPengurangan as $item){
-            //     Produk::whereIn('kode', $request->kode)->update([
-            //         'stok' => $item
-            //     ]);
-            // }
 
             $stokProduk = Produk::whereIn('kode', $request->kode)->get();
             $hasilPengurangan = [];
 
             foreach ($stokProduk as $produk) {
-                // Ubah pengurangan ke dalam loop ini untuk setiap produk
                 $pengurangan = $produk->stok;
-
                 foreach ($request->jumlah as $jumlahProduk) {
-                    // Kurangi stok setiap produk dengan jumlah yang sesuai
                     $pengurangan -= $jumlahProduk;
                 }
-
-                // Tambahkan hasil pengurangan ke dalam array
                 $hasilPengurangan[] = $pengurangan;
-
-                // Update stok produk saat ini
                 $produk->update(['stok' => $pengurangan]);
             }
 
@@ -105,7 +102,7 @@ class PenjualanController extends Controller
                 'apoteker_id' => auth()->user()->id,
                 'dokter_id' => $dokter_id,
                 'pasien_id' => $pasien_id,
-                'dsc' => $request->dscField,
+                'dsc' => $request->dsc,
                 'kategoriPenjualan' => $request->kategoriPenjualan,
                 'harga' => json_encode($hargaProduk),
                 'jumlah' => json_encode($request->jumlah),
@@ -113,7 +110,17 @@ class PenjualanController extends Controller
             ];
 
             Penjualan::create($data);
-            return response()->json(['message' => 'Produk berhasil diproses', 'data' => $hasilPengurangan]);
+            $namaPasien = User::where('id', $data['pasien_id'])->pluck('nama')->first();
+            $saldoServer = Keuangan::orderBy('created_at','desc')->pluck('saldo')->first();
+            $forKeuangan = [
+                'keterangan' => 'Transaksi Obat Pasien '.$namaPasien,
+                'jumlah' => $data['subtotal'],
+                'user_id' => auth()->user()->id,
+                'saldo' => $saldoServer + $data['subtotal'],
+                'kategori' => 'Debit'
+            ];
+            Keuangan::create($forKeuangan);
+            return response()->json(['data' => $data], 200);
         }
     }
 
@@ -134,7 +141,7 @@ class PenjualanController extends Controller
                     'harga' => json_decode($item->harga),
                     'kategori' => $item->kategoriPenjualan,
                     'jumlah' => json_decode($item->jumlah),
-                    'deskripsi' => $item->dsc,
+                    'deskripsi' => $item->deskripsi,
                     'subtotal' => $item->subtotal,
                     'created_at' => $item->created_at->format('d/m/Y H:i'),
                 ];

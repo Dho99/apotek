@@ -1,5 +1,4 @@
 @extends('layouts.main')
-
 @section('content')
     <div class="xs-pd-20-10 pd-ltr-20">
         <div class="title pb-20">
@@ -81,7 +80,7 @@
 
         {{ $data->links() }}
 
-    </div>
+        </div>
 
     </div>
 @endsection

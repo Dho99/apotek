@@ -41,7 +41,7 @@
                             <input type="text" class="form-control" name="nama" value="{{ $item->level }}" readonly>
                         </div>
                         <div class="col-xl-12 mt-4 d-flex">
-                            <a href="/apoteker/account/edit/{{$item->kode}}" class="btn btn-success m-auto w-50">Edit Akun</a>
+                            <a href="/account/edit/{{$item->kode}}" class="btn btn-success m-auto w-50">Edit Akun</a>
                         </div>
                     </div>
                 </div>

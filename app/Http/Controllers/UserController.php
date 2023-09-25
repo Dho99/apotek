@@ -194,7 +194,7 @@ class UserController extends Controller
         User::where('kode', $kode)->update($validateData);
 
         return redirect()
-            ->intended('/apoteker/account/manage/' . auth()->user()->kode)
+            ->intended('/account/manage/' . auth()->user()->kode)
             ->with('success', 'Data Akun anda Berhasil Diperbarui');
     }
 
@@ -202,8 +202,65 @@ class UserController extends Controller
      * Remove the specified resource from storage.
      */
 
-    public function destroy(User $user)
-    {
-        //
+    public function kasirPasienList(){
+        return view('kasir.pasien.list', [
+            'title' => 'Daftar Pasien',
+            // 'data' => User::where('level', '3')->get(),
+        ]);
     }
+
+    public function kasirGetPasien(Request $request){
+        if($request->ajax()){
+            $data = User::where('level', 3)->get();
+            return response()->json(['data' => $data]);
+        }else{
+            abort(400);
+        }
+    }
+
+    public function kasirGetPasienByKode(Request $request, $kode){
+        if($request->ajax()){
+            $data = User::where('kode', $kode)->get();
+            return response()->json(['data' => $data]);
+        }else{
+            abort(400);
+        }
+    }
+
+    public function kasirUpdatePasien(Request $request){
+        if($request->ajax()){
+            $kodeFromServer = User::where('nama', $request->nama)->pluck('kode')->first();
+            $data = [
+                'kode' => $request->kode,
+                'nama' => $request->nama,
+                'username' => $request->username,
+                'email' => $request->email,
+                'alamat' => $request->alamat,
+                'tanggal_lahir' => $request->tanggal_lahir,
+                'level' => '3',
+                'status' => 'Aktif'
+            ];
+            if(isset($kodeFromServer)){
+                $data['kode'] = $kodeFromServer;
+                User::where('kode', $data['kode'])->update($data);
+                return response()->json(['message' => 'Data berhasil diperbarui']);
+            }else{
+                User::create($data);
+                return response()->json(['message'=>'Data berhasil disimpan']);
+            }
+
+        }else{
+            abort(400);
+        }
+    }
+
+    public function kasirDeletePasien(Request $request, $kode){
+        if($request->ajax()){
+            User::where('kode', $kode)->delete();
+            return response()->json(['message' => 'Data berhasil dihapus']);
+        }else{
+            abort(400);
+        }
+    }
+
 }

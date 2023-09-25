@@ -17,9 +17,11 @@ return new class extends Migration {
             $table->string('namaProduk', 50);
             $table->json('golongan_id')->nullable();
             $table->string('satuan', 50);
+            $table->bigInteger('harga');
             $table->integer('stok')->default(0);
             $table->foreignIdFor(Supplier::class);
             $table->string('image')->nullable();
+            $table->date('expDate');
             $table->timestamps();
         });
     }
