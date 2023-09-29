@@ -1,8 +1,14 @@
 @extends('layouts.main')
 @section('content')
     <div class="xs-pd-20-10 pd-ltr-20">
-        <div class="title pb-20">
-            <h2 class="h3 mb-0">{{ $title }}</h2>
+        <div class="title pb-20 d-flex">
+            <h2 class="mb-0">{{ $title }}</h2>
+            <button class="btn btn-sm btn-outline-success ml-auto" id="fastTransaction">
+                <span class="font-weight-normal d-flex align-items-center">
+                    <i class="icon-copy dw dw-flash font-weight-bold font-20 mr-2"></i>
+                    Transaksi Cepat
+                </span>
+            </button>
         </div>
 
         <div class="row pb-10">
@@ -238,13 +244,15 @@
                                             </div>
                                         </div>
 
-                                        <div class="col-xl-3 col-md-4 col-sm-6 text-center small align-items-center d-flex">
-                                                <div class="rounded-lg text-light bg-danger p-2 m-auto">
-                                                    Belum dibuat
-                                                </div>
+                                        <div
+                                            class="col-xl-3 col-md-4 col-sm-6 text-center small align-items-center d-flex">
+                                            <div class="rounded-lg text-light bg-danger p-2 m-auto">
+                                                Belum dibuat
+                                            </div>
                                         </div>
                                         <div class="col-xl-1 col-md-4 col-sm-6 ">
-                                            <button class="border-0 mt-1 bg-transparent text-center text-danger font-24" onclick="if (confirm('Lanjut ke halaman proses resep?')) window.location.href='/apoteker/resep/list';">
+                                            <button class="border-0 mt-1 bg-transparent text-center text-danger font-24"
+                                                onclick="if (confirm('Lanjut ke halaman proses resep?')) window.location.href='/apoteker/resep/list';">
                                                 <i class="icon-copy dw dw-edit"></i>
                                             </button>
                                         </div>
@@ -290,7 +298,7 @@
                                             </div>
                                         </div>
                                         <div class="col-xl-5 col-md-6">
-                                            <div class=" rounded-lg text-center">
+                                            <div class="rounded-lg text-center">
                                                 @php
                                                     $nama = explode(' ', $item->nama);
                                                     $namaDepan = array_shift($nama);
@@ -322,5 +330,251 @@
         </div>
 
     </div>
+
+
+    <div class="modal fade" id="fast-transaction-modal" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-body text-center">
+                    <div class="text-center font-20 font-weight-bold">
+                        Transaksi Cepat Non Resep
+                    </div>
+                    @php
+                        $pasiens = \App\Models\User::where('level', 3)->get();
+                    @endphp
+                    <div class="my-3">
+                        <div class="mt-2 mb-3 text-left font-18 font-weight-bold w-75">
+                            Kode Transaksi : <span id="trxCode"></span>
+                            <div class="d-flex m-auto align-items-center w-100">
+                                Nama Pasien : <span class="ml-1 font-weight-normal w-50">
+                                    <select name="" class="form-control-sm" style="width: 100%;" id="pasienFastTrx">
+                                        <option value=""></option>
+                                        @foreach ($pasiens as $item)
+                                            <option value="{{ $item->nama }}">{{ $item->nama }}</option>
+                                        @endforeach
+                                    </select>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-center">
+                            <input type="text" class="form-control rounded-right" style="width: 70%;"
+                                id="codeProductInputField" placeholder="Masukkan Kode Obat">
+                            <button class="btn btn-sm btn-success ml-auto rounded-right" onclick="addRowsToTable()">
+                                <span>
+                                    <i class="icon-copy dw dw-add font-20"></i>
+                                </span>
+                            </button>
+                            <button class="btn btn-sm btn-danger ml-1 rounded-left" id="rowTableDeletor"
+                                onclick="deleteTableRow()" disabled>
+                                <span>
+                                    <i class="icon-copy dw dw-delete-2"></i>
+                                </span>
+                            </button>
+                        </div>
+                        <div id="form-feedback" class="d-none text-danger text-left"></div>
+                    </div>
+
+                    <div class="table-responsive mb-3 " style="overflow-x: auto;">
+                        <table id="table-transactions" class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <td>No</td>
+                                    <td>Kode Obat</td>
+                                    <td>Nama Obat</td>
+                                    <td>Jumlah</td>
+                                    <td>Harga</td>
+                                </tr>
+                            </thead>
+                            <tbody id="table-transactions-field">
+
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="4" class="font-weight-bold text-right">Subtotal</td>
+                                    <td id="subtotal-table-field"></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
+                    <div class="mb-3 d-flex">
+                        <button class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                        <button class="btn btn-success ml-auto" id="processTransactions" onclick="prosesPesanan()">Proses</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let number = 0;
+        let total = 0;
+        let kodeObat = [];
+        let harga = [];
+        let jumlahbarang = [];
+
+        $().ready(function() {
+            $('#pasienFastTrx').select2({
+                tags: true,
+                placeholder: 'Pilih atau tuliskan nama Pasien'
+            });
+            let kode = randomString() * 23313;
+            $('#trxCode').text('TRX' + kode);
+
+        });
+
+        $('#fastTransaction').on('click', function() {
+            $('#fast-transaction-modal').modal('show');
+
+        });
+
+        $('.form-control').on('keydown', function(e) {
+            if (e.code === 'Enter') {
+                addRowsToTable();
+            }
+        });
+
+        function deleteTableRow() {
+            let arrKode = kodeObat.length - 1;
+            let kode = kodeObat[arrKode];
+            if (number == 0) {
+                $('#rowTableDeletor').attr('disabled', 'disabled');
+            } else {
+                jumlahbarang[`${kode}`] = 0;
+                let hVal = harga[`${kode}`];
+                total-=parseInt($(`#jumlah${kode}`).text()) * parseInt(hVal);
+                kodeObat.pop();
+                harga.pop();
+                $('#subtotal-table-field').text(formatCurrency(parseInt(total)));
+                $(`#row${kode}`).remove();
+                number--;
+            }
+        };
+
+        function addRowsToTable() {
+            let inpf = $('.form-control');
+            let formMsg = $('#form-feedback');
+            let val = inpf.val();
+
+            if (val.length === 0) {
+                userMessage();
+            } else {
+                $('.table-responsive').prepend(
+                    `<div class="loader m-auto position-absolute" style="left: 0; right: 0; text-align:center;"></div>`);
+                setTimeout(() => {
+                    $('.loader').remove();
+                    $.ajax({
+                        url: '/apoteker/obat/get/' + val,
+                        method: 'GET',
+                        success: function(response) {
+                            let hasil = response.data[0];
+                            if (hasil === undefined)
+                            {
+                                userMessage();
+                                jumlah.val('');
+                                $('#codeProductInputField').focus();
+                            }
+                            else
+                            {
+                                kodeHasCollected = kodeObat.includes(hasil.kode);
+                                if (!kodeHasCollected) {
+                                    kodeObat.push(hasil.kode);
+                                    number++;
+                                    $('#table-transactions-field').append(`
+                                <tr id="row${hasil.kode}">
+                                    <td>${number}</td>
+                                    <td>${hasil.kode}</td>
+                                    <td>${hasil.namaProduk}</td>
+                                    <td style="max-width: 20px; padding: 0;"><input type="number" class=" w-100 p-2 border-0 text-center" placeholder="Jumlah" id="jumlah${hasil.kode}" value="1" oninput="calculateJumlah('${hasil.kode}')"></td>
+                                    <td id="harga${hasil.kode}">${formatCurrency(hasil.harga)}</td>
+                                </tr>
+                                `);
+                                    harga[`${hasil.kode}`] = hasil.harga;
+                                    calculateJumlah(`${hasil.kode}`);
+                                    $('#rowTableDeletor').removeAttr('disabled');
+                                    jumlahbarang[`${hasil.kode}`] = 1;
+                                } else {
+                                    jumlahbarang[`${hasil.kode}`]+=parseInt(1);
+                                    calculateJumlah(hasil.kode, 'tambah');
+                                }
+
+                                inpf.val('');
+                                removeUserMessage();
+                                $('#codeProductInputField').focus();
+                                $('#subtotal-table-field').text(formatCurrency(parseInt(total)));
+                                // console.log(Object.values(jumlahbarang));
+
+                            }
+                        },
+                        error: function(response, error, xhr) {
+                            errorAlert(response.responseText)
+                            console.log(error.message);
+                            console.log(xhr.responseText);
+                        }
+                    });
+                }, 1500);
+
+            }
+
+            function userMessage() {
+                inpf.addClass('form-control-danger');
+                formMsg.removeClass('d-none').text('Masukkan kode barang dengan benar dan teliti');
+            }
+
+            function removeUserMessage() {
+                inpf.removeClass('form-control-danger');
+                formMsg.addClass('d-none').text('');
+            }
+
+        };
+
+        function prosesPesanan() {
+            if (kodeObat.length == 0) {
+                errorAlert('Tidak dapat memproses Pesanan');
+            }
+            else if($('#pasienFastTrx').val() === ''){
+                errorAlert('Masukkan Nama Pasien terlebih dahulu');
+                $('#pasienFastTrx').focus();
+            }
+            else {
+                let myForm = new FormData();
+                myForm.append('kode', JSON.stringify(kodeObat));
+                myForm.append('jumlah', JSON.stringify(Object.values(jumlahbarang)));
+                myForm.append('total', total);
+                myForm.append('kodePenjualan', $('#trxCode').text());
+                myForm.append('dsc', 0);
+                myForm.append('kategoriPenjualan', 'Non Resep');
+                myForm.append('subtotal', total);
+                myForm.append('pasienId', $('#pasienFastTrx').val());
+
+
+                if(myForm){
+                    ajaxUpdate('/resep/antrian/proses/', 'POST', myForm);
+                }else{
+                    errorAlert('Gagal memproses Transaksi');
+                }
+
+            }
+        }
+
+        function calculateJumlah(arg, act){
+            let jumlah;
+            if(act === undefined){
+                jumlah = $(`#jumlah${arg}`).val();
+            }else{
+                jumlah = parseInt(jumlahbarang[arg]);
+                console.log(jumlah);
+            }
+
+            $(`#jumlah${arg}`).val(jumlah);
+            total += jumlah * parseInt(harga[arg]);
+            $('#subtotal-table-field').text(formatCurrency(parseInt(total)));
+        }
+
+
+    </script>
+
 
 @endsection

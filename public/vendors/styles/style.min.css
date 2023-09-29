@@ -1,39 +1,22 @@
-.lds-ring {
-    display: inline-block;
-    position: relative;
-    width: 80px;
-    height: 80px;
-  }
-  .lds-ring div {
-    box-sizing: border-box;
-    display: block;
-    position: absolute;
-    width: 64px;
-    height: 64px;
-    margin: 8px;
-    border: 8px solid #fff;
+.loader {
+    border: 16px solid #f3f3f3;
     border-radius: 50%;
-    animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
-    border-color: #fff transparent transparent transparent;
-  }
-  .lds-ring div:nth-child(1) {
-    animation-delay: -0.45s;
-  }
-  .lds-ring div:nth-child(2) {
-    animation-delay: -0.3s;
-  }
-  .lds-ring div:nth-child(3) {
-    animation-delay: -0.15s;
-  }
-  @keyframes lds-ring {
-    0% {
-      transform: rotate(0deg);
-    }
-    100% {
-      transform: rotate(360deg);
-    }
+    border-top: 16px solid #3498db;
+    width: 120px;
+    height: 120px;
+    -webkit-animation: spin 2s linear infinite; /* Safari */
+    animation: spin 2s linear infinite;
   }
 
+  @-webkit-keyframes spin {
+    0% { -webkit-transform: rotate(0deg); }
+    100% { -webkit-transform: rotate(360deg); }
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
 
 .container-slider {
     height: auto;
@@ -2797,8 +2780,9 @@ body.IE .register-page-wrap .container {
 }
 .nav-tabs.customtab .nav-item.show .nav-link,
 .nav-tabs.customtab .nav-link.active {
-    color: #50d890;
+    background-color: #50d890;
     border: 0;
+    color: #fff;
     border-bottom: 2px solid #50d890;
 }
 .nav-tabs.customtab .nav-item {
@@ -2810,12 +2794,15 @@ body.IE .register-page-wrap .container {
     border-bottom: 2px solid transparent;
     -webkit-transition: all 0.3s ease-in-out;
     transition: all 0.3s ease-in-out;
+    display: inline-block;
 }
 .nav-tabs.customtab .nav-link:focus,
 .nav-tabs.customtab .nav-link:hover {
-    color: #50d890;
-    border: 0;
-    border-bottom: 2px solid #50d890;
+    color: #fff;
+    background-color: #00e091;
+    opacity: 0.5;
+    /* border: 0; */
+    /* border-bottom: 2px solid #50d890; */
     cursor: pointer;
 }
 .nav.vtabs {

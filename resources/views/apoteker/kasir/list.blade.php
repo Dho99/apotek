@@ -1,6 +1,6 @@
 @extends('layouts.main')
 <style>
-    #togglerbar:hover{
+    #togglerbar:hover {
         background-color: #50D890 !important;
         color: #fff;
     }
@@ -8,6 +8,7 @@
 @section('content')
     <div class="xs-pd-20-10 pd-ltr-20">
         <div class="checkout-bar d-none">
+
             <div id="pasientopwrapper">
 
             </div>
@@ -61,7 +62,8 @@
 
         <div class="title pb-20">
             <h2 class="h3 mb-0 d-flex">{{ $title }}
-                <button class="btn ml-auto bg-lightgreen shadow-sm text-green" id="togglerbar" onclick="openCheckoutBar()"><i class="icon-copy dw dw-open-book font-30 font-weight-bold"></i></button>
+                <button class="btn ml-auto bg-lightgreen shadow-sm text-green position-sticky" id="togglerbar"
+                    onclick="openCheckoutBar()"><i class="icon-copy dw dw-open-book font-30 font-weight-bold"></i></button>
             </h2>
             <p class="font-weight-bold font-20 mt-2">Antrian Resep</p>
         </div>
@@ -75,10 +77,16 @@
             </div>
         </div>
 
-        <h5 class="h4 mb-20">Katalog Obat</h5>
+        <h5 class="h4 mb-20 d-flex">Katalog Obat
+            <span class="ml-auto">
+                <input type="text" name="" id="searchProduct" placeholder="Search Item"
+                class="form-control">
+            </span>
+        </h5>
+
 
         <div class="tab my-2">
-            <ul class="nav nav-tabs customtab border-0" role="tablist">
+            <ul class="nav nav-tabs customtab" role="tablist">
                 <li class="nav-item">
                     <a class="nav-link active" data-toggle="tab" onclick="filterKatalog('Semua')" role="tab"
                         aria-selected="true">Semua</a>
@@ -114,10 +122,11 @@
                         Lain</a>
                 </li>
                 <li class="nav-item ml-auto mb-2">
-                    <input type="text" name="" id="searchProduct" placeholder="Search Item" class="form-control">
-                </li>
 
+                </li>
             </ul>
+
+
 
             <div class="tab-pane fade show active mt-2" id="contact2" role="tabpanel">
 
@@ -128,40 +137,100 @@
 
 
         </div>
-        <script>
-            $().ready(function() {
-                filterKatalog('Semua');
-                refreshTable();
-                let swiper = new Swiper(".mySwiper", {});
-            });
 
-            $('#searchProduct').on('input', function(){
-                let val = $(this).val();
-                if(val){
-                    $('.col-lg-3.col-md-6.col-sm-12.mb-30').each(function(){
-                        let text = $(this).text().toLowerCase();
-                        if(text.includes(val)){
-                            $(this).show();
-                        }else{
-                            $(this).hide();
-                        }
-                    });
-                }else{
-                    $('.col-lg-3.col-md-6.col-sm-12.mb-30').show();
-                }
-            });
-        </script>
-    @endsection
-    <script>
+        {{-- @dd($pasiens) --}}
+
+
+        <div class="modal fade" id="nama-pasien-modal" data-backdrop="static" role="dialog" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-body font-18 my-2">
+                        <label for="" class="d-flex">Pilih atau Masukkan Nama Pasien
+                            <span class="ml-auto"><i class="icon-copy bi bi-info-circle float-right font-20 mb-2" data-toggle="tooltip"
+                                title="Tambah pasien baru dengan mengetikkan nama Pasien baru, Tambahkan spasi untuk mengubah data yang tersedia"></i></span>
+                        </label>
+                        <select name="" class="form-control-lg" style="width: 100%;" id="pasienSelect" onchange="savePasien()" required>
+                            <option value=""></option>
+                            @foreach ($pasiens as $item)
+                                <option value="{{$item->nama}}">{{$item->nama}}</option>
+                            @endforeach
+                        </select>
+                        <div class="my-3 d-flex">
+                            <button class="btn btn-outline-success d-none ml-auto" id="savePasien" onclick="">Simpan</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+        <script>
+
         let cartItems = {};
         let randCodeCollector;
         let proccessed = 0;
+        let isnonresep = 0;
 
-        function openCheckoutBar(){
+        $().ready(function() {
+            filterKatalog('Semua');
+            refreshTable();
+            let swiper = new Swiper(".mySwiper", {});
+            initSel2();
+        });
+
+        function initSel2(){
+            $('#pasienSelect').select2({
+                tags: true
+            });
+        }
+
+        function savePasien(){
+            let sVal = $('#pasienSelect').val();
+            if(sVal === ''){
+                $('#savePasien').addClass('d-none');
+            }else{
+                $('#savePasien').removeClass('d-none');
+            }
+        };
+
+        $('#savePasien').on('click', function(){
+            let value = $('#pasienSelect').val();
+            $('#pasientopwrapper').append(`
+                <div class="row container" style="margin-top: 80px; margin-bottom: -40px;">
+                    <div class="col-12">
+                        <div>Nama Pasien : <span class="font-weight-bold" id="namaPasien">${value}</span></div>
+                    </div>
+                </div>
+            `);
+            $('#nama-pasien-modal').modal('hide');
+            initSel2();
+            pasienId = value;
+        });
+
+
+        $('#searchProduct').on('input', function() {
+            let val = $(this).val();
+            if (val) {
+                $('.col-lg-3.col-md-6.col-sm-12.mb-30').each(function() {
+                    let text = $(this).text().toLowerCase();
+                    if (text.includes(val.toLowerCase())) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+                });
+            } else {
+                $('.col-lg-3.col-md-6.col-sm-12.mb-30').show();
+            }
+        });
+
+
+        function openCheckoutBar() {
             $('.checkout-bar').removeClass('d-none');
 
         }
-
 
         function filterKatalog(satuan) {
             const hasil = `${satuan}`;
@@ -170,6 +239,7 @@
                 method: 'GET',
                 success: function(response) {
                     const hasil = response.data;
+                    // console.log(hasil);
                     if (hasil.length == 0) {
                         $('#katalogCard').empty().append(`
                             <div class="col-lg-12 col-md-12 col-sm-12 mb-30">
@@ -222,14 +292,15 @@
 
         function prosesResep(kode) {
             let collecteditems = {};
-            if(proccessed == 0){
-            $.ajax({
-                url: '/apoteker/resep/proses/transaksi/' + kode,
-                method: 'GET',
-                success: function(response) {
-                    cartItems[`${kode}`] = 1;
-                    const hasil = response.data[0];
-                    $('#pasientopwrapper').append(`
+            console.log(isnonresep);
+            if (proccessed == 0 && isnonresep == 0) {
+                $.ajax({
+                    url: '/apoteker/resep/proses/transaksi/' + kode,
+                    method: 'GET',
+                    success: function(response) {
+                        cartItems[`${kode}`] = 1;
+                        const hasil = response.data[0];
+                        $('#pasientopwrapper').append(`
                     <div class="row container" style="margin-top: 80px; margin-bottom: -40px;">
                         <div class="col-12">
                             <div>Nama Pasien : <span class="font-weight-bold" id="namaPasien">${hasil.namaPasien}</span></div>
@@ -240,59 +311,63 @@
                     </div>
                     `);
 
-                    const datas = {
-                        kodeProduk: hasil.kodeProduk,
-                        imageProduk: hasil.image,
-                        namaProduk: hasil.namaProduk,
-                        hargaProduk: hasil.harga,
-                        stokProduk: hasil.stok
+                        const datas = {
+                            kodeProduk: hasil.kodeProduk,
+                            imageProduk: hasil.image,
+                            namaProduk: hasil.namaProduk,
+                            hargaProduk: hasil.harga,
+                            stokProduk: hasil.stok
+                        }
+
+                        for (let i = 0; i < datas.kodeProduk.length; i++) {
+                            let kode = datas.kodeProduk[i];
+                            let image = datas.imageProduk[i];
+                            let name = datas.namaProduk[i];
+                            let price = datas.hargaProduk[i];
+                            let stock = datas.stokProduk[i];
+
+                            checkout(kode, image, name, price, stock);
+                            proccessed = 1;
+
+                        }
+
+                        $(`#daftarResep${kode}`).hide();
+
+                    },
+                    error: function(response, error, xhr) {
+                        errorAlert(response.responseText)
+                        console.log(error.message);
+                        console.log(xhr.responseText);
                     }
 
-                    for (let i = 0; i < datas.kodeProduk.length; i++) {
-                        let kode = datas.kodeProduk[i];
-                        let image = datas.imageProduk[i];
-                        let name = datas.namaProduk[i];
-                        let price = datas.hargaProduk[i];
-                        let stock = datas.stokProduk[i];
+                });
 
-                        checkout(kode, image, name, price, stock);
-                    }
-
-                    $(`#daftarResep${kode}`).hide();
-
-                },
-                error: function(response, error, xhr) {
-                    errorAlert(response.responseText)
-                    console.log(error.message);
-                    console.log(xhr.responseText);
-                }
-
-            });
-        }else{
-            errorAlert('Tidak bisa memproses dua resep Sekaligus');
-        }
+            } else {
+                errorAlert('Tidak bisa memproses dua resep Sekaligus');
+            }
         }
 
         function checkout(kode, image, name, price, stock) {
             const stokString = parseInt($(`#stokProduk${kode}`).text());
-            proccessed+=1;
-            if(proccessed < 2){
-            if (stokString > 0) {
-                $('.checkout-bar').removeClass('d-none');
-                if (randCodeCollector === undefined) {
-                    randCodeCollector = (parseInt(Math.floor(Math.random() * 99999)));
-                    $('#trxCode').text('TRX' + randCodeCollector);
-                } else {
-                    $('#trxCode').text('TRX' + randCodeCollector);
-                }
-                let cartKode = kode.toString();
-                if (cartItems[cartKode] !== undefined) {
-                    counter('tambah', cartKode, price, stock);
-                } else {
-                    cartItems[cartKode] = 1;
-                    const imageUrl = '{{ URL::asset('/storage/') }}' + `/${image}`;
+            if (proccessed != 1) {
+                isnonresep = 1;
+                console.log(isnonresep);
+                if (stokString > 0) {
                     $('.checkout-bar').removeClass('d-none');
-                    $('#obatCart').append(`
+                    if (randCodeCollector === undefined) {
+                        randCodeCollector = (parseInt(Math.floor(Math.random() * 99999)));
+                        $('#trxCode').text('TRX' + randCodeCollector);
+                    } else {
+                        $('#trxCode').text('TRX' + randCodeCollector);
+                    }
+                    let cartKode = kode.toString();
+                    if (cartItems[cartKode] !== undefined) {
+                        counter('tambah', cartKode, price, stock);
+                    } else {
+                        cartItems[cartKode] = 1;
+                        const imageUrl = '{{ URL::asset('/storage/') }}' + `/${image}`;
+                        $('.checkout-bar').removeClass('d-none');
+                        $('#obatCart').append(`
                     <div class="container rounded small shadow p-3 my-2" id="list${cartKode}">
                         <div class="row">
                             <div class="col-lg-4">
@@ -300,7 +375,7 @@
                             </div>
                             <div class="col-lg-5">
                                 <span class="font-weight-bold font-20">
-                                    Paracetamol
+                                    ${name}
                                 </span>
                                 <span>
                                     <a href="${imageUrl}">Detail / Deskripsi</a>
@@ -308,28 +383,28 @@
                                 <div class="counter-bar font-20 pt-2 d-flex m-auto text-green align-items-center">
                                     ${ proccessed == 1 ? `
 
-                                    <span class="mx-3 text-dark" id="counted${kode}">0</span><span class="text-dark">Buah</span>
+                                        <span class="mx-3 text-dark" id="counted${kode}">0</span><span class="text-dark">Buah</span>
 
-                                    `: ` <button class="rounded-circle bg-transparent border border-success px-2"
-                                        onclick="counter('tambah','${kode}', '${price}')">+</button>
-                                    <span class="mx-3 text-dark" id="counted${kode}">0</span>
-                                    <button class="rounded-circle border bg-transparent border-success px-2"
-                                        onclick="counter('kurang','${kode}', '${price}','${stock}')">-</button>`}
+                                        `: ` <button class="rounded-circle bg-transparent border border-success px-2"
+                                            onclick="counter('tambah','${kode}', '${price}')">+</button>
+                                        <span class="mx-3 text-dark" id="counted${kode}">0</span>
+                                        <button class="rounded-circle border bg-transparent border-success px-2"
+                                            onclick="counter('kurang','${kode}', '${price}','${stock}')">-</button>`}
                                 </div>
                             </div>
                             <div class="col-lg-3 font-weight-bold font-20 text-right">
                                 <span>${price}</span>
-                                <button class="btn btn-danger" onclick="deleteItem('${kode}','${price}','${stock}')"><i class="icon-copy dw dw-trash"></i></button>
+
                             </div>
                         </div>
                     </div>
                 `);
-                    counter('tambah', kode, price, stock);
-                }
+                        counter('tambah', kode, price, stock);
+                    }
                 } else {
                     alert(`Stok produk ${name} adalah ` + stokString);
                 }
-            }else{
+            } else {
                 errorAlert('Tidak dapat menambahkan obat, Selesaikan dahulu proses Resep');
             }
         }
@@ -378,10 +453,10 @@
         }
 
         function deleteItem(kode, price, stok) {
-            console.log(proccessed);
-            if(proccessed >= 1){
+            // console.log(proccessed);
+            if (proccessed == 1) {
                 errorAlert('Selesaikan proses resep terlebih dahulu');
-            }else{
+            } else {
                 let cartKode = kode.toString();
                 let current = parseInt($(`#counted${cartKode}`).text());
                 let harga = parseInt(price);
@@ -391,6 +466,7 @@
                 calculateGrandTotal();
                 $(`#list${cartKode}`).remove();
                 delete cartItems[cartKode];
+                proccessed = 0;
             }
         }
 
@@ -434,67 +510,84 @@
 
         function closeCheckout() {
             $('.checkout-bar').addClass('d-none');
-            // $('.row.container').remove();
         }
 
         function prosesPesanan() {
-            let kategoriPenjualan;
-            const kode = collectedItems.kode;
-            let jumlah = collectedItems.jumlah;
-            const total = collectedItems.total;
-            const kodePenjualan = $('#trxCode').text();
-            let kodeResep = $('#kodeResep').text();
-
-            let userId = '';
-            let dokterId = '';
-
-            if ($('#namaPasien').text() !== '' && $('#namaDokter').text() !== '') {
-                pasienId = $('#namaPasien').text();
-                dokterId = $('#namaDokter').text();
-                kategoriPenjualan = 'Resep';
-            }
-
-            const gt = parseInt($('#grandTotal').text());
-
-            let dscVal = $('#dsc').val();
-            let dscField;
-
-            if (dscVal === "") {
-                dscField = 0;
+            if (collectedItems.kode.length == 0) {
+                errorAlert('Tidak dapat memproses Pesanan');
             } else {
-                dscField = dscVal;
-            }
+                let userId = '';
+                let dokterId = '';
+                let pasienId = '';
 
-            $.ajax({
-                url: '/resep/antrian/proses/',
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                data: {
-                    kode: kode,
-                    kodeResep: kodeResep,
-                    jumlah: jumlah,
-                    total: total,
-                    kodePenjualan: kodePenjualan,
-                    pasienId: pasienId,
-                    dsc: dscField,
-                    dokterId: dokterId,
-                    kategoriPenjualan: kategoriPenjualan,
-                    subtotal: gt
-                },
-                success: function(response) {
-                    successAlert(response.message);
-                    emptyCollectedItems();
-                    closeCheckout();
-                    $('.row.container').remove();
-                    $('#daftarResep').show();
-                },
-                error: function(xhr, status, error) {
-                    console.error("Error:", error);
-                    console.log("Response:", xhr.responseText);
-                },
-            });
+                let kategoriPenjualan = 'Non Resep';
+                const kode = collectedItems.kode;
+                let jumlah = collectedItems.jumlah;
+                const total = collectedItems.total;
+                const kodePenjualan = $('#trxCode').text();
+                let kodeResep = $('#kodeResep').text();
+
+                if ($('#namaPasien').text() !== '' || $('#namaDokter').text() !== '') {
+                    pasienId = $('#namaPasien').text();
+                    dokterId = $('#namaDokter').text();
+                    kategoriPenjualan = 'Resep';
+                }else{
+                    $('#nama-pasien-modal').modal('show');
+                }
+
+                const gt = parseInt($('#grandTotal').text());
+
+                let dscVal = $('#dsc').val();
+                let dscField;
+
+                if (dscVal === "") {
+                    dscField = 0;
+                } else {
+                    dscField = dscVal;
+                }
+
+                if (jumlah[0] == 0) {
+                    errorAlert('Jumlah Produk tidak boleh berjumlah 0')
+                } else {
+                    if(pasienId === ''){
+                        $('#nama-pasien-modal').modal('show');
+                    }else{
+                        // console.log(dokterId);
+                        $.ajax({
+                            url: '/resep/antrian/proses/',
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                            },
+                            data: {
+                                kode: kode,
+                                kodeResep: kodeResep,
+                                jumlah: jumlah,
+                                total: total,
+                                kodePenjualan: kodePenjualan,
+                                pasienId: pasienId,
+                                dsc: dscField,
+                                dokterId: dokterId,
+                                kategoriPenjualan: kategoriPenjualan,
+                                subtotal: gt
+                            },
+                            success: function(response) {
+                                successAlert(response.message);
+                                emptyCollectedItems();
+                                closeCheckout();
+                                $('.row.container').remove();
+                                $('#daftarResep').show();
+                                dokterId = '';
+                                pasienId = '';
+                            },
+                            error: function(xhr, status, error) {
+                                console.error("Error:", error);
+                                console.log("Response:", xhr.responseText);
+                            },
+                        });
+                    }
+                }
+            }
         }
 
         function emptyCollectedItems() {
@@ -510,7 +603,7 @@
             $.ajax({
                 url: '/apoteker/resep/not-processed',
                 method: 'GET',
-                success: function(response){
+                success: function(response) {
                     const hasil = response.data;
                     let number = 0;
                     hasil.forEach(item => {
@@ -545,7 +638,7 @@
                         `);
                     });
                 },
-                error: function(error, xhr){
+                error: function(error, xhr) {
                     errorAlert(error.responseText);
                     console.log(error);
                     console.log(xhr.responseText);
@@ -553,3 +646,5 @@
             });
         }
     </script>
+
+@endsection

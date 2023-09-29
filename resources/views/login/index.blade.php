@@ -28,7 +28,7 @@
             <img src="{{ asset('src/images/amico.png') }}" alt="" class="d-flex mt-5 ml-auto mr-auto h-100" />
         </div>
         <div class="col-md-6 col-lg-6 col-md-12 py-5 align-items-center d-flex">
-            <div class="container-fluid">
+            <div class="container-fluid m-auto">
                 <div class="login-box shadow-lg">
                     <div class="login-title">
                         <img src="{{ asset('src/images/logo-pharmapal.png') }}"

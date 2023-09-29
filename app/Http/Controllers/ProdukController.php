@@ -173,9 +173,18 @@ class ProdukController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Produk $produk)
+    public function apotekerGetProdukByKode(Request $request, $kode)
     {
-        //
+        if($request->ajax()){
+            $data = Produk::where('kode', $kode)->get();
+            if(isset($data)){
+                return response()->json(['data' => $data], 200);
+            }else{
+                return response('Data tidak ditemukan', 404);
+            }
+        }else{
+            return response('Server disconnected', 400);
+        }
     }
 
     /**

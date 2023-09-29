@@ -18,7 +18,8 @@ class DashboardController extends Controller
             ->orderBy('created_at', 'desc')
             ->get()
             ->take(3);
-        $dataNotProceed = Resep::where('isProceedByApoteker', '0')
+        $dataNotProceed = Resep::where('isProceed' ,'1')
+            ->whereNull('apoteker_id')
             ->with('pasien', 'dokter')
             ->orderBy('created_at', 'desc')
             ->get()

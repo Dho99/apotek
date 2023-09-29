@@ -59,7 +59,7 @@
                         <a href="/apoteker/resep/antrian"
                             class="dropdown-toggle no-arrow {{ $title == 'Kasir' ? 'active' : '' }}">
                             <span class="micon icon-copy dw dw-shopping-cart-1"></span><span
-                                class="mtext">Kasir</span>
+                                class="mtext">Transaksi</span>
                         </a>
                     </li>
                     <li class="drowpdown">
@@ -84,7 +84,7 @@
                         </a>
                     </li>
                     <li class="dropdown">
-                        <a href="javascript:;" class="dropdown-toggle {{ $title == 'Transaksi' || $title == 'Produk' || $title == 'Struk' || $title == 'Penerimaan Barang' || $title == 'Resep' ? 'active' : '' }}">
+                        <a href="javascript:;" class="dropdown-toggle {{ $title == 'Laporan Penjualan' || $title == 'Laporan Keuangan' ? 'active' : '' }}">
                             <span class="micon icon-copy dw dw-file"></span><span class="mtext">Laporan</span>
                         </a>
                         <ul class="submenu">

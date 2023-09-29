@@ -10,6 +10,7 @@ use App\Models\Penjualan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use App\Events\UserNotification;
+use Illuminate\Support\Str;
 
 class PenjualanController extends Controller
 {
@@ -23,7 +24,7 @@ class PenjualanController extends Controller
             'yearOption' => Penjualan::orderBy('created_at','desc')->get()->groupBy(function($item){
                 return $item->created_at->format('Y');
             }),
-            'datas' => Penjualan::all()
+            'datas' => Penjualan::with('pasien')->orderBy('created_at','desc')->get()
         ]);
     }
 
@@ -42,24 +43,51 @@ class PenjualanController extends Controller
         }
     }
 
-    public function create()
-    {
-        //
-    }
+    // public function store(Request $request)
+    // {
+    //     if($request->ajax()){
+    //         return response()->json(['data' => $request->all()]);
+    //     }else{
+    //         return response(400);
+    //     }
+    // }
 
     /**
      * Store a newly created resource in storage.
      */
+
+
+
     public function store(Request $request)
     {
         if (request()->ajax()) {
-            if (isset($request->dokterId) && isset($request->pasienId)) {
-                $dokter_id = User::where('nama', $request->dokterId)->pluck('id')->first();
-                $pasien_id = User::where('nama', $request->pasienId)->pluck('id')->first();
-            } else {
+            $dataPasien = User::where('nama', $request->pasienId)->pluck('id')->first();
+            if(isset($dataPasien)){
+                if (isset($request->pasienId)) {
+                    $pasien_id = $dataPasien;
+                }
+                if(isset($request->dokterId)){
+                    $dokter_id = User::where('nama', $request->dokterId)->pluck('id')->first();
+                }else{
+                    $dokter_id = 0;
+                }
+
+            }else{
+                $newPasien = User::create([
+                    'kode' => 'PSN-'.mt_rand(0000,9999),
+                    'nama' => Str::title($request->pasienId),
+                    'username' => Str::slug($request->pasienId),
+                    'email' => fake()->unique()->safeEmail(),
+                    'alamat' => fake()->address(),
+                    'tanggal_lahir' => fake()->dateTimeThisDecade(),
+                    'level' => '3',
+                    'status' => 'Aktif'
+                ]);
+
+                $pasien_id = $newPasien->id;
                 $dokter_id = 0;
-                $pasien_id = 0;
             }
+
 
             if($request->kategoriPenjualan === 'Resep'){
                 $dataResep = Resep::where('kode', $request->kodeResep);
@@ -76,7 +104,7 @@ class PenjualanController extends Controller
                 }
             }
 
-            $dataProduk = Produk::whereIn('kode', $request->kode)->get(['id', 'harga']);
+            $dataProduk = Produk::whereIn('kode', json_decode($request->kode))->get(['id', 'harga']);
             $produk_id = [];
             $hargaProduk = [];
             foreach ($dataProduk as $item) {
@@ -84,12 +112,12 @@ class PenjualanController extends Controller
                 $hargaProduk[] = $item->harga;
             }
 
-            $stokProduk = Produk::whereIn('kode', $request->kode)->get();
+            $stokProduk = Produk::whereIn('kode', json_decode($request->kode))->get();
             $hasilPengurangan = [];
 
             foreach ($stokProduk as $produk) {
                 $pengurangan = $produk->stok;
-                foreach ($request->jumlah as $jumlahProduk) {
+                foreach (json_decode($request->jumlah) as $jumlahProduk) {
                     $pengurangan -= $jumlahProduk;
                 }
                 $hasilPengurangan[] = $pengurangan;
@@ -120,7 +148,10 @@ class PenjualanController extends Controller
                 'kategori' => 'Debit'
             ];
             Keuangan::create($forKeuangan);
-            return response()->json(['data' => $data], 200);
+            // return response()->json(['data' => [$produk_id, $hargaProduk]], 200);
+            return response()->json(['message' => 'Transaksi berhasil diproses'], 200);
+        }else{
+            return response('Server Disconnected', 400);
         }
     }
 
@@ -132,12 +163,13 @@ class PenjualanController extends Controller
             $data = Penjualan::where('kodePenjualan', $kode)->get();
             $dataInvoice = [];
             foreach ($data as $item) {
+                $namaPasien = User::where('id', $item->pasien_id)->pluck('nama');
                 $dataInvoice[] = [
                     'kode' => $item->kodePenjualan,
                     'namaProduk' => Produk::whereIn('id', json_decode($item->produk_id))->pluck('namaProduk')->toArray(),
                     'namaApoteker' => User::where('id', $item->apoteker_id)->pluck('nama'),
                     'namaDokter' => User::where('id', $item->dokter_id)->pluck('nama'),
-                    'namaPasien' => User::where('id', $item->pasien_id)->pluck('nama'),
+                    'namaPasien' => isset($namaPasien) ? $namaPasien : 'Data Pasien sudah Dihapus',
                     'harga' => json_decode($item->harga),
                     'kategori' => $item->kategoriPenjualan,
                     'jumlah' => json_decode($item->jumlah),

@@ -36,6 +36,7 @@
                             <tr>
                                 <th class="table-plus datatable-nosort">No</th>
                                 <th>Tanggal</th>
+                                <th>Nama Pasien</th>
                                 <th>Kode Transaksi</th>
                                 <th>Total</th>
                                 <th class="datatable-nosort">Action</th>
@@ -46,6 +47,7 @@
                                 <tr>
                                     <td class="table-plus datatable-nosort">{{ $loop->iteration }}</td>
                                     <td>{{ $item->created_at->format('d/m/Y') }}</td>
+                                    <td>{{ isset($item->pasien->nama) ? $item->pasien->nama : 'Data Pasien tidak tersedia' }}</td>
                                     <td>{{ $item->kodePenjualan }}</td>
                                     <td>@currency($item->subtotal)</td>
                                     <td>

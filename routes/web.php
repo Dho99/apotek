@@ -49,6 +49,7 @@ Route::controller(ProdukController::class)->group(function () {
         Route::get('/apoteker/obat/show/{kode}', 'apotekerShow');
         Route::post('/apoteker/obat/edit/{kode}', 'apotekerUpdate');
         Route::get('/apoteker/obat/add/stock/{kode}', 'apotekerAddStock');
+        Route::get('/apoteker/obat/get/{kode}', 'apotekerGetProdukByKode');
         Route::post('/apoteker/obat/add/update/stock/{kode}', 'apotekerUpdateStock');
     });
 

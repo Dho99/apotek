@@ -24,24 +24,24 @@ class Penjualan extends Model
     ];
 
 
-    public function obat(): BelongsTo
+    public function obat()
     {
-        return $this->belongsTo(App\Models\Produk::class, 'produk_id');
+        return $this->belongsTo(\App\Models\Produk::class, 'produk_id');
     }
 
-    public function apoteker(): BelongsTo
+    public function apoteker()
     {
-        return $this->belongsTo(App\Models\User::class, 'apoteker_id');
+        return $this->belongsTo(\App\Models\User::class, 'apoteker_id');
     }
 
-    public function dokter(): BelongsTo
+    public function dokter()
     {
-        return $this->belongsTo(App\Models\User::class, 'dokter_id');
+        return $this->belongsTo(\App\Models\User::class, 'dokter_id');
     }
 
-    public function pasien(): BelongsTo
+    public function pasien()
     {
-        return $this->belongsTo(App\Models\User::class, 'pasien_id');
+        return $this->belongsTo(\App\Models\User::class, 'pasien_id');
     }
 
 }

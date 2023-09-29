@@ -65,11 +65,11 @@ class ResepController extends Controller
 
     public function apotekerIndex()
     {
-        // dd($dataExtracted);
+
         return view('apoteker.kasir.list', [
             'title' => 'Kasir',
             'produks' => Produk::all(),
-            // 'datas' => $dataExtracted,
+            'pasiens' => User::where('level', '3')->get()
         ]);
     }
 
@@ -88,7 +88,6 @@ class ResepController extends Controller
         }
     }
 
-    //  Blok Apoteker
     public function apotekerListResep(){
             $dataExtracted = [];
             $data = Resep::where('isProceed', '1')
@@ -146,7 +145,6 @@ class ResepController extends Controller
         ]);
     }
 
-    // Blok Dokter
     public function dokterStore(Request $request)
     {
         if ($request->ajax()) {

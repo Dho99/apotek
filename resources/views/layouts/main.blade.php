@@ -27,6 +27,7 @@
     {{-- <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" /> --}}
     {{-- SwiperCDN --}}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
+    <link rel="stylesheet" href="{{ asset('vendors/styles/pagination.css') }}">
     {{-- @vite('resources/css/app.css') --}}
 </head>
 
@@ -97,8 +98,8 @@
     <script src="{{ asset('src/plugins/apexcharts/apexcharts.min.js') }}"></script>
     <script src="{{ asset('vendors/scripts/myScript/jquery.mask.min.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
-    <link rel="stylesheet" href="{{ asset('vendors/styles/pagination.css') }}">
-    @vite('resources/js/bootstrap.js')
+
+    {{-- @vite('resources/js/bootstrap.js') --}}
     @php
         $level = \App\Models\User::where('id', auth()->user()->id)
             ->pluck('level')
@@ -170,42 +171,6 @@
 
 
 
-
-
-    {{-- <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
-    @php
-        $userlevel = auth()->check() ? auth()->user()->level : 0;
-    @endphp
-    <script>
-        // Enable pusher logging - don't include this in production
-        Pusher.logToConsole = true;
-
-        var pusher = new Pusher('{{ env('PUSHER_APP_KEY') }}', {
-            cluster: 'ap1'
-        });
-
-        var usrlvl = @json($userlevel);
-        var channel = pusher.subscribe('popup-channel');
-        channel.bind('user-register', function(data) {
-            // console.log(data);
-
-            if (data.user_level == usrlvl) {
-                $('#sidebarWrapper').append(`
-                <div class="container-fluid bg-light py-2 my-2 text-dark">
-                    <div class="row d-flex py-2">
-                        <div class="col-xl-12 col-md-12">
-                            <p class="font-weight-bold font-18 mb-0">${data.user_nama}</p>
-                            <p class="mb-2">${data.message}</p>
-                            ${data.links !== "" ? `<a class="btn btn-sm btn-success text-light" href="${data.links}">Proses Resep</a>` : ''}
-                        </div>
-                    </div>
-                </div>
-                `);
-            }
-            refreshTable();
-        });
-    </script> --}}
-
     <script>
         function updateTable(table, data, column) {
             $(table).empty();
@@ -270,6 +235,10 @@
                 reverse: true
             });
         }
+
+        // function unmask(arg){
+        //     return arg.cleanVal();
+        // }
 
         function changeToEdit(arg) {
             $('.btn.btn-info.ml-auto').addClass('d-none');
@@ -351,7 +320,7 @@
             });
         }
     </script>
-    @if (auth()->user()->level == '1')
+    @if (auth()->user()->level == 'Apoteker')
         @if ($title === 'Dashboard' || $title === 'Laporan Penjualan')
             <script>
                 let year = new Date().getFullYear();

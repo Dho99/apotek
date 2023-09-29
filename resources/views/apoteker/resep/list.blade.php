@@ -122,7 +122,7 @@
                 countedItem = 0;
                 $('.col-xl-12.text-center.my-2').each(function(){
                     let text = $(this).text().toUpperCase();
-                    if(text.includes(val)){
+                    if(text.includes(val.toUpperCase())){
                         $(this).show();
                         countedItem++;
                     }else{
