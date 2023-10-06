@@ -39,6 +39,7 @@
                 url: '/kasir/pasien/get/' + kode,
                 method: 'GET',
                 success: function(response) {
+                    console.log(kode);
                     const data = response.data[0];
                     $('#inputAfterSearchKode').empty().append(`
                     <div class="row mb-3">
@@ -85,7 +86,7 @@
         myForm.append('kode', 'RES-'+randomString());
         myForm.append('kodePasien', kodePasien);
         myForm.append('gejala', $('#gejala').val());
-        const url = '/kasir/transaksi/resep/create';
+        const url = '/apoteker/transaksi/resep/create';
 
         ajaxUpdate(url,'POST',myForm);
         setTimeout(() => {

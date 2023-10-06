@@ -35,17 +35,7 @@
                                 Data Stock Obat
                             </div>
 
-                            @if (count($obat) === 0)
-                                <div class="container-fluid my-3 rounded-lg">
-                                    <div class="row bg-lightgreen">
-                                        <div class="col-12">
-                                            No Data
-                                        </div>
-                                    </div>
-                                </div>
-                            @else
-                                {{-- @dd    ($obat) --}}
-                                @foreach ($obat as $item)
+                                @forelse ($obat as $item)
                                     <div class="container-fluid my-3 rounded-lg">
                                         <div class="row bg-lightgreen text-center align-items-center py-2">
                                             <div class="col-lg-1">
@@ -65,11 +55,15 @@
                                             </div>
 
                                             <div class="col-lg-4 w-50 m-auto">
-                                                @if ($item->stok <= 20 && $item->stok >= 10)
-                                                    <div class="small bg-orange text-light rounded-lg p-1">
+                                                @if ($item->stok < 20 && $item->stok > 10)
+                                                    <div class="small bg-warning text-light rounded-lg p-1">
                                                         Stok Menipis
                                                     </div>
-                                                @elseif ($item->stok <= 0 && $item->stok <= 10)
+                                                @elseif ($item->stok < 5 && $item->stok > 1)
+                                                    <div class="small bg-orange text-light rounded-lg p-1">
+                                                        Stok Kritis
+                                                    </div>
+                                                @elseif ($item->stok <= 1)
                                                     <div class="small bg-danger text-light rounded-lg p-1">
                                                         Stok Habis
                                                     </div>
@@ -81,9 +75,10 @@
                                             </div>
                                         </div>
                                     </div>
-                                @endforeach
-                            @endif
-                            <a href="/apoteker/obat/list" class="px-3 mb-4 text-dark">Lihat Selengkapnya</a>
+                                    @empty
+                                    @endforelse
+                                    <a href="/apoteker/obat/list" class="px-3 mb-4 text-dark">Lihat Selengkapnya</a>
+
                         </div>
 
                     </div>
@@ -225,7 +220,7 @@
                             @empty
                             @endforelse
 
-                            @foreach ($dataNotProceed as $item)
+                            @forelse ($dataNotProceed as $item)
                                 <div class="bg-lightgreen my-3 rounded-lg">
                                     <div class="row py-1 w-100 m-auto text-center align-items-center">
                                         <div class="col-xl-1 col-md-4 col-sm-6">
@@ -252,20 +247,18 @@
                                         </div>
                                         <div class="col-xl-1 col-md-4 col-sm-6 ">
                                             <button class="border-0 mt-1 bg-transparent text-center text-danger font-24"
-                                                onclick="if (confirm('Lanjut ke halaman proses resep?')) window.location.href='/apoteker/resep/list';">
+                                                onclick="if (confirm('Lanjut ke halaman proses resep?')) window.location.href='/apoteker/resep/antrian';">
                                                 <i class="icon-copy dw dw-edit"></i>
                                             </button>
                                         </div>
                                     </div>
                                 </div>
-                            @endforeach
-                            {{-- @empty --}}
+                                <a href="#" class="px-3 mb-4 text-dark sticky-bottom">Lihat Selengkapnya</a>
+                            @empty
+                            @endforelse
 
 
 
-
-
-                            <a href="#" class="px-3 mb-4 text-dark sticky-bottom">Lihat Selengkapnya</a>
                         </div>
                     </div>
                 </div>
@@ -284,7 +277,7 @@
                                 <div class="container-fluid rounded-lg py-2">
                                     <div class="row text-center font-18">
                                         <div class="col-12">
-                                            Belum Ada Dokter yang Hadir :(
+
                                         </div>
                                     </div>
                                 </div>
@@ -331,99 +324,27 @@
 
     </div>
 
-
-    <div class="modal fade" id="fast-transaction-modal" role="dialog" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-body text-center">
-                    <div class="text-center font-20 font-weight-bold">
-                        Transaksi Cepat Non Resep
-                    </div>
-                    @php
-                        $pasiens = \App\Models\User::where('level', 3)->get();
-                    @endphp
-                    <div class="my-3">
-                        <div class="mt-2 mb-3 text-left font-18 font-weight-bold w-75">
-                            Kode Transaksi : <span id="trxCode"></span>
-                            <div class="d-flex m-auto align-items-center w-100">
-                                Nama Pasien : <span class="ml-1 font-weight-normal w-50">
-                                    <select name="" class="form-control-sm" style="width: 100%;" id="pasienFastTrx">
-                                        <option value=""></option>
-                                        @foreach ($pasiens as $item)
-                                            <option value="{{ $item->nama }}">{{ $item->nama }}</option>
-                                        @endforeach
-                                    </select>
-                                </span>
-                            </div>
-                        </div>
-
-                        <div class="d-flex justify-content-center">
-                            <input type="text" class="form-control rounded-right" style="width: 70%;"
-                                id="codeProductInputField" placeholder="Masukkan Kode Obat">
-                            <button class="btn btn-sm btn-success ml-auto rounded-right" onclick="addRowsToTable()">
-                                <span>
-                                    <i class="icon-copy dw dw-add font-20"></i>
-                                </span>
-                            </button>
-                            <button class="btn btn-sm btn-danger ml-1 rounded-left" id="rowTableDeletor"
-                                onclick="deleteTableRow()" disabled>
-                                <span>
-                                    <i class="icon-copy dw dw-delete-2"></i>
-                                </span>
-                            </button>
-                        </div>
-                        <div id="form-feedback" class="d-none text-danger text-left"></div>
-                    </div>
-
-                    <div class="table-responsive mb-3 " style="overflow-x: auto;">
-                        <table id="table-transactions" class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <td>No</td>
-                                    <td>Kode Obat</td>
-                                    <td>Nama Obat</td>
-                                    <td>Jumlah</td>
-                                    <td>Harga</td>
-                                </tr>
-                            </thead>
-                            <tbody id="table-transactions-field">
-
-                            </tbody>
-                            <tfoot>
-                                <tr>
-                                    <td colspan="4" class="font-weight-bold text-right">Subtotal</td>
-                                    <td id="subtotal-table-field"></td>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
-
-                    <div class="mb-3 d-flex">
-                        <button class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                        <button class="btn btn-success ml-auto" id="processTransactions" onclick="prosesPesanan()">Proses</button>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-    </div>
-
     <script>
+        let jumlah = 0;
         let number = 0;
         let total = 0;
         let kodeObat = [];
         let harga = [];
         let jumlahbarang = [];
+        let stokObat = [];
 
         $().ready(function() {
             $('#pasienFastTrx').select2({
                 tags: true,
                 placeholder: 'Pilih atau tuliskan nama Pasien'
             });
+            randomTrxCode();
+        });
+
+        function randomTrxCode(){
             let kode = randomString() * 23313;
             $('#trxCode').text('TRX' + kode);
-
-        });
+        }
 
         $('#fastTransaction').on('click', function() {
             $('#fast-transaction-modal').modal('show');
@@ -479,32 +400,32 @@
                             else
                             {
                                 kodeHasCollected = kodeObat.includes(hasil.kode);
+                                stokObat[hasil.kode] = hasil.stok;
                                 if (!kodeHasCollected) {
                                     kodeObat.push(hasil.kode);
                                     number++;
                                     $('#table-transactions-field').append(`
                                 <tr id="row${hasil.kode}">
                                     <td>${number}</td>
-                                    <td>${hasil.kode}</td>
+                                    <td id="kode${hasil.kode}">${hasil.kode}</td>
                                     <td>${hasil.namaProduk}</td>
-                                    <td style="max-width: 20px; padding: 0;"><input type="number" class=" w-100 p-2 border-0 text-center" placeholder="Jumlah" id="jumlah${hasil.kode}" value="1" oninput="calculateJumlah('${hasil.kode}')"></td>
+                                    <td style="max-width: 20px; padding: 0;"><input type="number" class=" w-100 p-2 border-0 text-center" placeholder="Jumlah" value="1" id="jumlah${hasil.kode}" oninput="calculateJumlah('${hasil.kode}','incbyinput')"></td>
                                     <td id="harga${hasil.kode}">${formatCurrency(hasil.harga)}</td>
                                 </tr>
                                 `);
+                                    jumlahbarang[hasil.kode]=0;
                                     harga[`${hasil.kode}`] = hasil.harga;
-                                    calculateJumlah(`${hasil.kode}`);
                                     $('#rowTableDeletor').removeAttr('disabled');
-                                    jumlahbarang[`${hasil.kode}`] = 1;
-                                } else {
-                                    jumlahbarang[`${hasil.kode}`]+=parseInt(1);
-                                    calculateJumlah(hasil.kode, 'tambah');
+                                }
+                                else{
+                                    errorAlert('Kode sudah ada');
                                 }
 
+
                                 inpf.val('');
+                                calculateJumlah(`${hasil.kode}` ,'incbyinput');
                                 removeUserMessage();
                                 $('#codeProductInputField').focus();
-                                $('#subtotal-table-field').text(formatCurrency(parseInt(total)));
-                                // console.log(Object.values(jumlahbarang));
 
                             }
                         },
@@ -530,47 +451,69 @@
 
         };
 
-        function prosesPesanan() {
-            if (kodeObat.length == 0) {
-                errorAlert('Tidak dapat memproses Pesanan');
-            }
-            else if($('#pasienFastTrx').val() === ''){
-                errorAlert('Masukkan Nama Pasien terlebih dahulu');
-                $('#pasienFastTrx').focus();
-            }
-            else {
-                let myForm = new FormData();
-                myForm.append('kode', JSON.stringify(kodeObat));
-                myForm.append('jumlah', JSON.stringify(Object.values(jumlahbarang)));
-                myForm.append('total', total);
-                myForm.append('kodePenjualan', $('#trxCode').text());
-                myForm.append('dsc', 0);
-                myForm.append('kategoriPenjualan', 'Non Resep');
-                myForm.append('subtotal', total);
-                myForm.append('pasienId', $('#pasienFastTrx').val());
-
-
-                if(myForm){
-                    ajaxUpdate('/resep/antrian/proses/', 'POST', myForm);
-                }else{
-                    errorAlert('Gagal memproses Transaksi');
+        function calculateJumlah(arg, act) {
+            let jumlahVal = $(`#jumlah${arg}`).val();
+            if(jumlahVal > stokObat[arg]){
+                errorAlert('Stok produk tidak mecukupi');
+                $(`#jumlah${arg}`).val('1');
+            }else{
+                if (act === 'incbyinput') {
+                    total -= jumlahbarang[arg] * harga[arg];
+                    if (jumlahVal < 0) {
+                        errorAlert('Tidak bisa memasukkan angka kurang dari 0');
+                    } else {
+                        jumlahbarang[arg] = jumlahVal;
+                        total += jumlahbarang[arg] * harga[arg];
+                        $('#subtotal-table-field').text(formatCurrency(total));
+                    }
                 }
-
             }
         }
 
-        function calculateJumlah(arg, act){
-            let jumlah;
-            if(act === undefined){
-                jumlah = $(`#jumlah${arg}`).val();
-            }else{
-                jumlah = parseInt(jumlahbarang[arg]);
-                console.log(jumlah);
-            }
+        function prosesPesanan() {
+                if (kodeObat.length == 0) {
+                    errorAlert('Tidak dapat memproses Pesanan');
+                }
+                else if($('#pasienFastTrx').val() === ''){
+                    errorAlert('Masukkan Nama Pasien terlebih dahulu');
+                    $('#pasienFastTrx').focus();
+                }
+                else {
+                    let myForm = new FormData();
+                    myForm.append('kode', JSON.stringify(kodeObat));
+                    myForm.append('jumlah', JSON.stringify(Object.values(jumlahbarang)));
+                    myForm.append('total', total);
+                    myForm.append('kodePenjualan', $('#trxCode').text());
+                    myForm.append('dsc', 0);
+                    myForm.append('kategoriPenjualan', 'Non Resep');
+                    myForm.append('subtotal', total);
+                    myForm.append('pasienId', $('#pasienFastTrx').val());
 
-            $(`#jumlah${arg}`).val(jumlah);
-            total += jumlah * parseInt(harga[arg]);
-            $('#subtotal-table-field').text(formatCurrency(parseInt(total)));
+                    if(myForm){
+                        ajaxUpdate('/resep/antrian/proses/', 'POST', myForm);
+                    }else{
+                        errorAlert('Gagal memproses Transaksi');
+                    }
+
+                }
+        }
+
+        function emptyModal(){
+            if(confirm('Apakah anda ingin mencetak Invoice ?') ? printInvoice() : clearModal());
+        }
+
+        function clearModal(){
+            jumlah = 0;
+            number = 0;
+            total = 0;
+            kodeObat = [];
+            harga = [];
+            jumlahbarang = [];
+            $('#table-transactions-field').empty();
+            randomTrxCode();
+            $('#pasienFastTrx').val('').change();
+            $('#subtotal-table-field').text('');
+            $('#fast-transaction-modal').modal('hide');
         }
 
 
@@ -578,3 +521,82 @@
 
 
 @endsection
+<div class="modal fade" id="fast-transaction-modal" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content shadow">
+            <div class="modal-body text-center">
+                 <div class="text-center">
+                    <img src="{{ asset('src/images/logo-pharmapal.png') }}" width="200px" height="100px"
+                        alt="">
+                </div>
+                <div class="text-center font-20 font-weight-bold">
+                    Transaksi Cepat Non Resep
+                </div>
+                @php
+                    $pasiens = \App\Models\User::where('level', 3)->get();
+                @endphp
+                <div class="my-3">
+                    <div class="mt-2 mb-3 text-left font-18 font-weight-bold w-75">
+                        Kode Transaksi : <span id="trxCode"></span>
+                        <div class="d-flex m-auto align-items-center w-100">
+                            Nama Pasien : <span class="ml-1 font-weight-normal w-50">
+                                <select name="" class="form-control-sm" style="width: 100%;" id="pasienFastTrx">
+                                    <option value=""></option>
+                                    @foreach ($pasiens as $item)
+                                        <option value="{{ $item->nama }}">{{ $item->nama }}</option>
+                                    @endforeach
+                                </select>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-center">
+                        <input type="text" class="form-control rounded-right noprint" style="width: 70%;"
+                            id="codeProductInputField" placeholder="Masukkan Kode Obat">
+                        <button class="btn btn-sm btn-success ml-auto rounded-right noprint" onclick="addRowsToTable()">
+                            <span>
+                                <i class="icon-copy dw dw-add font-20"></i>
+                            </span>
+                        </button>
+                        <button class="btn btn-sm btn-danger ml-1 rounded-left noprint" id="rowTableDeletor"
+                            onclick="deleteTableRow()" disabled>
+                            <span>
+                                <i class="icon-copy dw dw-delete-2"></i>
+                            </span>
+                        </button>
+                    </div>
+                    <div id="form-feedback" class="d-none text-danger text-left"></div>
+                </div>
+
+                <div class="table-responsive mb-3 " style="overflow-x: auto;">
+                    <table id="table-transactions" class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <td>No</td>
+                                <td>Kode Obat</td>
+                                <td>Nama Obat</td>
+                                <td>Jumlah</td>
+                                <td>Harga</td>
+                            </tr>
+                        </thead>
+                        <tbody id="table-transactions-field">
+
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="4" class="font-weight-bold text-right">Subtotal</td>
+                                <td id="subtotal-table-field"></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+                <div class="mb-3 d-flex">
+                    <button class="btn btn-secondary noprint" data-dismiss="modal">Batal</button>
+                    <button class="btn btn-success ml-auto noprint" id="processTransactions" onclick="prosesPesanan()">Proses</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

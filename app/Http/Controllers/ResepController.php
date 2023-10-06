@@ -69,7 +69,8 @@ class ResepController extends Controller
         return view('apoteker.kasir.list', [
             'title' => 'Kasir',
             'produks' => Produk::all(),
-            'pasiens' => User::where('level', '3')->get()
+            'pasiens' => User::where('level', '3')->get(),
+            'satuans' => Produk::groupBy('satuan')->get()
         ]);
     }
 
@@ -164,8 +165,8 @@ class ResepController extends Controller
 
                 $updatedData = Resep::where('kode', $request->kode)->update($data);
                 if ($updatedData) {
-                    return response()->json(['message' => 'Data resep ' . $request->kode . ' berhasil disimpan'], 200);
                     event(new UserNotification('Dokter telah membuat resep baru '.$data['kode'], auth()->user(), '/apoteker/resep/antrian', '1', 'Buat Sekarang'));
+                    return response()->json(['message' => 'Data resep ' . $request->kode . ' berhasil disimpan'], 200);
                 } else {
                     return response('Gagal Menyimpan Resep', 400);
                 }
@@ -177,9 +178,6 @@ class ResepController extends Controller
         }
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function kasirNonResep()
     {
         return view('kasir.transaksi.nonresep', [
@@ -190,13 +188,10 @@ class ResepController extends Controller
     public function kasirWithResep()
     {
         return view('kasir.transaksi.transaksi-resep', [
-            'title' => 'Dengan Resep',
+            'title' => 'Buat Resep',
             'pasiens' => User::where('level', '3')->get(),
         ]);
     }
-    /**
-     * Show the form for editing the specified resource.
-     */
 
     public function kasirCreateResep(Request $request)
     {
@@ -209,8 +204,7 @@ class ResepController extends Controller
                 'pasien_id' => $pasienId,
                 'gejala' => $request->gejala,
             ];
-            event(new UserNotification('Kasir telah membuat permintaan Resep baru '.$data['kode'], auth()->user(), '/dokter/resep/create', '0', 'Buat Sekarang'));
-            notification('Telah membuat resep dengan kode '.$data['kode'].'. Proses sekarang');
+            event(new UserNotification('Terdapat permintaan Resep baru '.$data['kode'], auth()->user(), '/dokter/resep/create', '0', 'Buat Sekarang'));
             Resep::create($data);
             return response()->json(['message' => 'Permintaan resep dan produk berhasil dikirimkan']);
         } else {

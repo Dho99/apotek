@@ -21,11 +21,11 @@ function submitNewObat(event, url) {
 
     $("#createNewObatForm input").val('');
     $("#golongan").val(null).trigger("change");
-    $("#golongan").select2();
+    initSel2Tags('#golongan, #supplier');
     undoChanges();
     setTimeout(function() {
         window.location.href = "/apoteker/obat/list";
-    }, 1500);
+    }, 2000);
 }
 
 function randomized(event) {

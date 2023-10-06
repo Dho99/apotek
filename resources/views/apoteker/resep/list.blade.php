@@ -107,10 +107,14 @@
                     <li class="page-item active m-auto"><a class="page-link" href="#">1</a></li>
                 </ul>
             </div>
+            <a href="/apoteker/transaksi/resep" style="width: 140px;" class="fixed-bottom ml-auto btn btn-success m-4 d-flex align-items-center">
+                <i class="icon-copy dw dw-add mr-2"></i> Resep Baru
+            </a>
         </div>
 
 
     </div>
+
     <script>
         let pageItems;
         let countedItem;

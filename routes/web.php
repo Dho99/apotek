@@ -74,17 +74,18 @@ Route::controller(ResepController::class)->group(function () {
         Route::get('/apoteker/resep/list', 'apotekerListResep');
         Route::post('/apoteker/resep/proses/{kode}', 'apotekerProsesResep');
         Route::get('/apoteker/resep/proses/transaksi/{kode}', 'apotekerGetResepByKode');
+        Route::get('/apoteker/transaksi/resep', 'kasirWithResep');
+        Route::post('/apoteker/transaksi/resep/create', 'kasirCreateResep');
     });
     Route::middleware(['auth', 'user-access:Dokter'])->group(function () {
         Route::get('/dokter/resep/create', 'dokterCreate');
         Route::get('/dokter/resep/create/getAllResep', 'getResep');
         Route::post('/dokter/resep/create/new', 'dokterStore');
     });
-    Route::middleware(['auth','user-access:Kasir'])->group(function(){
-        Route::get('/kasir/transaksi/nonresep', 'kasirNonResep');
-        Route::get('/kasir/transaksi/resep', 'kasirWithResep');
-        Route::post('/kasir/transaksi/resep/create', 'kasirCreateResep');
-    });
+    // Route::middleware(['auth','user-access:Kasir'])->group(function(){
+    //     Route::get('/kasir/transaksi/nonresep', 'kasirNonResep');
+
+    // });
 });
 
 Route::controller(UserController::class)->group(function () {
@@ -98,15 +99,13 @@ Route::controller(UserController::class)->group(function () {
         Route::get('/apoteker/user/show/get/{kode}', 'apotekerGetUser');
         Route::post('/apoteker/user/update/', 'apotekerUpdateUser');
         Route::get('/apoteker/user/delete/{kode}', 'apotekerDeleteUser');
-
-        // Manage self account
+        Route::get('/kasir/pasien/get/{kode}', 'kasirGetPasienByKode');
     });
 
     Route::middleware(['auth', 'user-access:Kasir'])->group(function(){
         Route::get('/kasir/pasien/create', 'kasirCreatePasien');
         Route::get('/kasir/pasien/list', 'kasirPasienList');
         Route::get('/kasir/pasien/get', 'kasirGetPasien');
-        Route::get('/kasir/pasien/get/{kode}', 'kasirGetPasienByKode');
         Route::get('/kasir/pasien/delete/{kode}', 'kasirDeletePasien');
         Route::post('/kasir/pasien/update/', 'kasirUpdatePasien');
     });
@@ -120,6 +119,7 @@ Route::controller(PenjualanController::class)->group(function () {
         Route::get('/apoteker/laporan/penjualan', 'index');
         Route::get('/apoteker/laporan/penjualan/get/{year}', 'getDataPenjualan');
         Route::get('/apoteker/laporan/penjualan/inovice/{kode}', 'apotekerGetInvoice');
+        Route::get('/apoteker/laporan/penjualan/get', 'show');
     });
 });
 

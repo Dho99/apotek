@@ -21,6 +21,7 @@ class ProdukController extends Controller
         return view('apoteker.obat.list', [
             'title' => 'Daftar Obat',
             'kategori' => $data,
+            'satuan' => Produk::groupBy('satuan')->get()
         ]);
     }
 
@@ -82,7 +83,7 @@ class ProdukController extends Controller
                 }
             }
         } else {
-            abort(400);
+            return response('Server disconnected',400);
         }
     }
 
@@ -95,6 +96,7 @@ class ProdukController extends Controller
             'title' => 'Tambah Data Obat',
             'golongan' => Kategori::all(),
             'pemasok' => Supplier::all(),
+            'satuan' => Produk::groupBy('satuan')->pluck('satuan'),
         ]);
     }
 
@@ -104,14 +106,46 @@ class ProdukController extends Controller
 
     public function store(Request $request)
     {
+        foreach (json_decode($request->golongan) as $item){
+            $cekKategori = Kategori::where('id', $item)->get()->first();
+            if(isset($cekKategori)){
+                $golongan_id[] = $cekKategori->id;
+                // $golongan_id[] = 'Ada';
+            }else{
+                try {
+                    $kategoriBaru = Kategori::create([
+                        'golongan' => $item,
+                        'keterangan' => $item
+                    ]);
+                    $golongan_id[] = $kategoriBaru->id;
+                } catch (\Exception $e) {
+                    return response(500);
+                }
+            }
+        }
+
+        $cekSupplier = Supplier::where('id', $request->supplier)->pluck('id')->first();
+        if(isset($cekSupplier)){
+            $supplier_id = $cekSupplier;
+        }else{
+            $newSupplier = Supplier::create([
+                'kode' => 'SUP-'.mt_rand(0000,9999),
+                'nama' => $request->supplier,
+                'alamat' => fake()->address(),
+                'noTel' => fake()->phoneNumber(),
+                'perwakilan' => fake()->name()
+            ]);
+            $supplier_id = $newSupplier->id;
+        }
+
         $data = [
             'kode' => $request->kode,
             'namaProduk' => $request->namaProduk,
             'satuan' => $request->satuan,
             'stok' => $request->stok,
             'harga' => $request->harga,
-            'supplier_id' => $request->supplier,
-            'golongan_id' => $request->golongan,
+            'supplier_id' => $supplier_id,
+            'golongan_id' => json_encode($golongan_id),
             'expDate' => $request->expDate,
             'image' => $request->image,
         ];
@@ -138,7 +172,8 @@ class ProdukController extends Controller
         $total = $data['harga'] * $data['stok'];
 
         if ($total > $saldo) {
-            return response()->json(['fail' => 'Saldo tidak mencukupi']);
+            return response('Saldo tidak mencukupi, masukkan dana kas terlebih dahulu', 500);
+
         } else {
             Keuangan::create([
                 'keterangan' => 'Pembelian Produk ' . $data['namaProduk'],
@@ -157,6 +192,7 @@ class ProdukController extends Controller
 
             return response()->json(['message' => 'Data Berhasil Disimpan']);
         }
+        return response('Gagal menyimpan Data', 400);
     }
 
     public function apotekerShow(Request $request, $kode)
@@ -167,6 +203,7 @@ class ProdukController extends Controller
             'datas' => $datas,
             'golongan' => Kategori::get(),
             'pemasok' => Supplier::all(),
+            'satuan' => Produk::groupBy('satuan')->pluck('satuan')
         ]);
     }
 
@@ -192,15 +229,48 @@ class ProdukController extends Controller
      */
     public function apotekerUpdate(Request $request, $kode)
     {
-        $data = [
+        foreach (json_decode($request->golongan) as $item){
+            $cekKategori = Kategori::where('id', $item)->get()->first();
+            if(isset($cekKategori)){
+                $golongan_id[] = $cekKategori->id;
+                // $golongan_id[] = 'Ada';
+            }else{
+                try {
+                    $kategoriBaru = Kategori::create([
+                        'golongan' => $item,
+                        'keterangan' => $item
+                    ]);
+                    $golongan_id[] = $kategoriBaru->id;
+                } catch (\Exception $e) {
+                    return response(500);
+                }
+            }
+        }
+
+        $cekSupplier = Supplier::where('id', $request->supplier)->pluck('id')->first();
+        if(isset($cekSupplier)){
+            $supplier_id = $cekSupplier;
+        }else{
+            $newSupplier = Supplier::create([
+                'kode' => 'SUP-'.mt_rand(0000,9999),
+                'nama' => $request->supplier,
+                'alamat' => fake()->address(),
+                'noTel' => fake()->phoneNumber(),
+                'perwakilan' => fake()->name(2)
+            ]);
+            $supplier_id = $newSupplier->id;
+        }
+
+       $data = [
             'kode' => $request->kode,
             'namaProduk' => $request->namaProduk,
             'satuan' => $request->satuan,
             'stok' => $request->stok,
             'harga' => $request->harga,
-            'supplier_id' => $request->supplier,
-            'golongan_id' => $request->golongan,
+            'supplier_id' => $supplier_id,
+            'golongan_id' => $golongan_id,
             'expDate' => $request->expDate,
+            'image' => $request->image,
         ];
 
         $validator = Validator::make($data, [
@@ -210,7 +280,7 @@ class ProdukController extends Controller
             'stok' => 'required',
             'harga' => 'required',
             'supplier_id' => 'required',
-            'golongan_id' => 'required|json',
+            'golongan_id' => 'required',
             'expDate' => 'required',
         ]);
 
@@ -218,12 +288,13 @@ class ProdukController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        // event All Users
+    //     // event All Users
 
         $validatedData = $data;
         $submit = Produk::where('kode', $kode)->update($validatedData);
         event(new UserNotification('Apoteker '.auth()->user()->nama.' berhasil Memperbarui data Obat '.$request->namaProduk, auth()->user()));
         return response()->json(['message' => 'Data Berhasil Disimpan'], 200);
+        // return response()->json(['data' => json_decode($cekKategori)]);
     }
 
     /**
@@ -288,7 +359,7 @@ class ProdukController extends Controller
                 }
             }
         } else {
-            abort(400);
+            return response('Server disconnected', 400);
         }
     }
 }

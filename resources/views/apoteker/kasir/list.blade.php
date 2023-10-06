@@ -91,39 +91,12 @@
                     <a class="nav-link active" data-toggle="tab" onclick="filterKatalog('Semua')" role="tab"
                         aria-selected="true">Semua</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" role="tab" onclick="filterKatalog('Tablet')"
-                        aria-selected="false">Tablet</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" role="tab" onclick="filterKatalog('Kapsul')"
-                        aria-selected="false">Kapsul</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" role="tab" onclick="filterKatalog('Pill')"
-                        aria-selected="false">Pill</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" role="tab" onclick="filterKatalog('Obat Cair')"
-                        aria-selected="false">Obat
-                        Cair</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" role="tab" onclick="filterKatalog('Oles')"
-                        aria-selected="false">Oles</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" onclick="filterKatalog('Injeksi')" role="tab"
-                        aria-selected="false">Injeksi</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" onclick="filterKatalog('Lain - Lain')" data-toggle="tab" role="tab"
-                        aria-selected="false">Lain -
-                        Lain</a>
-                </li>
-                <li class="nav-item ml-auto mb-2">
-
-                </li>
+                @foreach ($satuans as $item)
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" role="tab" onclick="filterKatalog('{{$item->satuan}}')"
+                        aria-selected="false">{{$item->satuan}}</a>
+                    </li>
+                @endforeach
             </ul>
 
 
@@ -137,8 +110,6 @@
 
 
         </div>
-
-        {{-- @dd($pasiens) --}}
 
 
         <div class="modal fade" id="nama-pasien-modal" data-backdrop="static" role="dialog" aria-hidden="true">
@@ -519,13 +490,7 @@
                 let userId = '';
                 let dokterId = '';
                 let pasienId = '';
-
                 let kategoriPenjualan = 'Non Resep';
-                const kode = collectedItems.kode;
-                let jumlah = collectedItems.jumlah;
-                const total = collectedItems.total;
-                const kodePenjualan = $('#trxCode').text();
-                let kodeResep = $('#kodeResep').text();
 
                 if ($('#namaPasien').text() !== '' || $('#namaDokter').text() !== '') {
                     pasienId = $('#namaPasien').text();
@@ -546,45 +511,31 @@
                     dscField = dscVal;
                 }
 
-                if (jumlah[0] == 0) {
+                let myForm = new FormData();
+                myForm.append('kode', JSON.stringify(collectedItems.kode));
+                myForm.append('jumlah', JSON.stringify(collectedItems.jumlah));
+                myForm.append('total', collectedItems.total);
+                myForm.append('kodePenjualan', $('#trxCode').text());
+                myForm.append('pasienId', pasienId);
+                myForm.append('dsc', dscField);
+                myForm.append('dokterId', dokterId);
+                myForm.append('kategoriPenjualan', kategoriPenjualan);
+                myForm.append('subtotal', gt);
+
+                if (collectedItems.jumlah[0] == 0) {
                     errorAlert('Jumlah Produk tidak boleh berjumlah 0')
                 } else {
                     if(pasienId === ''){
                         $('#nama-pasien-modal').modal('show');
                     }else{
-                        // console.log(dokterId);
-                        $.ajax({
-                            url: '/resep/antrian/proses/',
-                            method: 'POST',
-                            headers: {
-                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                            },
-                            data: {
-                                kode: kode,
-                                kodeResep: kodeResep,
-                                jumlah: jumlah,
-                                total: total,
-                                kodePenjualan: kodePenjualan,
-                                pasienId: pasienId,
-                                dsc: dscField,
-                                dokterId: dokterId,
-                                kategoriPenjualan: kategoriPenjualan,
-                                subtotal: gt
-                            },
-                            success: function(response) {
-                                successAlert(response.message);
-                                emptyCollectedItems();
-                                closeCheckout();
-                                $('.row.container').remove();
-                                $('#daftarResep').show();
-                                dokterId = '';
-                                pasienId = '';
-                            },
-                            error: function(xhr, status, error) {
-                                console.error("Error:", error);
-                                console.log("Response:", xhr.responseText);
-                            },
-                        });
+                       if(myForm){
+                            ajaxUpdate('/resep/antrian/proses/', 'POST', myForm);
+                            emptyCollectedItems();
+                            closeCheckout();
+                            refreshTable();
+                       }else{
+                            errorAlert('Tidak dapat memproses Resep')
+                       }
                     }
                 }
             }

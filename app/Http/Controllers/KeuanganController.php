@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Keuangan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 
 class KeuanganController extends Controller
 {
@@ -12,9 +13,18 @@ class KeuanganController extends Controller
      */
     public function index()
     {
+        $perBulan = Keuangan::get()->groupBy(function($month){
+            return Carbon::parse($month->created_at)->format('F');
+        });
+        $perTahun = Keuangan::get()->groupBy(function($month){
+            return Carbon::parse($month->created_at)->format('Y');
+        });
+        // dd($perBulan);
         return view('apoteker.laporan.keuangan', [
             'title' => 'Laporan Keuangan',
-            'kategori' => Keuangan::orderBy('kategori')->pluck('kategori'),
+            'kategori' => Keuangan::groupBy('kategori')->pluck('kategori'),
+            'perBulan' => $perBulan,
+            'perTahun' => $perTahun
         ]);
     }
 
@@ -26,17 +36,45 @@ class KeuanganController extends Controller
     {
         if ($request->ajax()) {
             $totalSaldo = Keuangan::orderBy('created_at','desc')->pluck('saldo')->first();
-            if ($request->kategori !== null) {
+            if ($request->kategori !== null)
+            {
                 $data = Keuangan::with('user')
                     ->where('kategori', $request->kategori)
                     ->get();
                 return response()->json(['data' => $data, 'saldo' => $totalSaldo]);
-            } elseif ($request->kode !== null) {
+            }
+            elseif ($request->kode !== null)
+            {
                 $data = Keuangan::with('user')
                     ->where('id', $request->kode)
                     ->get();
                 return response()->json(['data' => $data, 'modal' => 'true', 'saldo' => $totalSaldo]);
-            } else {
+            }
+             elseif ($request->month !== null)
+            {
+                $monthNumber = Carbon::parse($request->month)->format('m');
+                $data = Keuangan::with('user')
+                    ->whereMonth('created_at', $monthNumber)
+                    ->get();
+                if($request->year !== null){
+                    $data = Keuangan::with('user')
+                    ->whereMonth('created_at', $monthNumber)
+                    ->whereYear('created_at', $request->year)
+                    ->get();
+                }
+
+                return response()->json(['data' => $data, 'saldo' => $totalSaldo]);
+            }
+             elseif ($request->year !== null)
+            {
+                $data = Keuangan::with('user')
+                    ->whereYear('created_at', $request->year)
+                    ->get();
+
+                return response()->json(['data' => $data, 'saldo' => $totalSaldo]);
+            }
+            else
+            {
                 $data = Keuangan::with('user')->get();
                 return response()->json(['data' => $data, 'saldo' => $totalSaldo]);
             }

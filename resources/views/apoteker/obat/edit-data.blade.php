@@ -37,7 +37,7 @@
                                 <span class="float-right" data-toggle="tooltip"
                                     title="Digunakan Untuk Identifier Sebuah Produk"><i
                                         class="icon-copy dw dw-question font-20"></i></span>
-                                <select class="custom-select2 form-control" name="golongan" id="golongan"
+                                <select class="form-control" name="golongan" id="golongan"
                                     multiple="multiple" style="width: 100%" disabled>
                                     @foreach ($golongan as $golonganItem)
                                         <option value="{{ $golonganItem->id }}"
@@ -63,11 +63,12 @@
                                 <span class="float-right" data-toggle="tooltip"
                                     title="Digunakan Untuk Identifier Sebuah Produk"><i
                                         class="icon-copy dw dw-question font-20"></i></span>
-                                <select name="supplier" id="supplier" class="custom-select2 form-control" style="width: 100%;" required disabled>
+                                <select name="supplier" id="supplier" class="form-control" style="width: 100%;" required disabled>
                                     <option value="">Pilih Supplier</option>
                                     @foreach ($pemasok as $pemasokItem)
-                                        <option value="{{ $pemasokItem->id }}"
-                                            @if($pemasokItem->id === json_decode($item['supplier_id']))
+                                    <option value="{{ $pemasokItem->id }}"
+                                        {{-- @dd($pemasokItem->id) --}}
+                                            @if($pemasokItem->id === $item->supplier_id)
                                             selected @endif>{{ $pemasokItem->nama }}</option>
                                     @endforeach
                                 </select>
@@ -88,7 +89,13 @@
                             </div>
                             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-3">
                                 <label for="">Satuan</label>
-                                <input type="text" name="" value="{{$item->satuan}}" id="satuan" class="form-control" disabled>
+                                <select name="" id="satuan" class="form-control" disabled>
+                                    @forelse ($satuan as $itemSatuan)
+                                        <option value="{{$itemSatuan}}" {{$itemSatuan == $item->satuan ? 'selected' : ''}}>{{$itemSatuan}}</option>
+                                     @empty
+                                        <option value=""></option>
+                                    @endforelse
+                                </select>
                             </div>
 
 
@@ -105,7 +112,7 @@
                         <div class="row mt-4">
                             <div class="col-xl-2 col-lg-6 col-md-6 col-sm-6 mb-3">
                                 <a href="/apoteker/obat/list" id="backToListBtn"
-                                    class="btn btn-secondary w-100">Kembali</a>
+                                    class="btn btn-secondary w-100" onclick="return confirm('Perubahan yang anda lakukan tidak akan disimpan')">Kembali</a>
                             </div>
                             <div class="col-xl-2 col-lg-6 col-md-6 col-sm-6 ml-auto">
                                 <button type="button" class="btn btn-primary float-right w-100" onclick="changeMode()" id="changeModeBtn">Edit</button>
@@ -119,7 +126,14 @@
     </div>
     <script>
         $().ready(function(){
+            initSel2Tags('#golongan, #supplier, #satuan');
             $('#harga').mask('000,000,000', {reverse: true});
+            $('input[type="text"]').keydown(function(e) {
+                if (e.keyCode == 13) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
         });
     </script>
     <script src="{{ asset('vendors/scripts/myScript/tambah-data.js') }}"></script>
@@ -130,8 +144,8 @@
             const title = $('#title').text('Edit Data Obat');
             const myForm = $('#createNewObatForm input, #createNewObatForm select').removeAttr('disabled');
             $('html, body').animate({ scrollTop: 0 }, 800);
-            $('#backToListBtn').attr('onclick', "alert('Perubahan yang anda Lakukan tidak Akan Disimpan !')");
         }
+
     </script>
 
 @endsection

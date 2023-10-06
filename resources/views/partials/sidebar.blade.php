@@ -1,8 +1,7 @@
-<div class="left-side-bar sidebar-light shadow">
+<div class="left-side-bar sidebar-light shadow bg-lightgreen">
     <div class="brand-logo border-0 shadow-0">
-        <a href="index.html" class="light-logo">
-            {{-- <h2 class="dark-logo">Modernics</h2> --}}
-            <h2 class="font-green">PharmaPal</h2>
+        <a href="#" class="light-logo m-0 p-0">
+            <img src="{{asset('src/images/logo-pharmapal.png')}}" style="min-width: 248px; height: 72px;" alt="">
         </a>
         <div class="close-sidebar" data-toggle="left-sidebar-close">
             <i class="ion-close-round"></i>
@@ -64,16 +63,16 @@
                     </li>
                     <li class="drowpdown">
                         <a href="/apoteker/resep/list"
-                            class="dropdown-toggle no-arrow {{ $title == 'Daftar Resep Masuk' ? 'active' : '' }}">
+                            class="dropdown-toggle no-arrow {{ $title == 'Daftar Resep Masuk' || $title == 'Buat Resep' ? 'active' : '' }}">
                             <span class="micon icon-copy dw dw-newspaper"></span><span
                                 class="mtext">Resep</span>
                         </a>
                     </li>
                     <li class="drowpdown">
                         <a href="/apoteker/user/list"
-                            class="dropdown-toggle no-arrow {{ $title == 'Daftar User' ? 'active' : '' }}">
+                            class="dropdown-toggle no-arrow {{ $title == 'Daftar Anggota' ? 'active' : '' }}">
                             <span class="micon icon-copy fa fa-address-book-o"></span><span
-                                class="mtext">User</span>
+                                class="mtext">Anggota</span>
                         </a>
                     </li>
                     <li class="drowpdown">
@@ -101,7 +100,7 @@
         </div>
     @endif
 
-    @if (auth()->user()->level === 'Kasir')
+    {{-- @if (auth()->user()->level === 'Kasir')
         <div class="menu-block customscroll mt-4">
             <div class="sidebar-menu">
                 <ul id="accordion-menu">
@@ -121,13 +120,12 @@
                         </a>
                         <ul class="submenu">
                             <li><a href="/kasir/pasien/list" class="{{ $title == 'Daftar Pasien' ? 'active' : '' }}">Daftar Pasien</a></li>
-                            {{-- <li><a href="/kasir/pasien/kartu" class="{{ $title == 'Kartu Pasien' ? 'active' : '' }}">Kartu Pasien</a></li> --}}
                         </ul>
                     </li>
 
                 </ul>
             </div>
         </div>
-    @endif
+    @endif --}}
 </div>
 

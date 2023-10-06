@@ -4,7 +4,7 @@
         <div class="title pb-20">
             <h2 class="h3 mb-0">{{ $title }}</h2>
         </div>
-
+{{-- @dd($satuan) --}}
         <div class="card-box mb-30">
             <form id="createNewObatForm" onsubmit="submitNewObat(event, '/apoteker/obat/create/store')"
                 enctype="multipart/form-data">
@@ -35,7 +35,7 @@
                             <span class="float-right" data-toggle="tooltip"
                                 title="Digunakan Untuk Identifier Sebuah Produk"><i
                                     class="icon-copy dw dw-question font-20"></i></span>
-                            <select class="custom-select2 form-control" name="golongan_id" id="golongan"
+                            <select class="form-control" name="golongan_id" id="golongan"
                                 multiple="multiple" style="width: 100%">
                                 @foreach ($golongan as $item)
                                     <option value="{{ $item->id }}">{{ $item->golongan }}</option>
@@ -59,8 +59,8 @@
                             <span class="float-right" data-toggle="tooltip"
                                 title="Digunakan Untuk Identifier Sebuah Produk"><i
                                     class="icon-copy dw dw-question font-20"></i></span>
-                            <select name="supplier" id="supplier" class="form-control">
-                                <option value="" selected>Pilih Supplier</option>
+                            <select name="supplier" id="supplier" style="width: 100%;" class="form-control">
+                                <option value=""></option>
                                 @foreach ($pemasok as $item)
                                     <option value="{{ $item->id }}">{{ $item->nama }}</option>
                                 @endforeach
@@ -72,7 +72,7 @@
                                 title="Digunakan Untuk Identifier Sebuah Produk"><i
                                     class="icon-copy dw dw-question font-20"></i></span>
                             <input class="form-control" name="stok" id="stok" placeholder="Stok Awal"
-                                type="number" />
+                                type="number"/>
                         </div>
                     </div>
                     <div class="row my-3">
@@ -90,7 +90,14 @@
                     <div class="row my-3">
                         <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-3">
                             <label for="">Satuan</label>
-                            <input type="text" name="" id="satuan" class="form-control">
+                            <select name="" id="satuan" class="form-control">
+                                    <option value=""></option>
+                                @forelse ($satuan as $item)
+                                    <option value="{{$item}}">{{$item}}</option>
+                                @empty
+                                    {{-- <option value=""></option> --}}
+                                @endforelse
+                            </select>
                         </div>
                         <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-3">
                             <label for="">Harga</label>
@@ -115,9 +122,22 @@
 
     <script>
         $().ready(function() {
+            $('#createNewObatForm input').attr('required','required');
+            $('#createNewObatForm select').attr('required','required');
             $('#harga').mask('000.000.000', {
                 reverse: true
             });
+            $('input[type="text"]').keydown(function(e) {
+                if (e.keyCode == 13) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+            initSel2Tags('#golongan, #supplier, #satuan');
         });
+
+
+
+
     </script>
 @endsection

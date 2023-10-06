@@ -28,7 +28,8 @@
                 <table class="data-table table nowrap" id="myObatTable">
                     <thead>
                         <tr>
-                            <th class="table-plus datatable-nosort">Kode</th>
+                            <th>No</th>
+                            <th>Kode</th>
                             <th>Nama Obat</th>
                             <th>Kategori</th>
                             <th>Stock</th>
@@ -56,32 +57,31 @@
             url: url,
             type: 'GET',
             success: function(response) {
-                updateTable('#myObatTable', response.data, [{
-                        title: "Kode",
+                updateTable('#myObatTable', response.data, [
+                    {
+                        render: function(data, type, row, meta){
+                            return meta.row + meta.settings._iDisplayStart + 1;
+                        }
+                    },
+                    {
                         data: "kode"
                     },
                     {
-                        title: "Nama Obat",
                         data: "namaProduk"
                     },
                     {
-                        title: "Kategori",
                         data: "golongan"
                     },
                     {
-                        title: "Satuan",
-                        data: "satuan"
-                    },
-                    {
-                        title: "Stok",
                         data: "stok"
                     },
                     {
-                        title: "Supplier",
+                        data: "satuan"
+                    },
+                    {
                         data: "supplier"
                     },
                     {
-                        title: "Action",
                         render: function(data, type, row) {
                             // Masukkan kode HTML aksi sesuai kebutuhan
                             return `

@@ -30,45 +30,44 @@
         <div class="card-box mb-30">
             <div class="pd-20">
                 <div class="font-weight-bold font-20">Tabel Penjualan</div>
+                        <div class="row mt-3">
+                            <div class="col-lg-8 font-20">
+                                Urutkan Per
+                            </div>
+
+                            <div class="col-lg-4 d-flex">
+                                <select name="" id="orByMo" class="form-control mx-1" onchange="refreshTable()">
+                                    <option value="">Bulan</option>
+                                    @foreach ($perBulan as $key => $item)
+                                        <option value="{{$key}}">{{$key}}</option>
+                                    @endforeach
+                                </select>
+
+
+                                <select name="" id="orByYear" class="form-control mx-1" onchange="refreshTable()">
+                                    <option value="">Tahun</option>
+                                    @foreach ($yearOption as $key => $item)
+                                        <option value="{{$key}}">{{$key}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
+                </div>
                 <div class="pb-20">
-                    <table class="data-table table nowrap">
+                    <table class="data-table table nowrap" id="myPenjualanTable">
                         <thead>
                             <tr>
-                                <th class="table-plus datatable-nosort">No</th>
+                                <th class="table-plus">No</th>
                                 <th>Tanggal</th>
                                 <th>Nama Pasien</th>
                                 <th>Kode Transaksi</th>
                                 <th>Total</th>
-                                <th class="datatable-nosort">Action</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($datas as $item)
-                                <tr>
-                                    <td class="table-plus datatable-nosort">{{ $loop->iteration }}</td>
-                                    <td>{{ $item->created_at->format('d/m/Y') }}</td>
-                                    <td>{{ isset($item->pasien->nama) ? $item->pasien->nama : 'Data Pasien tidak tersedia' }}</td>
-                                    <td>{{ $item->kodePenjualan }}</td>
-                                    <td>@currency($item->subtotal)</td>
-                                    <td>
-                                        <div class="dropdown">
-                                            <a class="btn btn-link font-24 p-0 line-height-1 no-arrow dropdown-toggle"
-                                                href="#" role="button" data-toggle="dropdown">
-                                                <i class="dw dw-more"></i>
-                                            </a>
-                                            <div class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list">
-                                                <a class="dropdown-item"
-                                                    onclick="invoiceModal('{{ $item->kodePenjualan }}')">
-                                                    <i class="dw dw-invoice"></i> Invoice
-                                                </a>
-                                                <a class="dropdown-item text-danger"
-                                                    onclick="deleteDataObat('${row.kode}')"><i class="dw dw-delete-3"></i>
-                                                    Delete</a>
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endforeach
+
                         </tbody>
 
                     </table>
@@ -197,9 +196,8 @@
         } else {
             getDataPenjualan(value);
         }
-        console.log(value);
+        // console.log(value);
     }
-
 
     function invoiceModal(kode) {
         $.ajax({
@@ -214,6 +212,74 @@
             error: function(error, xhr) {
                 console.error(error);
                 console.log(xhr.responseText);
+            }
+        });
+    }
+
+    function refreshTable(){
+        let bulan = $('#orByMo').val();
+        let tahun = $('#orByYear').val();
+        $.ajax({
+            method: 'GET',
+            url: '/apoteker/laporan/penjualan/get',
+            data: {
+                month: bulan,
+                year: tahun
+            },
+            success: function(response){
+                // console.log(response.data);
+                printable('#myPenjualanTable', response.data, [
+                    {
+                        render: function(data, type, row, meta){
+                            return meta.row + meta.settings._iDisplayStart + 1
+                        }
+                    },
+                    {
+                        render: function(data, type, row){
+                            return moment(`${row.created_at}`).format(
+                                'DD/MM/YYYY'
+                            );
+                        }
+                    },
+                    {
+                        data: 'pasien.nama'
+                    },
+                    {
+                        data: 'kodePenjualan'
+                    },
+                    {
+                        render: function(data, type, row){
+                            return formatCurrency(`${row.subtotal}`);
+                        }
+                    },
+                    {
+                        render: function(data, type, row){
+                            return `
+                            <div class="dropdown">
+                                <a class="btn btn-link font-24 p-0 line-height-1 no-arrow dropdown-toggle"
+                                    href="#" role="button" data-toggle="dropdown">
+                                    <i class="dw dw-more"></i>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list">
+                                    <a class="dropdown-item"
+                                        onclick="invoiceModal('${row.kodePenjualan}')">
+                                        <i class="dw dw-invoice"></i> Invoice
+                                    </a>
+                                    <a class="dropdown-item text-danger"
+                                        onclick="deleteDataObat('${row.kodePenjualan}')"><i class="dw dw-delete-3"></i>
+                                        Delete</a>
+                                </div>
+                            </div>
+                              `;
+
+                        }
+                    }
+                ]);
+            },
+            error: function(error, xhr){
+                console.log(error.message);
+                // console.log(xhr.responseText);
+                errorAlert(xhr.responseText);
             }
         });
     }

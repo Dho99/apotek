@@ -8,19 +8,6 @@ use Illuminate\Support\Carbon;
 
 class UserController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function apotekerIndex()
-    {
-        return view('apoteker.dokter.list', [
-            'title' => 'Daftar Dokter',
-            'dokter' => User::where('level', 0)->get(),
-            'kategoriDokter' => User::where('level', '0')
-                ->groupBy('kategoriDokter')
-                ->get(),
-        ]);
-    }
 
     public function apotekerGetAllDokterAjax(Request $request)
     {
@@ -82,8 +69,6 @@ class UserController extends Controller
                 User::create($data);
                 return response()->json(['message' => 'Data User '.$data['nama'].' Berhasil di Simpan']);
             }
-
-            // return response()->json(['data' => $hasil]);
         } else {
             abort(400);
         }
@@ -99,13 +84,10 @@ class UserController extends Controller
         }
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function apotekerListPasien()
     {
         return view('apoteker.user.list', [
-            'title' => 'Daftar User',
+            'title' => 'Daftar Anggota',
             'datas' => User::all(),
             'kategoriUser' => User::groupBy('level')
                 ->orderBy('level', 'asc')

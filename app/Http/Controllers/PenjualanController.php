@@ -21,10 +21,12 @@ class PenjualanController extends Controller
     {
         return view('apoteker.laporan.penjualan', [
             'title' => 'Laporan Penjualan',
-            'yearOption' => Penjualan::orderBy('created_at','desc')->get()->groupBy(function($item){
-                return $item->created_at->format('Y');
+            'yearOption' => Penjualan::orderBy('created_at','asc')->get()->groupBy(function($item){
+                return Carbon::parse($item->created_at)->format('Y');
             }),
-            'datas' => Penjualan::with('pasien')->orderBy('created_at','desc')->get()
+            'perBulan' => Penjualan::orderBy('created_at','asc')->get()->groupBy(function($item){
+                return Carbon::parse($item->created_at)->format('F');
+            }),
         ]);
     }
 
@@ -34,7 +36,7 @@ class PenjualanController extends Controller
     public function getDataPenjualan(Request $request, $year)
     {
         if ($request->ajax()) {
-            $data = Penjualan::whereYear('created_at' , $year )->get(['jumlah', 'subtotal','created_at'])->groupBy(function ($date) {
+            $data = Penjualan::orderBy('created_at','asc')->whereYear('created_at' , $year )->get(['jumlah', 'subtotal','created_at'])->groupBy(function ($date) {
                 return Carbon::parse($date->created_at)->format('F');
             });
             return response()->json(['data' => $data]);
@@ -42,19 +44,6 @@ class PenjualanController extends Controller
             abort(400);
         }
     }
-
-    // public function store(Request $request)
-    // {
-    //     if($request->ajax()){
-    //         return response()->json(['data' => $request->all()]);
-    //     }else{
-    //         return response(400);
-    //     }
-    // }
-
-    /**
-     * Store a newly created resource in storage.
-     */
 
 
 
@@ -98,7 +87,7 @@ class PenjualanController extends Controller
                         'updated_at' => Carbon::now()
                     ]);
 
-                    event(new UserNotification('Apoteker telah selesai memproses Resep '.$request->kodeResep, auth()->user(), '/kasir/resep/konfirmasi', '2', 'Selesaikan Resep'));
+                    // event(new UserNotification('Apoteker telah selesai memproses Resep '.$request->kodeResep, auth()->user(), '/kasir/resep/konfirmasi', '2', 'Selesaikan Resep'));
                 }else{
                     return response('Data resep tidak ditemukan', 404);
                 }
@@ -117,11 +106,15 @@ class PenjualanController extends Controller
 
             foreach ($stokProduk as $produk) {
                 $pengurangan = $produk->stok;
-                foreach (json_decode($request->jumlah) as $jumlahProduk) {
-                    $pengurangan -= $jumlahProduk;
+                if($stokProduk > json_decode($request->jumlah)){
+                    foreach (json_decode($request->jumlah) as $jumlahProduk) {
+                        $pengurangan -= $jumlahProduk;
+                    }
+                    $hasilPengurangan[] = $pengurangan;
+                    $produk->update(['stok' => $pengurangan]);
+                }else{
+                    return response('Stok tidak Cukup', 400);
                 }
-                $hasilPengurangan[] = $pengurangan;
-                $produk->update(['stok' => $pengurangan]);
             }
 
             $data = [
@@ -133,7 +126,7 @@ class PenjualanController extends Controller
                 'dsc' => $request->dsc,
                 'kategoriPenjualan' => $request->kategoriPenjualan,
                 'harga' => json_encode($hargaProduk),
-                'jumlah' => json_encode($request->jumlah),
+                'jumlah' => $request->jumlah,
                 'subtotal' => $request->subtotal,
             ];
 
@@ -187,9 +180,33 @@ class PenjualanController extends Controller
 
 
 
-    public function show(Penjualan $penjualan)
+    public function show(Request $request)
     {
-        //
+        if($request->ajax()){
+            $currentMonth = Carbon::now()->format('m');
+            $currentYear = Carbon::now()->format('Y');
+            if($request->month !== null){
+                $monthNum = Carbon::parse($request->month)->format('m');
+                $data = Penjualan::whereMonth('created_at', $monthNum)->with('pasien')->get();
+                if($request->year !== null){
+                    $data = Penjualan::whereMonth('created_at', $monthNum)
+                            ->whereYear('created_at', $request->year)
+                            ->with('pasien')
+                            ->get();
+                }
+            }elseif($request->year !== null){
+                $data = Penjualan::whereYear('created_at', $request->year)
+                        ->with('pasien')
+                        ->get();
+            }else{
+                $data = Penjualan::whereMonth('created_at', $currentMonth)
+                    ->whereYear('created_at', $currentYear)
+                    ->with('pasien')->get();
+            }
+            return response()->json(['data' => $data]);
+        }else{
+            return response('Server Disconnected', 400);
+        }
     }
 
     /**

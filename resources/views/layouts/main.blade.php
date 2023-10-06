@@ -14,21 +14,11 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" type="text/css" href="{{ asset('vendors/styles/core.css') }}" />
     <link rel="stylesheet" type="text/css" href="{{ asset('vendors/styles/icon-font.min.css') }}" />
-    <link rel="stylesheet" type="text/css"
-        href="{{ asset('src/plugins/datatables/css/dataTables.bootstrap4.min.css') }}" />
-    <link rel="stylesheet" type="text/css"
-        href="{{ asset('src/plugins/datatables/css/responsive.bootstrap4.min.css') }}" />
     <link rel="stylesheet" type="text/css" href="{{ asset('vendors/styles/style.min.css') }}" />
-    <link rel="stylesheet" type="text/css"
-        href="{{ asset('src/plugins/datatables/css/dataTables.bootstrap4.min.css') }}" />
-    <link rel="stylesheet" type="text/css"
-        href="{{ asset('src/plugins/datatables/css/responsive.bootstrap4.min.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ asset('src/plugins/datatables/css/dataTables.min.css') }}" />
     <link rel="stylesheet" type="text/css" href="{{ asset('src/plugins/sweetalert2/sweetalert2.css') }}" />
-    {{-- <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" /> --}}
-    {{-- SwiperCDN --}}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
     <link rel="stylesheet" href="{{ asset('vendors/styles/pagination.css') }}">
-    {{-- @vite('resources/css/app.css') --}}
 </head>
 
 
@@ -85,46 +75,39 @@
     <script src="{{ asset('vendors/scripts/core.js') }}"></script>
     <script src="{{ asset('vendors/scripts/script.min.js') }}"></script>
     <script src="{{ asset('vendors/scripts/layout-settings.js') }}"></script>
-    <script src="{{ asset('src/plugins/datatables/js/jquery.dataTables.min.js') }}"></script>
-    <script src="{{ asset('src/plugins/datatables/js/dataTables.bootstrap4.min.js') }}"></script>
-    <script src="{{ asset('src/plugins/datatables/js/dataTables.responsive.min.js') }}"></script>
-    <script src="{{ asset('src/plugins/datatables/js/responsive.bootstrap4.min.js') }}"></script>
-    <script src="{{ asset('src/plugins/datatables/js/dataTables.buttons.min.js') }}"></script>
-    <script src="{{ asset('src/plugins/datatables/js/buttons.bootstrap4.min.js') }}"></script>
-    <script src="{{ asset('src/plugins/datatables/js/buttons.print.min.js') }}"></script>
-    <script src="{{ asset('src/plugins/datatables/js/buttons.html5.min.js') }}"></script>
+    <script src="{{ asset('src/plugins/datatables/js/dataTables.min.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
     <script src="{{ asset('src/plugins/sweetalert2/sweetalert2.all.js') }}"></script>
     <script src="{{ asset('src/plugins/apexcharts/apexcharts.min.js') }}"></script>
     <script src="{{ asset('vendors/scripts/myScript/jquery.mask.min.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
 
-    {{-- @vite('resources/js/bootstrap.js') --}}
+    @vite(['resources/js/app.js'])
     @php
         $level = \App\Models\User::where('id', auth()->user()->id)
             ->pluck('level')
             ->first();
     @endphp
     <script>
+        function initSel2Tags(arg){
+            $(arg).select2({
+                tags: true,
+                placeholder: 'Pilih opsi berikut atau tambahkan opsi baru'
+            });
+        }
         $().ready(function() {
+            refreshTable();
             let level = '{{ $level }}';
 
             const public = Echo.channel('public-notif');
 
-            public.subscribed(() => {
-                console.log('yahh');
-            }).listen('.notif-msg', (event) => {
-                console.log(event);
+            public.subscribed(() => {}).listen('.notif-msg', (event) => {
                 appendNotif(event.user.nama, event.message);
             });
 
-
-
             const channel = Echo.private('private.notif.' + level);
 
-            channel.subscribed(() => {
-                console.log('Cyka Blyat');
-            }).listen('.notif-msg', (event) => {
+            channel.subscribed(() => {}).listen('.notif-msg', (event) => {
                 console.log(event);
                 const user = event.user;
                 const message = event.message;
@@ -168,10 +151,69 @@
 
         });
     </script>
-
-
-
     <script>
+        function printable(table, data, column) {
+            $(table).empty();
+            $(table).DataTable({
+                data: data,
+                responsive: true,
+                searching: true,
+                destroy: true,
+                columns: column,
+                autoWidth: false,
+                columnDefs: [{
+                    targets: "_all",
+                    defaultContent: ""
+                }],
+                "language": {
+                    paginate: {
+                        next: '<i class="ion-chevron-right"></i>',
+                        previous: '<i class="ion-chevron-left"></i>'
+                    }
+                },
+                "lengthMenu": [
+                    [25, 50, 100, 125, -1],
+                    [25, 50, 100, 125, "All"]
+                ],
+                dom: 'Bfrtip',
+                buttons: [
+                    {
+                        extend: 'colvis',
+                        titleAttr: 'Kustomisasi Tampilan tabel untuk di export'
+                    },
+                    {
+                        extend: 'copy',
+                        text: 'Copy',
+                        exportOptions: {
+                            columns: ':visible',
+                        }
+                    },{
+                        extend: 'excel',
+                        text: 'Excel',
+                        exportOptions: {
+                            columns: ':visible'
+                        },
+                    },{
+                        extend: 'pdf',
+                        text: 'PDF',
+                        exportOptions: {
+                            columns: ':visible'
+                        }
+                    },{
+                        extend: 'print',
+                        text: 'Print',
+                        exportOptions: {
+                            columns: ':visible'
+                        }
+                    },
+                ],
+                error: function(error, xhr) {
+                    console.error(error);
+                    console.log(xhr.responseText);
+                }
+            }).draw();
+        }
+
         function updateTable(table, data, column) {
             $(table).empty();
             $(table).DataTable({
@@ -181,17 +223,25 @@
                 destroy: true,
                 columns: column,
                 autoWidth: false,
+                columnDefs: [{
+                    targets: "_all",
+                    defaultContent: ""
+                }],
                 "language": {
                     paginate: {
                         next: '<i class="ion-chevron-right"></i>',
                         previous: '<i class="ion-chevron-left"></i>'
                     }
                 },
+                "lengthMenu": [
+                    [25, 50, 100, 125, -1],
+                    [25, 50, 100, 125, "All"]
+                ],
                 error: function(error, xhr) {
                     console.error(error);
                     console.log(xhr.responseText);
                 }
-            }).draw();
+            });
         }
 
         function ajaxUpdate(url, method, dataForm) {
@@ -206,10 +256,7 @@
                 cache: false,
                 data: dataForm,
                 success: function(response) {
-                    console.log(response.data);
-                    if (response.fail) {
-                        errorAlert(response.fail);
-                    }
+                    // console.log(response.data);
                     successAlert(response.message);
                     emptyModal();
                     refreshTable();
@@ -236,10 +283,6 @@
             });
         }
 
-        // function unmask(arg){
-        //     return arg.cleanVal();
-        // }
-
         function changeToEdit(arg) {
             $('.btn.btn-info.ml-auto').addClass('d-none');
             $('#updateBtn').removeClass('d-none');
@@ -253,7 +296,7 @@
         }
 
         function printInvoice() {
-            const modal = $('.modal-content');
+            let modal = $('modal-content');
             window.print(modal);
             emptyModal();
         }
@@ -268,8 +311,8 @@
                     orderable: false,
                 }],
                 "lengthMenu": [
-                    [10, 25, 50, -1],
-                    [10, 25, 50, "All"]
+                    [25, 50, 100, 125, -1],
+                    [25, 50, 100, 125, "All"]
                 ],
                 "language": {
                     "info": "_START_-_END_ of _TOTAL_ entries",
@@ -354,10 +397,13 @@
                         colors: ['transparent']
                     },
                     xaxis: {
-                        categories: []
+                        categories: [],
                     },
                     fill: {
                         opacity: 1
+                    },
+                    tooltip: {
+                        y: {},
                     },
                 };
                 let chart = new ApexCharts(document.querySelector("#chart3"), options3);
@@ -369,11 +415,11 @@
                         url: '/apoteker/laporan/penjualan/get/' + getDataByYear,
                         method: 'GET',
                         success: function(response) {
+                            console.log(response.data);
                             serverData = ({
                                 bulan: Object.keys(response.data),
                                 data: Object.values(response.data),
                             });
-
 
                             let serverDataExtracted = ({
                                 jumlah: {},
@@ -389,15 +435,35 @@
                                 serverDataExtracted.jumlah[month] = dataForMonth.length;
                                 serverDataExtracted.subtotal[month] = subtotal;
                             }
-                            console.log(serverDataExtracted);
+
                             chart.updateSeries([{
-                                name: 'Penjualan',
-                                data: Object.values(serverDataExtracted.jumlah)
-                            }]);
+                                data: Object.values(serverDataExtracted.jumlah),
+                            }, ]);
                             chart.updateOptions({
                                 xaxis: {
                                     categories: Object.keys(serverDataExtracted.jumlah)
-                                }
+                                },
+                                tooltip: {
+                                    y: {
+                                        formatter: function(value, {
+                                            series,
+                                            seriesIndex,
+                                            dataPointIndex,
+                                            w
+                                        }) {
+                                            // Tambahkan data tambahan dari serverDataExtracted.subtotal ke tooltip
+                                            return "Jumlah: " + value + "<br>" + "Total: " + formatCurrency(
+                                                serverDataExtracted.subtotal[w.config.xaxis.categories[
+                                                    dataPointIndex]]);
+                                        },
+                                        title: {
+                                            formatter: function() {
+                                                return ''
+                                            },
+                                        },
+                                    },
+
+                                },
                             });
 
                         },
