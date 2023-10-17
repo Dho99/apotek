@@ -9,7 +9,7 @@ use App\Models\Keuangan;
 use App\Models\Penjualan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use App\Events\UserNotification;
+// use App\Events\UserNotification;
 use Illuminate\Support\Str;
 
 class PenjualanController extends Controller
@@ -74,17 +74,18 @@ class PenjualanController extends Controller
                 ]);
 
                 $pasien_id = $newPasien->id;
-                $dokter_id = 0;
+                // $dokter_id = 0;
             }
 
 
             if($request->kategoriPenjualan === 'Resep'){
-                $dataResep = Resep::where('kode', $request->kodeResep);
+                $dataResep = Resep::where('kode', $request->kodeResep)->first();
                 if(isset($dataResep)){
                     $dataResep->update([
                         'isProceedByApoteker' => '1',
                         'apoteker_id' => auth()->user()->id,
-                        'updated_at' => Carbon::now()
+                        'updated_at' => Carbon::now(),
+                        'isSuccess' => '1',
                     ]);
 
                     // event(new UserNotification('Apoteker telah selesai memproses Resep '.$request->kodeResep, auth()->user(), '/kasir/resep/konfirmasi', '2', 'Selesaikan Resep'));
@@ -121,7 +122,7 @@ class PenjualanController extends Controller
                 'kodePenjualan' => $request->kodePenjualan,
                 'produk_id' => json_encode($produk_id),
                 'apoteker_id' => auth()->user()->id,
-                'dokter_id' => $dokter_id,
+                'dokter_id' => isset($dokter_id) ? $dokter_id : 0,
                 'pasien_id' => $pasien_id,
                 'dsc' => $request->dsc,
                 'kategoriPenjualan' => $request->kategoriPenjualan,
@@ -172,7 +173,7 @@ class PenjualanController extends Controller
                 ];
             }
 
-            return response()->json(['data' => $dataInvoice]);
+            return response()->json(['data' => $dataInvoice], 200);
         }else{
             abort(400);
         }

@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Kategori;
 use Illuminate\Http\Request;
-use App\Events\UserNotification;
+// use App\Events\UserNotification;
 
 class KategoriController extends Controller
 {
@@ -33,14 +33,14 @@ class KategoriController extends Controller
             ];
             if(isset($data)){
                 Kategori::where('golongan', $request->kategori)->update($form);
-                event(new UserNotification(auth()->user()->nama.' Memperbarui data kategori '.$request->kategori, auth()->user()));
+                // event(new UserNotification(auth()->user()->nama.' Memperbarui data kategori '.$request->kategori, auth()->user()));
                 return response()->json(['message' => 'Data kategori '.$request->kategori.' berhasil diperbarui']);
                 // Event for all Users
 
 
             }else{
                 Kategori::create($form);
-                event(new UserNotification(auth()->user()->nama.' Membuat data kategori '.$request->kategori, auth()->user()));
+                // event(new UserNotification(auth()->user()->nama.' Membuat data kategori '.$request->kategori, auth()->user()));
                 return response()->json(['message' => 'Data kategori '.$request->kategori.' berhasil disimpan']);
             }
         }else{
@@ -101,7 +101,7 @@ class KategoriController extends Controller
     public function deleteKategori(Request $request, $golongan)
     {
         if($request->ajax()){
-            event(new UserNotification(auth()->user()->nama.' Menghapus data kategori '.Kategori::where('golongan', $golongan)->pluck('golongan')->first(), auth()->user()));
+            // event(new UserNotification(auth()->user()->nama.' Menghapus data kategori '.Kategori::where('golongan', $golongan)->pluck('golongan')->first(), auth()->user()));
             Kategori::where('golongan', $golongan)->delete();
             return response()->json(['message' => 'Data kategori '.$golongan.' berhasil dihapus']);
         }else{

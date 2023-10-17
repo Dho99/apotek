@@ -8,7 +8,7 @@ use App\Models\Keuangan;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use App\Events\UserNotification;
+// use App\Events\UserNotification;
 
 class ProdukController extends Controller
 {
@@ -52,30 +52,31 @@ class ProdukController extends Controller
                 return response()->json(['data' => $data]);
             } else {
                 if ($filter !== '') {
-                    $filterKategori = Kategori::where('golongan', 'like', '%' . $filter . '%')->pluck('id');
+                    $filterKategori = Kategori::where('golongan', 'like', '%' . $filter . '%')->pluck('id')->toArray();
 
                     $filterBarang = Produk::where(function ($query) use ($filterKategori) {
                         foreach ($filterKategori as $kategoriId) {
-                            $query->orWhereJsonContains('golongan_id', ["$kategoriId"]);
+                            $query->orWhereJsonContains('golongan_id', [$kategoriId]);
                         }
                     })->get();
 
+
+
                     $onlyFiltered = [];
                     foreach ($filterBarang as $item) {
-                        $golonganObatFiltered = Kategori::whereIn('id', json_decode($item['golongan_id']))
-                            ->pluck('golongan')
-                            ->toArray();
+                        $golonganObat = Kategori::whereIn('id', json_decode($item->golongan_id))
+                        ->pluck('golongan')
+                        ->toArray();
 
-                        $onlyFiltered[] = [
+                    $onlyFiltered[] = [
                             'kode' => $item->kode,
                             'namaProduk' => $item->namaProduk,
-                            'golongan' => $golonganObatFiltered,
+                            'golongan' => $golonganObat,
                             'satuan' => $item->satuan,
                             'stok' => $item->stok,
-                            'harga' => $item->harga,
                             'expDate' => $item->expDate,
                             'diprosesPada' => $item->created_at->format('d-m-Y'),
-                            'supplier' => $supplier[0],
+                            'supplier' => isset($item->supplier->nama) ? $item->supplier->nama : 'Supplier telah tidak bekerja sama',
                         ];
                     }
 
@@ -148,6 +149,7 @@ class ProdukController extends Controller
             'golongan_id' => json_encode($golongan_id),
             'expDate' => $request->expDate,
             'image' => $request->image,
+            'deskripsi' =>$request->deskripsi
         ];
 
         $validator = Validator::make($data, [
@@ -176,7 +178,7 @@ class ProdukController extends Controller
 
         } else {
             Keuangan::create([
-                'keterangan' => 'Pembelian Produk ' . $data['namaProduk'],
+                'keterangan' => 'Pembelian `Pr`oduk ' . $data['namaProduk'],
                 'jumlah' => $total,
                 'user_id' => auth()->user()->id,
                 'saldo' => $saldo - $total,
@@ -188,7 +190,7 @@ class ProdukController extends Controller
             $submit = Produk::create($validatedData);
 
             // event for All Users
-            event(new UserNotification('Apoteker '.auth()->user()->nama.' berhasil Menambahkan data Obat '.$request->namaProduk, auth()->user()));
+            // event(new UserNotification('Apoteker '.auth()->user()->nama.' berhasil Menambahkan data Obat '.$request->namaProduk, auth()->user()));
 
             return response()->json(['message' => 'Data Berhasil Disimpan']);
         }
@@ -205,6 +207,21 @@ class ProdukController extends Controller
             'pemasok' => Supplier::all(),
             'satuan' => Produk::groupBy('satuan')->pluck('satuan')
         ]);
+    }
+
+
+    public function showDescription(Request $request, $kode){
+        if($request->ajax()){
+            $getData = Produk::where('kode', $kode)->pluck('deskripsi')->first();
+            if(isset($getData)){
+                $data = $getData;
+            }else{
+                return response('Data tidak ditemukan', 404);
+            }
+            return response()->json(['data' => $data]);
+        }else{
+            return response('Server Disconnected',400);
+        }
     }
 
     /**
@@ -270,7 +287,7 @@ class ProdukController extends Controller
             'supplier_id' => $supplier_id,
             'golongan_id' => $golongan_id,
             'expDate' => $request->expDate,
-            'image' => $request->image,
+            'deskripsi' => $request->deskripsi
         ];
 
         $validator = Validator::make($data, [
@@ -292,7 +309,7 @@ class ProdukController extends Controller
 
         $validatedData = $data;
         $submit = Produk::where('kode', $kode)->update($validatedData);
-        event(new UserNotification('Apoteker '.auth()->user()->nama.' berhasil Memperbarui data Obat '.$request->namaProduk, auth()->user()));
+        // event(new UserNotification('Apoteker '.auth()->user()->nama.' berhasil Memperbarui data Obat '.$request->namaProduk, auth()->user()));
         return response()->json(['message' => 'Data Berhasil Disimpan'], 200);
         // return response()->json(['data' => json_decode($cekKategori)]);
     }
@@ -302,7 +319,7 @@ class ProdukController extends Controller
      */
     public function destroy(Produk $produk, $kode)
     {
-        event(new UserNotification('Apoteker '.auth()->user()->nama.' telah Menghapus data Obat '.Produk::where('kode', $kode)->pluck('namaProduk')->first(), auth()->user()));
+        // event(new UserNotification('Apoteker '.auth()->user()->nama.' telah Menghapus data Obat '.Produk::where('kode', $kode)->pluck('namaProduk')->first(), auth()->user()));
         $data = Produk::where('kode', $kode)->delete();
         // all users event
 
@@ -347,7 +364,7 @@ class ProdukController extends Controller
                             'saldo' => $saldo - $total,
                             'kategori' => 'Kredit'
                         ]);
-                        event(new UserNotification('Apoteker '.auth()->user()->nama.' berhasil Menambahkan Stok Obat '.$stok->namaProduk, auth()->user()));
+                        // event(new UserNotification('Apoteker '.auth()->user()->nama.' berhasil Menambahkan Stok Obat '.$stok->namaProduk, auth()->user()));
                         //event for all Users
 
                         return response()->json(['message' => 'Stok berhasil Ditambahkan']);

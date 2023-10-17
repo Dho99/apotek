@@ -23,6 +23,8 @@ return new class extends Migration
             $table->text('catatan', 1000)->default(null);
             $table->boolean('isProceed')->default(0);
             $table->foreignId('apoteker_id');
+            $table->string('catatanDokter')->nullable();
+            $table->string('alasanPenolakan')->nullable();
             $table->boolean('isSuccess')->default(0);
             $table->boolean('isProceedByApoteker')->default(0);
             $table->json('satuan')->default(null);

@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Supplier;
 use Illuminate\Http\Request;
-use App\Events\UserNotification;
+// use App\Events\UserNotification;
 
 class SupplierController extends Controller
 {
@@ -51,7 +51,7 @@ class SupplierController extends Controller
                 return response()->json(['message' => 'Data Supplier '.$data['nama'].' berhasil di Simpan']);
             }
 
-            event(new UserNotification('Apoteker telah berhasil '.$action.' data Supplier '.$data['nama'], auth()->user()));
+            // event(new UserNotification('Apoteker telah berhasil '.$action.' data Supplier '.$data['nama'], auth()->user()));
 
         } else {
             abort(400);
@@ -115,7 +115,7 @@ class SupplierController extends Controller
     public function apotekerDeleteSupplier(Request $request, $kode)
     {
         if ($request->ajax()) {
-            event(new UserNotification('Apoteker berhasil menghapus data Supplier '.Supplier::where('kode', $kode)->pluck('nama')->first(), auth()->user()));
+            // event(new UserNotification('Apoteker berhasil menghapus data Supplier '.Supplier::where('kode', $kode)->pluck('nama')->first(), auth()->user()));
             Supplier::where('kode', $kode)->delete();
             //event for all users
             return response()->json(['message' => 'Data supplier ' . $kode . ' berhasil dihapus']);

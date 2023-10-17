@@ -7,7 +7,7 @@
     <title>PharmaPal | {{ $title }}</title>
 
     <!-- Site favicon -->
-    <link rel="icon" type="image/png" sizes="16x16" href="vendors/images/favicon-16x16.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="{{asset('favicon.ico')}}" />
 
     <!-- Mobile Specific Metas -->
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
@@ -59,7 +59,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row mt-3">
+                        {{-- <div class="row mt-3">
                             <div class="col-lg-12 col-md-12 col-sm-12 d-flex">
                                 <div class="input-group mb-0">
                                     <div class="forgot-password text-center m-auto">
@@ -67,7 +67,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
                     </form>
                 </div>
             </div>

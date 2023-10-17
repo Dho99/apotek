@@ -10,7 +10,7 @@
                 </span>
             </button>
         </div>
-
+        {{-- @dd($dataTerkirim) --}}
         <div class="row pb-10">
             <div class="col-xl-6 col-lg-6 col-md-12 mb-20 ">
                 <div class="card-box height-100-p widget-style3">
@@ -40,7 +40,7 @@
                                         <div class="row bg-lightgreen text-center align-items-center py-2">
                                             <div class="col-lg-1">
                                                 <div class="rounded-lg">
-                                                    {{ $loop->iteration }}
+                                                    {{ $item->kode }}
                                                 </div>
                                             </div>
                                             <div class="col-lg-4">
@@ -55,11 +55,11 @@
                                             </div>
 
                                             <div class="col-lg-4 w-50 m-auto">
-                                                @if ($item->stok < 20 && $item->stok > 10)
+                                                @if($item->stok >= 10 && $item->stok < 20)
                                                     <div class="small bg-warning text-light rounded-lg p-1">
                                                         Stok Menipis
                                                     </div>
-                                                @elseif ($item->stok < 5 && $item->stok > 1)
+                                                @elseif ($item->stok >= 1 && $item->stok < 10)
                                                     <div class="small bg-orange text-light rounded-lg p-1">
                                                         Stok Kritis
                                                     </div>
@@ -76,8 +76,8 @@
                                         </div>
                                     </div>
                                     @empty
-                                    @endforelse
-                                    <a href="/apoteker/obat/list" class="px-3 mb-4 text-dark">Lihat Selengkapnya</a>
+                                @endforelse
+                                <a href="/apoteker/obat/list" class="px-3 mb-4 text-dark">Lihat Selengkapnya</a>
 
                         </div>
 
@@ -107,17 +107,88 @@
                             </div>
 
                             {{-- @dd($data) --}}
-                            @forelse ($dataProcessed as $item)
+                            @forelse ($dataTerkirim as $item)
                                 <div class="bg-lightgreen my-3 rounded-lg">
                                     <div class="row py-1 w-100 m-auto text-center align-items-center">
                                         <div class="col-xl-1 col-md-4 col-sm-6">
                                             <div class="rounded-lg py-2">
-                                                {{ $loop->iteration }}
+                                                {{ $item->kode }}
                                             </div>
                                         </div>
                                         <div class="col-xl-3 col-md-4 col-sm-6">
                                             <div class="rounded-lg px-0 py-0">
-                                                {{ $item['created_at']->format('h:i d/m/y') }}
+                                                {{ $item->created_at->diffForHumans() }}
+                                            </div>
+                                        </div>
+                                        <div class="col-xl-4 col-md-4 col-sm-6">
+                                            <div class="rounded-lg py-2">
+                                                {{ $item->pasien->nama }}
+                                            </div>
+                                        </div>
+
+                                        <div
+                                            class="col-xl-3 col-md-4 col-sm-6 text-center small align-items-center d-flex">
+                                            <div class="rounded-lg text-light bg-green disabled p-2 m-auto">
+                                                Sedang dikirim
+                                            </div>
+                                        </div>
+                                        <div class="col-xl-1 col-md-4 col-sm-6 ">
+                                            <button class="border-0 mt-1 bg-transparent text-center text-danger font-24"
+                                            data-toggle="modal"
+                                            data-target="#detail-resep-{{ $item->kode }}"
+                                            type="button">
+                                                <i class="icon-copy dw dw-edit"></i>
+                                            </button>
+                                            <div class="modal fade bs-example-modal-lg"
+                                                id="detail-resep-{{ $item->kode }}" tabindex="-1" role="dialog"
+                                                aria-labelledby="myLargeModalLabel" aria-hidden="true">
+                                                <div class="modal-dialog modal-dialog-centered">
+                                                    <div class="modal-content text-left">
+                                                        <div class="modal-body">
+                                                            <div class="font-20 font-weight-bold text-center pb-3">
+                                                                Data Resep yang dikirimkan
+                                                            </div>
+                                                                @php
+                                                                    $now =\Illuminate\Support\Carbon::now()->format('Y');
+                                                                    $age = $now - \Illuminate\Support\Carbon::parse($item->pasien->tanggal_lahir)->format('Y');
+                                                                @endphp
+                                                            <div class="row border-bottom">
+                                                                <div class="col-lg-6">
+                                                                    <p class="font-weight-bold">Pasien</p>
+                                                                    <p class="mb-1 font-18">{{ $item->pasien->nama }}</p>
+                                                                    <p>Umur : {{$age}}</p>
+                                                                </div>
+                                                                <div class="col-lg-6 text-right">
+                                                                    <p>{{ $item->created_at->diffForHumans() }}</p>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row mt-3">
+                                                                <div class="col-lg-12">
+                                                                    <p class="font-weight-bold">Gejala</p>
+                                                                    <p class="mb-1 font-18">{{ $item->gejala }}</p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @empty
+                            @endforelse
+
+                            {{-- @forelse ($dataProcessed as $item)
+                                <div class="bg-lightgreen my-3 rounded-lg">
+                                    <div class="row py-1 w-100 m-auto text-center align-items-center">
+                                        <div class="col-xl-1 col-md-4 col-sm-6">
+                                            <div class="rounded-lg py-2">
+                                                {{ $item['kode'] }}
+                                            </div>
+                                        </div>
+                                        <div class="col-xl-3 col-md-4 col-sm-6">
+                                            <div class="rounded-lg px-0 py-0">
+                                                {{ $item['created_at']->diffForHumans() }}
                                             </div>
                                         </div>
                                         <div class="col-xl-4 col-md-4 col-sm-6">
@@ -127,15 +198,9 @@
                                         </div>
 
                                         <div class="col-xl-3 col-md-4 col-sm-6 text-center small align-items-center d-flex">
-                                            @if ($item['isProceedByApoteker'] = 1)
-                                                <div class="rounded-lg text-light bg-success p-2 m-auto">
-                                                    Sudah Dibuat
-                                                </div>
-                                            @else
-                                                <div class="rounded-lg text-light bg-danger p-2 m-auto">
-                                                    Sudah Dibuat
-                                                </div>
-                                            @endif
+                                            <div class="rounded-lg text-light bg-success p-2 m-auto">
+                                                Sudah Dibuat
+                                            </div>
                                         </div>
                                         <div class="col-xl-1 col-md-4 col-sm-6 ">
                                             <button class="border-0 mt-1 bg-transparent text-center text-danger font-24"
@@ -154,12 +219,14 @@
                                         <div class="modal-content">
                                             <div class="modal-body">
                                                 <div class="row border-bottom">
+
                                                     <div class="col-lg-6">
-                                                        <p class="mb-1 font-18">Dr. {{ $item['dokter_id'] }}</p>
-                                                        <p>{{ $item['dokter_id'] }}</p>
+                                                        <p class="mb-1 font-18">Dr. {{ $item['dokter_id']->nama }}</p>
+                                                        <p>{{ $item['dokter_id']->kategoriDokter }}</p>
+
                                                     </div>
                                                     <div class="col-lg-6 text-right">
-                                                        <p>{{ $item['created_at']->format('d:m:Y H:i') }}</p>
+                                                        <p>{{ $item['created_at']->diffForHumans() }}</p>
                                                     </div>
                                                 </div>
                                                 <div class="row my-2 border-bottom">
@@ -207,7 +274,7 @@
                                                     @csrf
                                                     @if ($item['isProceedByApoteker'] = '1')
                                                         <button type="button"
-                                                            class="btn btn-secondary disabled w-75 m-auto"
+                                                            class="btn btn-orange disabled w-75 m-auto"
                                                             data-dismiss="modal">
                                                             Resep Sudah Diproses
                                                         </button>
@@ -218,19 +285,19 @@
                                     </div>
                                 </div>
                             @empty
-                            @endforelse
+                            @endforelse --}}
 
                             @forelse ($dataNotProceed as $item)
                                 <div class="bg-lightgreen my-3 rounded-lg">
                                     <div class="row py-1 w-100 m-auto text-center align-items-center">
                                         <div class="col-xl-1 col-md-4 col-sm-6">
                                             <div class="rounded-lg py-2">
-                                                {{ count($dataProcessed) + $loop->iteration }}
+                                                {{ $item->kode }}
                                             </div>
                                         </div>
                                         <div class="col-xl-3 col-md-4 col-sm-6">
                                             <div class="rounded-lg px-0 py-0">
-                                                {{ $item->created_at->format('h:i d/m/y') }}
+                                                {{ $item->created_at->diffForHumans() }}
                                             </div>
                                         </div>
                                         <div class="col-xl-4 col-md-4 col-sm-6">
@@ -241,24 +308,25 @@
 
                                         <div
                                             class="col-xl-3 col-md-4 col-sm-6 text-center small align-items-center d-flex">
-                                            <div class="rounded-lg text-light bg-danger p-2 m-auto">
-                                                Belum dibuat
+                                            <div class="rounded-lg text-light bg-orange py-2 px-1 m-auto">
+                                                Belum diproses
                                             </div>
                                         </div>
                                         <div class="col-xl-1 col-md-4 col-sm-6 ">
                                             <button class="border-0 mt-1 bg-transparent text-center text-danger font-24"
-                                                onclick="if (confirm('Lanjut ke halaman proses resep?')) window.location.href='/apoteker/resep/antrian';">
+                                                onclick="if (confirm('Lanjut ke halaman daftar resep?')) window.location.href='/apoteker/resep/list';">
                                                 <i class="icon-copy dw dw-edit"></i>
                                             </button>
                                         </div>
                                     </div>
                                 </div>
-                                <a href="#" class="px-3 mb-4 text-dark sticky-bottom">Lihat Selengkapnya</a>
                             @empty
                             @endforelse
 
 
 
+
+                            <a href="#" class="px-3 mb-4 text-dark sticky-bottom">Lihat Selengkapnya</a>
                         </div>
                     </div>
                 </div>
@@ -272,22 +340,12 @@
                             <div class="font-20 pb-4 text-secondary weight-500">
                                 Data Dokter
                             </div>
-
-                            @if (count($isPresent) === 0)
-                                <div class="container-fluid rounded-lg py-2">
-                                    <div class="row text-center font-18">
-                                        <div class="col-12">
-
-                                        </div>
-                                    </div>
-                                </div>
-                            @endif
-                            @foreach ($isPresent as $item)
+                            @forelse ($isPresent as $item)
                                 <div class="container-fluid rounded-lg">
                                     <div class="row bg-lightgreen py-2 text-center align-items-center">
                                         <div class="col-xl-1 col-md-6">
                                             <div class=" rounded-lg text-center">
-                                                {{ $loop->iteration }}
+                                                {{ $item->kode }}
                                             </div>
                                         </div>
                                         <div class="col-xl-5 col-md-6">
@@ -302,7 +360,7 @@
                                         </div>
                                         <div class="col-xl-3 col-md-6">
                                             <div class=" rounded-lg text-center">
-                                                {{ $item->kategoriDokter }}
+                                                {{ $item->dokter->kategoriDokter }}
                                             </div>
                                         </div>
                                         <div class="col-xl-3 col-md-6 w-50 m-auto">
@@ -312,7 +370,8 @@
                                         </div>
                                     </div>
                                 </div>
-                            @endforeach
+                            @empty
+                            @endforelse
 
 
                         </div>
@@ -490,7 +549,9 @@
                     myForm.append('pasienId', $('#pasienFastTrx').val());
 
                     if(myForm){
-                        ajaxUpdate('/resep/antrian/proses/', 'POST', myForm);
+                        ajaxUpdate('/resep/antrian/proses', 'POST', myForm);
+                        let year = new Date().getFullYear();
+                        getDataPenjualan(year);
                     }else{
                         errorAlert('Gagal memproses Transaksi');
                     }

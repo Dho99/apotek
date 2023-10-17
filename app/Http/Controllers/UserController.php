@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 
@@ -49,10 +50,11 @@ class UserController extends Controller
                 $requestKategori = $request->kategori;
             }
 
+
             $data = [
                 'kode' => $request->kode,
-                'nama' => $request->nama,
-                'username' => $request->username,
+                'nama' => Str::title($request->nama),
+                'username' => Str::slug(Str::lower($request->username)),
                 'kategoriDokter' => $requestKategori,
                 'alamat' => $request->alamat,
                 'email' => $request->email,

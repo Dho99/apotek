@@ -39,7 +39,8 @@ Route::controller(DashboardController::class)->group(function () {
 });
 
 Route::controller(ProdukController::class)->group(function () {
-    Route::get('/{filter}', 'filterProduk');
+    Route::get('/obat/filter/{filter}', 'filterProduk');
+    Route::get('/obat/description/{kode}', 'showDescription');
     Route::middleware(['auth', 'user-access:Apoteker'])->group(function () {
         Route::post('/apoteker/obat/create/store/', 'store');
         Route::get('/apoteker/obat/list/delete/{kode}', 'destroy');
@@ -67,6 +68,9 @@ Route::controller(SupplierController::class)->group(function () {
 
 Route::controller(ResepController::class)->group(function () {
     Route::get('/katalog/filter/{satuan}', 'apotekerIndexFilter');
+    Route::post('/resep/reject','rejectResep');
+    Route::post('/resep/confirm','confirmResep');
+    Route::get('/resep/get/{kode}', 'getResepByKode');
 
     Route::middleware(['auth', 'user-access:Apoteker'])->group(function () {
         Route::get('/apoteker/resep/not-processed', 'notProcessedResep');
@@ -79,6 +83,7 @@ Route::controller(ResepController::class)->group(function () {
     });
     Route::middleware(['auth', 'user-access:Dokter'])->group(function () {
         Route::get('/dokter/resep/create', 'dokterCreate');
+        Route::get('/dokter/resep/list', 'dokterListResep');
         Route::get('/dokter/resep/create/getAllResep', 'getResep');
         Route::post('/dokter/resep/create/new', 'dokterStore');
     });
@@ -114,7 +119,7 @@ Route::controller(UserController::class)->group(function () {
 });
 
 Route::controller(PenjualanController::class)->group(function () {
-    Route::post('/resep/antrian/proses/', 'store');
+    Route::post('/resep/antrian/proses', 'store');
     Route::middleware(['auth', 'user-access:Apoteker'])->group(function () {
         Route::get('/apoteker/laporan/penjualan', 'index');
         Route::get('/apoteker/laporan/penjualan/get/{year}', 'getDataPenjualan');

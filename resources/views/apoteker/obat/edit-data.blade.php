@@ -97,8 +97,6 @@
                                     @endforelse
                                 </select>
                             </div>
-
-
                         </div>
                         <div class="row my-3">
                             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-3">
@@ -109,13 +107,18 @@
                                 <input type="text" name="" value="{{$item->harga}}" id="harga" class="form-control" disabled>
                             </div>
                         </div>
+                        <div class="row my-3 px-3" id="deskripsiField">
+                           <article>
+                            {!! $item->deskripsi !!}
+                           </article>
+                        </div>
                         <div class="row mt-4">
                             <div class="col-xl-2 col-lg-6 col-md-6 col-sm-6 mb-3">
                                 <a href="/apoteker/obat/list" id="backToListBtn"
-                                    class="btn btn-secondary w-100" onclick="return confirm('Perubahan yang anda lakukan tidak akan disimpan')">Kembali</a>
+                                    class="btn btn-secondary w-100 text-light">Kembali</a>
                             </div>
                             <div class="col-xl-2 col-lg-6 col-md-6 col-sm-6 ml-auto">
-                                <button type="button" class="btn btn-primary float-right w-100" onclick="changeMode()" id="changeModeBtn">Edit</button>
+                                <button type="button" class="btn btn-primary float-right w-100" id="changeModeBtn">Edit</button>
                                 <button type="submit" class="btn btn-primary float-right w-100 d-none" id="submitBtn">Simpan</button>
                             </div>
                         </div>
@@ -138,13 +141,31 @@
     </script>
     <script src="{{ asset('vendors/scripts/myScript/tambah-data.js') }}"></script>
     <script>
-        function changeMode(){
+        let isEdit;
+        $('#changeModeBtn').on('click', function(){
             const changer = $('#changeModeBtn').addClass('d-none');
             const changed = $('#submitBtn').removeClass('d-none');
             const title = $('#title').text('Edit Data Obat');
             const myForm = $('#createNewObatForm input, #createNewObatForm select').removeAttr('disabled');
             $('html, body').animate({ scrollTop: 0 }, 800);
-        }
+            isEdit = true;
+            $('#backToListBtn').removeAttr('href');
+            $('#deskripsiField').empty().append(`
+                <input id="descriptionInput" value="{{$item->deskripsi}}" placeholder="Silakan masukkan deskripsi obat disini" type="hidden" name="content">
+                <trix-editor input="descriptionInput" class="form-control rounded-0" style="height: auto;"></trix-editor>
+            `);
+        });
+
+        $('#backToListBtn').on('click', function(){
+            if(isEdit){
+                if(confirm('Perubahan yang anda buat tidak akan disimpan')){
+                    window.location.href = '/apoteker/obat/list';
+                    isEdit = false;
+                }else{
+                    alert('Anda sedang berada di mode Edit data');
+                }
+            }
+        });
 
     </script>
 

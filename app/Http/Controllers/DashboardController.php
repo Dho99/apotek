@@ -8,7 +8,7 @@ use App\Models\Produk;
 use App\Models\Keuangan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use App\Events\UserNotification;
+// use App\Events\UserNotification;
 
 class DashboardController extends Controller
 {
@@ -18,12 +18,22 @@ class DashboardController extends Controller
             ->orderBy('created_at', 'desc')
             ->get()
             ->take(3);
-        $dataNotProceed = Resep::where('isProceed' ,'1')
-            ->whereNull('apoteker_id')
+        $dataNotProceed = Resep::where([
+                'isProceed' => '1',
+                'apoteker_id' => '0',
+                'isProceedByApoteker' => '0'
+            ])
             ->with('pasien', 'dokter')
             ->orderBy('created_at', 'desc')
-            ->get()
-            ->take(2);
+            ->get();
+        $dataSend = Resep::where([
+            'dokter_id' => '0',
+            'isProceed' => '0'
+        ])
+        ->with('pasien','dokter')
+        ->orderBy('created_at','desc')
+        ->get();
+
         $decodedData = [];
 
 
@@ -52,7 +62,7 @@ class DashboardController extends Controller
                         ->first(),
                     'gejala' => $item->gejala,
                     'jumlah' => json_decode($item->jumlah, true),
-                    'dokter_id' => $dataUser->where('id', $item->dokter_id)->get('nama', 'kategoriDokter'),
+                    'dokter_id' => $dataUser->where('id', $item->dokter_id)->first(),
                     'umur' => $age,
                     'catatan' => json_decode($item->catatan),
                     'isProceed' => $item->isProceed,
@@ -67,6 +77,7 @@ class DashboardController extends Controller
             'title' => 'Dashboard',
             'dataProcessed' => $decodedData,
             'dataNotProceed' => $dataNotProceed,
+            'dataTerkirim' => $dataSend,
             'isPresent' => User::where(['level' => 0, 'isPresent' => 1])->get(),
             'obat' => Produk::all(),
             'kas' => Keuangan::orderBy('created_at', 'desc')

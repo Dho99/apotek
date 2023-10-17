@@ -90,7 +90,7 @@
                     <div class="row my-3">
                         <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-3">
                             <label for="">Satuan</label>
-                            <select name="" id="satuan" class="form-control">
+                            <select name="" id="satuan" class="form-control" style="width: 100%;">
                                     <option value=""></option>
                                 @forelse ($satuan as $item)
                                     <option value="{{$item}}">{{$item}}</option>
@@ -103,6 +103,10 @@
                             <label for="">Harga</label>
                             <input type="text" name="" id="harga" class="form-control">
                         </div>
+                    </div>
+                    <div class="row my-3 px-3">
+                        <input id="descriptionInput" value="" type="hidden" name="content">
+                        <trix-editor input="descriptionInput" placeholder="Silakan masukkan deskripsi obat disini" class="form-control rounded-0" style="height: auto;"></trix-editor>
                     </div>
                     <div class="row mt-4">
                         <div class="col-xl-2 col-lg-6 col-md-6 col-sm-6 mb-3">
@@ -135,9 +139,6 @@
             });
             initSel2Tags('#golongan, #supplier, #satuan');
         });
-
-
-
 
     </script>
 @endsection

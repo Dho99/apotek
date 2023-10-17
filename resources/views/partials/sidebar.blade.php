@@ -8,7 +8,7 @@
         </div>
     </div>
     @if (auth()->user()->level === 'Dokter')
-        <div class="menu-block customscroll">
+        <div class="menu-block customscroll mt-4">
             <div class="sidebar-menu">
                 <ul id="accordion-menu">
                     <li>

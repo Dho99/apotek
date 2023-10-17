@@ -19,8 +19,11 @@ class Resep extends Model
         'dokter_id',
         'apoteker_id',
         'isSuccess',
+        'alasanPenolakan',
         'catatan',
+        'catatanDokter',
         'isProceed',
+        'isProceedByApoteker',
         'keteranganResep'
     ];
 
@@ -43,5 +46,9 @@ class Resep extends Model
     public function obat()
     {
         return $this->belongsTo(Produk::class, 'obat_id');
+    }
+    public function apoteker()
+    {
+        return $this->belongsTo(User::class, 'apoteker_id');
     }
 }

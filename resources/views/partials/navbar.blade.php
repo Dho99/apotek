@@ -4,14 +4,13 @@
 
     </div>
     <div class="header-right">
-        <div class="dashboard-setting user-notification">
+        {{-- <div class="dashboard-setting user-notification">
             <div class="dropdown">
                 <a class="dropdown-toggle no-arrow text-dark" href="javascript:;" data-toggle="right-sidebar">
                     <i class="icon-copy dw dw-notification"></i>
-                    {{-- <span class="{{ session('notification') ? 'badge notification-active' : '' }}"></span> --}}
                 </a>
             </div>
-        </div>
+        </div> --}}
 
         <div
             class="user-info-dropdown {{ $title == 'Account Edit' || $title == 'Account Info' ? 'bg-lightgreen-sidebar' : '' }} mr-3 d-flex">

@@ -52,11 +52,12 @@
 <script>
     function refreshTable() {
         const kategori = $('#filterSupplier').val();
-        const url = '/'+kategori;
+        const url = '/obat/filter/'+kategori;
         $.ajax({
             url: url,
             type: 'GET',
             success: function(response) {
+                // console.log(response.data);
                 updateTable('#myObatTable', response.data, [
                     {
                         render: function(data, type, row, meta){

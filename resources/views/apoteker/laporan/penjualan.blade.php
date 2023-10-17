@@ -107,7 +107,6 @@
         </div>
     </div>
 </div>
-
 <script>
 
     function emptyModal() {
@@ -265,9 +264,6 @@
                                         onclick="invoiceModal('${row.kodePenjualan}')">
                                         <i class="dw dw-invoice"></i> Invoice
                                     </a>
-                                    <a class="dropdown-item text-danger"
-                                        onclick="deleteDataObat('${row.kodePenjualan}')"><i class="dw dw-delete-3"></i>
-                                        Delete</a>
                                 </div>
                             </div>
                               `;
@@ -284,3 +280,4 @@
         });
     }
 </script>
+

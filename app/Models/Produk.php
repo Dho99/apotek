@@ -20,6 +20,7 @@ class Produk extends Model
         'golongan_id',
         'expDate',
         'image',
+        'deskripsi',
     ];
 
 
