@@ -126,6 +126,7 @@ class ResepController extends Controller
     public function dokterListResep()
     {
         $data = Resep::orderBy('created_at', 'desc')
+            ->where('dokter_id', '!=', 0)
             ->with('pasien', 'dokter', 'apoteker')
             ->paginate(10);
 
@@ -154,6 +155,7 @@ class ResepController extends Controller
             if (count(array_unique($request->obatId)) < count($request->obatId)) {
                 return response('Gagal menyimpan resep karena duplikasi data', 500);
             } else {
+                // return response()->json(['data' => $request->all()], 200);
                 $check = Resep::where('kode', $request->kode)->first();
                 $item = Produk::whereIn('id', $request->obatId)
                     ->pluck('satuan')
@@ -169,7 +171,7 @@ class ResepController extends Controller
                         'isProceed' => 1,
                         'dokter_id' => auth()->user()->id,
                         'alasanPenolakan' => '',
-                        'catatanDokter' => $request->catatanDokter,
+                        'catatanDokter' => isset($request->catatanDokter) ? $request->catatanDokter : $check->catatanDokter,
                     ];
 
                     $updatedData = Resep::where('kode', $request->kode)->update($data);
@@ -213,6 +215,7 @@ class ResepController extends Controller
                 'kode' => $request->kode,
                 'pasien_id' => $pasienId,
                 'gejala' => $request->gejala,
+                'apoteker_id' => auth()->user()->id
             ];
             // event(new UserNotification('Terdapat permintaan Resep baru '.$data['kode'], auth()->user(), '/dokter/resep/create', '0', 'Buat Sekarang'));
             Resep::create($data);

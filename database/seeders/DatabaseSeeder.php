@@ -46,5 +46,6 @@ class DatabaseSeeder extends Seeder
             'tanggal_lahir' => fake()->dateTimeThisDecade()
         ]);
 
+
     }
 }

@@ -20,7 +20,6 @@ class DashboardController extends Controller
             ->take(3);
         $dataNotProceed = Resep::where([
                 'isProceed' => '1',
-                'apoteker_id' => '0',
                 'isProceedByApoteker' => '0'
             ])
             ->with('pasien', 'dokter')
@@ -79,11 +78,30 @@ class DashboardController extends Controller
             'dataNotProceed' => $dataNotProceed,
             'dataTerkirim' => $dataSend,
             'isPresent' => User::where(['level' => 0, 'isPresent' => 1])->get(),
-            'obat' => Produk::all(),
-            'kas' => Keuangan::orderBy('created_at', 'desc')
-                ->pluck('saldo')
-                ->first(),
+            // 'obat' => Produk::all(),
+            // 'kas' => Keuangan::orderBy('created_at', 'desc')
+            //     ->pluck('saldo')
+            //     ->first(),
         ]);
     }
+
+    public function countProduct(Request $request){
+        if($request->ajax()){
+            $obat = Produk::all();
+            return response()->json(['obat' => $obat]);
+        }else{
+            return response(400);
+        }
+    }
+
+    public function countKas(Request $request){
+        if($request->ajax()){
+            $kas = Keuangan::orderBy('created_at', 'desc')->pluck('saldo')->first();
+            return response()->json(['kas' => $kas]);
+        }else{
+            return response(400);
+        }
+    }
+
 
 }

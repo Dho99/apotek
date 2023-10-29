@@ -172,11 +172,11 @@
                         resepData.forEach((item) => {
                             let created_at = new Date(item.created_at).toLocaleDateString('id-ID');
                             swiperHtml += `
-                            <div class="swiper-slide mx-1">
+                            <div class="swiper-slide p-2">
                                     <a href="#" onclick="togglemodal(this)" data-toggle="modal" data-target="#create-resep-modal"
                                         data-nama="${item.pasien.nama}" data-gejala="${item.gejala}"
                                         data-kode="${item.kode}" data-createdat="${created_at}">
-                                        <div class="container-slider border rounded-lg px-3 py-2">
+                                        <div class="container-slider border rounded-lg px-3 py-2 shadow">
                                             <div class="row d-flex align-items-center">
                                                 <div class="col-4">
                                                     <div class="bg-secondary rounded-circle text-white">
@@ -206,7 +206,7 @@
         function submitResep() {
             let obatId = $(`#obatId${resepRows}`).val();
             let jumlah = $(`#jumlah${resepRows}`).val();
-            if (obatId === '' || jumlah === '') {
+            if (obatId === '' || jumlah === '' || jumlah == 0) {
                 errorAlert('Tidak boleh kosong');
             } else {
                 let myForm = new FormData();
@@ -223,7 +223,7 @@
                        resepRows = 0;
                        resepRowsArray = [];
                         location.reload();
-                    }, 2000);
+                    }, 1500);
                 }
         }
 

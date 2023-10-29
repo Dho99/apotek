@@ -18,6 +18,7 @@ return new class extends Migration {
             $table->json('golongan_id')->nullable();
             $table->text('deskripsi')->nullable();
             $table->string('satuan', 50);
+            $table->bigInteger('hargabeli');
             $table->bigInteger('harga');
             $table->integer('stok')->default(0);
             $table->foreignIdFor(Supplier::class);

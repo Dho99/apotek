@@ -30,6 +30,8 @@ Route::controller(AuthController::class)->group(function () {
 Route::controller(DashboardController::class)->group(function () {
     Route::middleware(['auth', 'user-access:Apoteker'])->group(function () {
         Route::get('/apoteker/dashboard', 'apotekerIndex');
+        Route::get('/apoteker/count/produk/dashboard','countProduct');
+        Route::get('/apoteker/count/kas/dashboard','countKas');
     });
     Route::middleware(['auth', 'user-access:Dokter'])->group(function () {
         Route::get('/dokter/dashboard', 'dokterIndex', function(){

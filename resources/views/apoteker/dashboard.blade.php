@@ -35,48 +35,10 @@
                                 Data Stock Obat
                             </div>
 
-                                @forelse ($obat as $item)
-                                    <div class="container-fluid my-3 rounded-lg">
-                                        <div class="row bg-lightgreen text-center align-items-center py-2">
-                                            <div class="col-lg-1">
-                                                <div class="rounded-lg">
-                                                    {{ $item->kode }}
-                                                </div>
-                                            </div>
-                                            <div class="col-lg-4">
-                                                <div class="rounded-lg">
-                                                    {{ $item->updated_at->format('d-m-Y') }}
-                                                </div>
-                                            </div>
-                                            <div class="col-lg-3">
-                                                <div class="rounded-lg">
-                                                    {{ $item->namaProduk }}
-                                                </div>
-                                            </div>
+                            <div class="container-fluid my-3 rounded-lg" id="countProduct">
 
-                                            <div class="col-lg-4 w-50 m-auto">
-                                                @if($item->stok >= 10 && $item->stok < 20)
-                                                    <div class="small bg-warning text-light rounded-lg p-1">
-                                                        Stok Menipis
-                                                    </div>
-                                                @elseif ($item->stok >= 1 && $item->stok < 10)
-                                                    <div class="small bg-orange text-light rounded-lg p-1">
-                                                        Stok Kritis
-                                                    </div>
-                                                @elseif ($item->stok <= 1)
-                                                    <div class="small bg-danger text-light rounded-lg p-1">
-                                                        Stok Habis
-                                                    </div>
-                                                @else
-                                                    <div class="small bg-success text-light rounded-lg p-1">
-                                                        Stok Tersedia
-                                                    </div>
-                                                @endif
-                                            </div>
-                                        </div>
-                                    </div>
-                                    @empty
-                                @endforelse
+                            </div>
+
                                 <a href="/apoteker/obat/list" class="px-3 mb-4 text-dark">Lihat Selengkapnya</a>
 
                         </div>
@@ -88,7 +50,7 @@
                         <div class="widget-data w-100">
                             <div class="font-20 text-secondary weight-500">
                                 Saldo Kas
-                                <div class="font-24 text-dark my-1 font-weight-bold">@currency($kas)</div>
+                                <div class="font-24 text-dark my-1 font-weight-bold" id="kas"></div>
                             </div>
                             <a href="/apoteker/laporan/keuangan">Lihat Selengkapnya</a>
                         </div>
@@ -398,11 +360,62 @@
                 placeholder: 'Pilih atau tuliskan nama Pasien'
             });
             randomTrxCode();
+            countProduct();
+            countKas();
         });
 
         function randomTrxCode(){
             let kode = randomString() * 23313;
             $('#trxCode').text('TRX' + kode);
+        }
+
+        function countProduct(){
+            $('#countProduct').empty();
+            $.ajax({
+                url: '/apoteker/count/produk/dashboard',
+                method: 'GET',
+                success: function(response){
+                    const hasil = response.obat;
+                    hasil.forEach(item => {
+                        $('#countProduct').append(`
+                        <div class="row bg-lightgreen text-center align-items-center py-2 my-2">
+                            <div class="col-lg-3">
+                                <div class="rounded-lg">
+                                    ${item.kode}
+                                </div>
+                            </div>
+                            <div class="col-lg-5">
+                                <div class="rounded-lg">
+                                    ${item.namaProduk}
+                                </div>
+                            </div>
+
+                            <div class="col-lg-4 w-50 m-auto">
+                                ${item.stok >= 10 && item.stok < 20 ? '<div class="small bg-warning text-light rounded-lg p-1">Stok Menipis</div>' : item.stok >= 1 && item.stok < 10 ? '<div class="small bg-orange text-light rounded-lg p-1">Stok Kritis</div>' : item.stok <= 1 ? '<div class="small bg-danger text-light rounded-lg p-1">Stok Habis</div>' : ' <div class="small bg-success text-light rounded-lg p-1">Stok Tersedia</div>'}
+                            </div>
+                        `);
+                    });
+                },
+                error: function(error, xhr){
+                    errorAlert(xhr.responseText);
+                    console.log(error.message);
+                }
+            });
+        }
+
+        function countKas(){
+            $.ajax({
+                url: '/apoteker/count/kas/dashboard',
+                method: 'GET',
+                success: function(response){
+                    const data = response.kas;
+                    $('#kas').text(formatCurrency(data));
+                },
+                error: function(error, xhr){
+                    errorAlert(xhr.responseText);
+                    console.log(error.message);
+                }
+            });
         }
 
         $('#fastTransaction').on('click', function() {
@@ -530,33 +543,34 @@
         }
 
         function prosesPesanan() {
-                if (kodeObat.length == 0) {
-                    errorAlert('Tidak dapat memproses Pesanan');
-                }
-                else if($('#pasienFastTrx').val() === ''){
-                    errorAlert('Masukkan Nama Pasien terlebih dahulu');
-                    $('#pasienFastTrx').focus();
-                }
-                else {
-                    let myForm = new FormData();
-                    myForm.append('kode', JSON.stringify(kodeObat));
-                    myForm.append('jumlah', JSON.stringify(Object.values(jumlahbarang)));
-                    myForm.append('total', total);
-                    myForm.append('kodePenjualan', $('#trxCode').text());
-                    myForm.append('dsc', 0);
-                    myForm.append('kategoriPenjualan', 'Non Resep');
-                    myForm.append('subtotal', total);
-                    myForm.append('pasienId', $('#pasienFastTrx').val());
+            if (kodeObat.length == 0) {
+                errorAlert('Tidak dapat memproses Pesanan');
+            }
+            else if($('#pasienFastTrx').val() === ''){
+                errorAlert('Masukkan Nama Pasien terlebih dahulu');
+                $('#pasienFastTrx').focus();
+            }
+            else {
+                let myForm = new FormData();
+                myForm.append('kode', JSON.stringify(kodeObat));
+                myForm.append('jumlah', JSON.stringify(Object.values(jumlahbarang)));
+                myForm.append('total', total);
+                myForm.append('kodePenjualan', $('#trxCode').text());
+                myForm.append('dsc', 0);
+                myForm.append('kategoriPenjualan', 'Non Resep');
+                myForm.append('subtotal', total);
+                myForm.append('pasienId', $('#pasienFastTrx').val());
 
-                    if(myForm){
-                        ajaxUpdate('/resep/antrian/proses', 'POST', myForm);
-                        let year = new Date().getFullYear();
-                        getDataPenjualan(year);
-                    }else{
-                        errorAlert('Gagal memproses Transaksi');
-                    }
-
+                if(myForm){
+                    ajaxUpdate('/resep/antrian/proses', 'POST', myForm);
+                    let year = new Date().getFullYear();
+                    getDataPenjualan(year);
+                    countProduct();
+                    countKas();
+                }else{
+                    errorAlert('Gagal memproses Transaksi');
                 }
+            }
         }
 
         function emptyModal(){

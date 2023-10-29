@@ -14,4 +14,9 @@ class Kategori extends Model
         'keterangan'
     ];
     use HasFactory;
+
+
+    public function golonganObat(){
+        return $this->hasMany(Produk::class, 'golongan_id');
+    }
 }

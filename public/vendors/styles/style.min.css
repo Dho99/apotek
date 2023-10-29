@@ -24,7 +24,6 @@
     margin: 0 auto;
     display: flex;
     transition: all 0.2s;
-    box-shadow: 3px 3px 12px 0px rgba(0, 0, 0, 0.2);
 }
 
 .checkout-bar {

@@ -34,6 +34,26 @@
 @endsection
 
 <script>
+   const kas = () => {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: '/apoteker/count/kas/dashboard',
+            method: 'GET',
+            success: function(response){
+                const data = response.kas;
+                resolve(data);
+            },
+            error: function(error, xhr){
+                errorAlert(xhr.responseText);
+                console.log(error.message);
+                reject(error);
+            }
+        });
+    });
+   }
+
+    let hargaProduk;
+    let jumlahProduk;
     function getDataByKode() {
         const kode = $('#kodeProduk').val();
         if (kode !== "") {
@@ -42,6 +62,7 @@
                 method: 'GET',
                 success: function(response) {
                     const data = response.data;
+                    hargaProduk = data.harga;
                     $('#inputAfterSearchKode').empty().append(`
                     <div class="row mb-3">
                             <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
@@ -96,27 +117,34 @@
 
     function increase(event) {
         event.preventDefault();
-
         const kode = $('#kodeProduk').val();
         const stock = $("#stock").val();
         const expDate = $('#expDate').val();
-        const csrfToken = $('meta[name="csrf-token"]').attr("content");
-        if (stock <= 0) {
-            // alert('Stok tidak boleh kurang dari 0');
-            $('#cekStok').removeClass('d-none');
-        } else if (expDate == '') {
-            $('#cekExpDate').removeClass('d-none');
-        } else {
-            let myForm = new FormData();
-            myForm.append("kode", kode);
-            myForm.append("stok", stock);
-            myForm.append("expDate", expDate);
+        jumlahProduk = stock;
+        let total = parseInt(jumlahProduk) * parseInt(hargaProduk);
+        let totalKas = 0;
+        kas().then(result => {
+            totalKas = result;
+            if (stock <= 0) {
+                alert('Stok tidak boleh kurang dari 0');
+                $('#cekStok').removeClass('d-none');
+            }else if(totalKas < total){
+                errorAlert('Kas Apotek tidak mencukupi Pembelanjaan, Jumlah kas kurang '+formatCurrency(total - totalKas));
+            } else if (expDate == '') {
+                $('#cekExpDate').removeClass('d-none');
+            } else {
+                // successAlert('Bisa');
+                let myForm = new FormData();
+                myForm.append("kode", kode);
+                myForm.append("stok", stock);
+                myForm.append("expDate", expDate);
 
-            const url = '/apoteker/obat/add/update/stock/' + kode;
-            ajaxUpdate(url, 'POST', myForm);
-            setTimeout(() => {
-                $('#kodeProduk').val(null).trigger('change');
-            }, 1000);
-        }
+                const url = '/apoteker/obat/add/update/stock/' + kode;
+                ajaxUpdate(url, 'POST', myForm);
+                setTimeout(() => {
+                    $('#kodeProduk').val(null).trigger('change');
+                }, 1000);
+            }
+        });
     }
 </script>

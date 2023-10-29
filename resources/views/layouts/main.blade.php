@@ -24,7 +24,7 @@
 
 
 <body class="body">
-
+s'
     @include('partials.navbar')
     @include('partials.sidebar')
     @include('partials.notification-bar')
@@ -441,7 +441,7 @@
                                 const dataForMonth = serverData.data[i];
                                 const month = serverData.bulan[i];
 
-                                const subtotal = dataForMonth.reduce((acc, item) => acc + item.subtotal, 0);
+                                const subtotal = dataForMonth.reduce((acc, item) => acc + parseInt(item.subtotal), 0);
 
                                 serverDataExtracted.jumlah[month] = dataForMonth.length;
                                 serverDataExtracted.subtotal[month] = subtotal;

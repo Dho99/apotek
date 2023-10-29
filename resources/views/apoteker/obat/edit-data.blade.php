@@ -103,7 +103,13 @@
                                 <img src="{{asset('storage/'.$item->image)}}" class="img-preview rounded img-fluid border border-success">
                             </div>
                             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-3">
-                                <label for="">Harga</label>
+                                <label for="">Harga Beli</label>
+                                <input type="text" name="" value="{{$item->hargabeli}}" id="hargabeli" class="form-control" disabled>
+                            </div>
+                        </div>
+                        <div class="row my-3">
+                            <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-3">
+                                <label for="">Harga Jual</label>
                                 <input type="text" name="" value="{{$item->harga}}" id="harga" class="form-control" disabled>
                             </div>
                         </div>
@@ -130,7 +136,7 @@
     <script>
         $().ready(function(){
             initSel2Tags('#golongan, #supplier, #satuan');
-            $('#harga').mask('000,000,000', {reverse: true});
+            $('#harga, #hargabeli').mask('000,000,000', {reverse: true});
             $('input[type="text"]').keydown(function(e) {
                 if (e.keyCode == 13) {
                     e.preventDefault();

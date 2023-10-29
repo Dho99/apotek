@@ -233,7 +233,7 @@
             }else{
                 $('.text-danger.font-weight-bold.font-18').text('');
                 $('.btn.btn-danger.float-right').removeClass('disabled');
-                $('.btn.btn-danger.float-right').on('click', prosesData);
+                // $('.btn.btn-danger.float-right').on('click', prosesData);
             }
         })
 
@@ -246,9 +246,8 @@
         // function prosesData(){
         //     let myData = new FormData();
         //     myData.append('alasan', $('#alasan').val());
-        //     let kodeResep = $('#resepCode').text();
-        //     ajaxUpdate('/resep/reject/'+kodeResep, 'POST', myData);
-        //     location.reload();
+        //     myData.append('kodeResep', $('#kodeResep').val());
+        //     ajaxUpdate('/resep/reject', 'POST', myData);
         // }
 
     </script>

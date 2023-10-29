@@ -13,7 +13,7 @@
         <div class="card-box mb-30">
             {{-- @dd($data) --}}
             <div class="row p-5">
-                @foreach ($data as $item)
+                @forelse ($data as $item)
                 <div class="col-xl-12 text-center pb-2">
                         <div class="bg-lightgreen rounded d-flex align-items-center row py-3 px-1">
                             <div class="col-xl-1 col-md-3">
@@ -61,7 +61,7 @@
                                             <p>Dokter {{ $item->dokter->kategoriDokter }}</p>
                                         </div>
                                         <div class="col-xl-6 text-right">
-                                            <p>Dibuat Pada {{ $item->created_at->format('H:i') }}</p>
+                                            <p>Dibuat {{$item->created_at->diffForHumans()}} Pada {{ $item->created_at->format('H:i') }}</p>
                                         </div>
                                     </div>
                                     <div class="border-bottom pt-3 px-5 row">
@@ -102,7 +102,7 @@
                         <div class="modal-dialog modal modal-dialog-centered">
                             <div class="modal-content text-left">
                                 <div class="modal-header">
-                                    <div class="modal-title  font-18" id="myLargeModalLabel">
+                                    <div class="modal-title font-18" id="myLargeModalLabel">
                                         Detail Penolakan Resep {{ $item->kode }}
                                     </div>
                                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
@@ -164,7 +164,11 @@
                             </div>
                         </div>
                     </div>
-                    @endforeach
+                    @empty
+                    <div class="col-lg-12 bg-warning text-center font-weight-bold font-20 text-light py-2">
+                        No Data Found
+                    </div>
+                    @endforelse
 
             {{ $data->links() }}
         </div>
@@ -318,26 +322,26 @@
         function submitResep() {
             let obatId = $(`#obatId${resepRows}`).val();
             let jumlah = $(`#jumlah${resepRows}`).val();
-            if (obatId === '' || jumlah === '') {
+            if (obatId === '' || jumlah === '' || resepRows < 1 || jumlah < 1) {
                 errorAlert('Tidak boleh kosong');
             } else {
                 let myForm = new FormData();
                     resepRowsArray.forEach((item, index) => {
-                        myForm.append('kode', $('#modal-kode').val());
+                        myForm.append('kode', $('#kodeResep').text());
                         myForm.append('obatId[]', $(`#obatId${item}`).val());
                         myForm.append('jumlah[]', $(`#jumlah${item}`).val());
                         myForm.append('catatan[]', $(`#catatan${item}`).val());
-                        myForm.append('catatanDokter', $('#catatanDokter').val());
+                        // myForm.append('catatanDokter', $('#catatanDokter').val());
                     });
                     const url = '/dokter/resep/create/new';
                     ajaxUpdate(url, 'POST', myForm);
+                    // resepRows = 0;
+                    // resepRowsArray = [];
                     setTimeout(() => {
-                       resepRows = 0;
-                       resepRowsArray = [];
                         location.reload();
-                    }, 2000);
+                    }, 1500);
                 }
-            }
         }
+
     </script>
 @endsection

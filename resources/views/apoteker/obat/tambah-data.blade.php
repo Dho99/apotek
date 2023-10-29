@@ -13,8 +13,7 @@
                         <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-3">
                             <label for="kode-obat">Kode Obat</label>
                             <a href="#" class="ml-5" onclick="randomized(event)">Coba Kode Acak?</a>
-                            <span class="float-right" data-toggle="tooltip"
-                                title="Digunakan Untuk Identifier Sebuah Produk">
+                            <span class="float-right">
                                 <i class="icon-copy dw dw-question font-20"></i></span>
                             <input type="text" name="kode-obat" class="form-control" placeholder="Masukkan Kode Obat"
                                 id="kodeObat">
@@ -22,8 +21,7 @@
                         </div>
                         <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
                             <label for="nama-obat">Nama Obat</label>
-                            <span class="float-right" data-toggle="tooltip"
-                                title="Digunakan Untuk Identifier Sebuah Produk"><i
+                            <span class="float-right"><i
                                     class="icon-copy dw dw-question font-20"></i></span>
                             <input type="text" name="nama-obat" id="namaObat" class="form-control"
                                 placeholder="Masukkan Nama Obat">
@@ -32,8 +30,7 @@
                     <div class="row mb-3">
                         <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-3">
                             <label for="stock">Golongan Obat</label>
-                            <span class="float-right" data-toggle="tooltip"
-                                title="Digunakan Untuk Identifier Sebuah Produk"><i
+                            <span class="float-right"><i
                                     class="icon-copy dw dw-question font-20"></i></span>
                             <select class="form-control" name="golongan_id" id="golongan"
                                 multiple="multiple" style="width: 100%">
@@ -46,8 +43,7 @@
                         </div>
                         <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
                             <label for="exp-date">Tanggal Kadaluarsa</label>
-                            <span class="float-right" data-toggle="tooltip"
-                                title="Digunakan Untuk Identifier Sebuah Produk">
+                            <span class="float-right">
                                 <i class="icon-copy dw dw-question font-20"></i></span>
                             <input class="form-control" id="expDate" placeholder="Exp Date" name="expdate"
                                 type="date" />
@@ -56,8 +52,7 @@
                     <div class="row my-3">
                         <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-3">
                             <label for="stock">Supplier</label>
-                            <span class="float-right" data-toggle="tooltip"
-                                title="Digunakan Untuk Identifier Sebuah Produk"><i
+                            <span class="float-right"><i
                                     class="icon-copy dw dw-question font-20"></i></span>
                             <select name="supplier" id="supplier" style="width: 100%;" class="form-control">
                                 <option value=""></option>
@@ -68,8 +63,7 @@
                         </div>
                         <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
                             <label for="exp-date">Stok Awal</label>
-                            <span class="float-right" data-toggle="tooltip"
-                                title="Digunakan Untuk Identifier Sebuah Produk"><i
+                            <span class="float-right"><i
                                     class="icon-copy dw dw-question font-20"></i></span>
                             <input class="form-control" name="stok" id="stok" placeholder="Stok Awal"
                                 type="number"/>
@@ -99,8 +93,17 @@
                                 @endforelse
                             </select>
                         </div>
+                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12">
+                            <label for="exp-date">Harga Beli</label>
+                            <span class="float-right"><i
+                                    class="icon-copy dw dw-question font-20"></i></span>
+                            <input class="form-control" name="stok" id="hargabeli"
+                                type="number"/>
+                        </div>
+                    </div>
+                    <div class="row my-3">
                         <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-3">
-                            <label for="">Harga</label>
+                            <label for="">Harga Jual</label>
                             <input type="text" name="" id="harga" class="form-control">
                         </div>
                     </div>
@@ -128,7 +131,7 @@
         $().ready(function() {
             $('#createNewObatForm input').attr('required','required');
             $('#createNewObatForm select').attr('required','required');
-            $('#harga').mask('000.000.000', {
+            $('#harga, #hargabeli').mask('000.000.000', {
                 reverse: true
             });
             $('input[type="text"]').keydown(function(e) {

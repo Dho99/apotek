@@ -16,6 +16,7 @@ class Produk extends Model
         'satuan',
         'stok',
         'harga',
+        'hargabeli',
         'supplier_id',
         'golongan_id',
         'expDate',
