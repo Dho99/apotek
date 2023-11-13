@@ -133,7 +133,6 @@
             } else if (expDate == '') {
                 $('#cekExpDate').removeClass('d-none');
             } else {
-                // successAlert('Bisa');
                 let myForm = new FormData();
                 myForm.append("kode", kode);
                 myForm.append("stok", stock);

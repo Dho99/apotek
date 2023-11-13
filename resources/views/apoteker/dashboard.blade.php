@@ -466,7 +466,7 @@
                             if (hasil === undefined)
                             {
                                 userMessage();
-                                jumlah.val('');
+                                val.val('');
                                 $('#codeProductInputField').focus();
                             }
                             else

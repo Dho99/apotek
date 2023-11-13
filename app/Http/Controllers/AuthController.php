@@ -39,12 +39,8 @@ class AuthController extends Controller
                 'password' => 'required',
             ]);
 
-            // $user = User::where(['email' => $request->email, 'password' => bcrypt($request->password)])->first();
-            // dd($credentials);
             if (Auth::attempt($credentials)) {
                 User::where('id', auth()->user()->id)->update(['isPresent' => '1']);
-                // event(new UserNotification(auth()->user()->level, auth()->user()->nama, auth()->user()->nama.' is logged on',''));
-
                 if (auth()->user()->level == 'Apoteker') {
                     $request->session()->regenerate();
                     return redirect()->intended('/apoteker/dashboard');

@@ -282,6 +282,7 @@ s'
             });
         }
 
+
         function formatCurrency(angka) {
             return new Intl.NumberFormat('id-ID', {
                 style: 'currency',

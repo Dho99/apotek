@@ -67,10 +67,12 @@
                             </tr>
                         </thead>
                         <tbody>
-
                         </tbody>
-
                     </table>
+                    <div class="container-fluid">
+                        <p>Total Data : <span id="countData"></span></p>
+                        <p>Total Nominal : <span id="countNominal"></span></p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -226,7 +228,14 @@
                 year: tahun
             },
             success: function(response){
-                // console.log(response.data);
+                $('#countData').text(response.data.length);
+                let nomArr = response.data;
+                let nom = [];
+                nomArr.map((item) => {
+                    nom.push(item.subtotal);
+                });
+                let totalSubtotal = nom.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+                $('#countNominal').text(formatCurrency(totalSubtotal));
                 printable('#myPenjualanTable', response.data, [
                     {
                         render: function(data, type, row, meta){
@@ -271,6 +280,14 @@
                         }
                     }
                 ]);
+                $('#myPenjualanTable').DataTable().destroy();
+                $('#myPenjualanTable').append(`
+                    <tfoot>
+                        <tr>
+                            <th colspan="6">test</th>
+                        </tr>
+                    </tfoot>
+                `);
             },
             error: function(error, xhr){
                 console.log(error.message);
