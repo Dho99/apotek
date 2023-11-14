@@ -1,6 +1,6 @@
 @extends('layouts.main')
-@section('content')
-    <div class="xs-pd-20-10 pd-ltr-20">
+{{-- @section('content') --}}
+    <div class="xs-pd-20-10 pd-ltr-20 float-right container pl-5">
         <div class="title pb-20">
             <h2 class="h3 mb-0">{{ $title }}</h2>
         </div>
@@ -32,11 +32,11 @@
                 <div class="font-weight-bold font-20">Tabel Penjualan</div>
                         <div class="row mt-3">
                             <div class="col-lg-8 font-20">
-                                Urutkan Per
+                                Urutkan Per <span class="mr-2" id="mo"></span> <span id="yrs"></span>
                             </div>
 
                             <div class="col-lg-4 d-flex">
-                                <select name="" id="orByMo" class="form-control mx-1" onchange="refreshTable()">
+                                <select name="" id="orByMo" class="form-control mx-1 noprint" onchange="refreshTable()">
                                     <option value="">Bulan</option>
                                     @foreach ($perBulan as $key => $item)
                                         <option value="{{$key}}">{{$key}}</option>
@@ -44,7 +44,7 @@
                                 </select>
 
 
-                                <select name="" id="orByYear" class="form-control mx-1" onchange="refreshTable()">
+                                <select name="" id="orByYear" class="form-control mx-1 noprint" onchange="refreshTable()">
                                     <option value="">Tahun</option>
                                     @foreach ($yearOption as $key => $item)
                                         <option value="{{$key}}">{{$key}}</option>
@@ -53,6 +53,11 @@
                             </div>
                         </div>
 
+                        {{-- <div class="container"> --}}
+                            <button class="btn btn-sm btn-secondary noprint" onclick="window.print();">
+                                Print
+                            </button>
+                        {{-- </div> --}}
                 </div>
                 <div class="pb-20">
                     <table class="data-table table nowrap" id="myPenjualanTable">
@@ -77,7 +82,7 @@
             </div>
         </div>
     </div>
-@endsection
+{{-- @endsection --}}
 <div class="modal fade" id="invoiceModal" role="dialog" data-backdrop="static" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content shadow">
@@ -220,6 +225,7 @@
     function refreshTable(){
         let bulan = $('#orByMo').val();
         let tahun = $('#orByYear').val();
+        console.log(bulan, tahun);
         $.ajax({
             method: 'GET',
             url: '/apoteker/laporan/penjualan/get',
@@ -236,58 +242,80 @@
                 });
                 let totalSubtotal = nom.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
                 $('#countNominal').text(formatCurrency(totalSubtotal));
-                printable('#myPenjualanTable', response.data, [
-                    {
-                        render: function(data, type, row, meta){
-                            return meta.row + meta.settings._iDisplayStart + 1
-                        }
-                    },
-                    {
-                        render: function(data, type, row){
-                            return moment(`${row.created_at}`).format(
-                                'DD/MM/YYYY'
-                            );
-                        }
-                    },
-                    {
-                        data: 'pasien.nama'
-                    },
-                    {
-                        data: 'kodePenjualan'
-                    },
-                    {
-                        render: function(data, type, row){
-                            return formatCurrency(`${row.subtotal}`);
-                        }
-                    },
-                    {
-                        render: function(data, type, row){
-                            return `
-                            <div class="dropdown">
-                                <a class="btn btn-link font-24 p-0 line-height-1 no-arrow dropdown-toggle"
-                                    href="#" role="button" data-toggle="dropdown">
-                                    <i class="dw dw-more"></i>
-                                </a>
-                                <div class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list">
-                                    <a class="dropdown-item"
-                                        onclick="invoiceModal('${row.kodePenjualan}')">
-                                        <i class="dw dw-invoice"></i> Invoice
+                $('#myPenjualanTable').DataTable({
+                    data: response.data,
+                    dom: 'Bfrtip',
+                    buttons: [{
+                        extend: 'colvis',
+                        titleAttr: 'Kustomisasi Tampilan tabel untuk di export'
+                    }],
+                    responsive: true,
+                    searching: true,
+                    destroy: true,
+                    columns: [
+                        {
+                            render: function(data, type, row, meta){
+                                return meta.row + meta.settings._iDisplayStart + 1
+                            }
+                        },
+                        {
+                            render: function(data, type, row){
+                                return moment(`${row.created_at}`).format(
+                                    'DD/MM/YYYY'
+                                );
+                            }
+                        },
+                        {
+                            data: 'pasien.nama'
+                        },
+                        {
+                            data: 'kodePenjualan'
+                        },
+                        {
+                            render: function(data, type, row){
+                                return formatCurrency(`${row.subtotal}`);
+                            }
+                        },
+                        {
+                            render: function(data, type, row){
+                                return `
+                                <div class="dropdown">
+                                    <a class="btn btn-link font-24 p-0 line-height-1 no-arrow dropdown-toggle"
+                                        href="#" role="button" data-toggle="dropdown">
+                                        <i class="dw dw-more"></i>
                                     </a>
+                                    <div class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list">
+                                        <a class="dropdown-item"
+                                            onclick="invoiceModal('${row.kodePenjualan}')">
+                                            <i class="dw dw-invoice"></i> Invoice
+                                        </a>
+                                    </div>
                                 </div>
-                            </div>
-                              `;
+                                `;
 
+                            }
                         }
+                    ],
+                    autoWidth: false,
+                    columnDefs: [{
+                        targets: "_all",
+                        defaultContent: ""
+                    }],
+                    "language": {
+                        paginate: {
+                            next: '<i class="ion-chevron-right"></i>',
+                            previous: '<i class="ion-chevron-left"></i>'
+                        }
+                    },
+                    "lengthMenu": [
+                        [25, 50, 100, 125, -1],
+                        [25, 50, 100, 125, "All"]
+                    ],
+                    error: function(error, xhr) {
+                        console.error(error);
+                        console.log(xhr.responseText);
                     }
-                ]);
-                $('#myPenjualanTable').DataTable().destroy();
-                $('#myPenjualanTable').append(`
-                    <tfoot>
-                        <tr>
-                            <th colspan="6">test</th>
-                        </tr>
-                    </tfoot>
-                `);
+                });
             },
             error: function(error, xhr){
                 console.log(error.message);

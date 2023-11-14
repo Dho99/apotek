@@ -24,7 +24,6 @@
 
 
 <body class="body">
-s'
     @include('partials.navbar')
     @include('partials.sidebar')
     @include('partials.notification-bar')
