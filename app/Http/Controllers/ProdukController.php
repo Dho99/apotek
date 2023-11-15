@@ -173,14 +173,14 @@ class ProdukController extends Controller
         $saldo = Keuangan::orderBy('created_at', 'desc')
             ->pluck('saldo')
             ->first();
-        $total = $data['harga'] * $data['stok'];
+        $total = $data['hargabeli'] * $data['stok'];
 
         if ($total > $saldo) {
             return response('Saldo tidak mencukupi, masukkan dana kas terlebih dahulu', 500);
 
         } else {
             Keuangan::create([
-                'keterangan' => 'Pembelian `Pr`oduk ' . $data['namaProduk'],
+                'keterangan' => 'Pembelian Produk ' . $data['namaProduk'],
                 'jumlah' => $total,
                 'user_id' => auth()->user()->id,
                 'saldo' => $saldo - $total,

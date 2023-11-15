@@ -11,7 +11,7 @@ function submitNewObat(event, url) {
     formData.append("expDate", $("#expDate").val());
     formData.append("harga", $("#harga").cleanVal());
     formData.append("deskripsi", $("#descriptionInput").val());
-    formData.append("hargabeli", $("#hargabeli").val());
+    formData.append("hargabeli", $("#hargabeli").cleanVal());
 
     if (fileInput.files.length > 0) {
         formData.append("image", fileInput.files[0]);

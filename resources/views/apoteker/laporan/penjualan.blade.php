@@ -1,6 +1,6 @@
 @extends('layouts.main')
 {{-- @section('content') --}}
-    <div class="xs-pd-20-10 pd-ltr-20 float-right container pl-5">
+    <div class="xs-pd-20-10 pd-ltr-20 float-right container pl-3">
         <div class="title pb-20">
             <h2 class="h3 mb-0">{{ $title }}</h2>
         </div>
@@ -34,6 +34,7 @@
                             <div class="col-lg-8 font-20">
                                 Urutkan Per <span class="mr-2" id="mo"></span> <span id="yrs"></span>
                             </div>
+                            {{-- @dd($perBulan) --}}
 
                             <div class="col-lg-4 d-flex">
                                 <select name="" id="orByMo" class="form-control mx-1 noprint" onchange="refreshTable()">
@@ -247,6 +248,8 @@
                     dom: 'Bfrtip',
                     buttons: [{
                         extend: 'colvis',
+                        text: 'Kustomisasi',
+                        className: 'noprint',
                         titleAttr: 'Kustomisasi Tampilan tabel untuk di export'
                     }],
                     responsive: true,
@@ -316,6 +319,7 @@
                         console.log(xhr.responseText);
                     }
                 });
+                $('#myPenjualanTable_filter').addClass('noprint');
             },
             error: function(error, xhr){
                 console.log(error.message);

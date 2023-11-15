@@ -2,6 +2,7 @@
 /public/build
 /public/hot
 /storage/*.key
+/public/storage
 .env.backup
 .env.production
 .phpunit.result.cache
