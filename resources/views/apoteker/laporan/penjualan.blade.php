@@ -1,6 +1,6 @@
 @extends('layouts.main')
 {{-- @section('content') --}}
-    <div class="xs-pd-20-10 pd-ltr-20 float-right container pl-3">
+    <div class="xs-pd-20-10 pd-ltr-20 float-right container pl-5">
         <div class="title pb-20">
             <h2 class="h3 mb-0">{{ $title }}</h2>
         </div>
@@ -27,38 +27,45 @@
             </div>
         </div>
 
+        @php
+            $now = \Illuminate\Support\Carbon::now();
+            $month = $now->format('F');
+            $yrs = $now->format('Y');
+            // dd($month, $yrs)
+        @endphp
         <div class="card-box mb-30">
             <div class="pd-20">
                 <div class="font-weight-bold font-20">Tabel Penjualan</div>
                         <div class="row mt-3">
                             <div class="col-lg-8 font-20">
-                                Urutkan Per <span class="mr-2" id="mo"></span> <span id="yrs"></span>
+                                Urutkan Per :
+                                <span id="mo">{{$month}}</span>
+                                <span id="yrs">{{$yrs}}</span>
                             </div>
-                            {{-- @dd($perBulan) --}}
 
                             <div class="col-lg-4 d-flex">
-                                <select name="" id="orByMo" class="form-control mx-1 noprint" onchange="refreshTable()">
-                                    <option value="">Bulan</option>
+                                <select name="" id="orByMo" class="form-control mx-1 noprint" onchange="refreshTable()" {{empty($perBulan->first()) ? 'disabled' : ''}}>
+                                    {{-- <option value="">Bulan</option> --}}
                                     @foreach ($perBulan as $key => $item)
-                                        <option value="{{$key}}">{{$key}}</option>
+                                        <option value="{{$key}}" {{$key == $month ? 'selected' : ''}}>{{$key}}</option>
                                     @endforeach
                                 </select>
 
 
-                                <select name="" id="orByYear" class="form-control mx-1 noprint" onchange="refreshTable()">
-                                    <option value="">Tahun</option>
+                                <select name="" id="orByYear" class="form-control mx-1 noprint" onchange="refreshTable()" {{empty($yearOption->first()) ? 'disabled' : ''}}>
+                                    {{-- <option value="">Tahun</option> --}}
                                     @foreach ($yearOption as $key => $item)
-                                        <option value="{{$key}}">{{$key}}</option>
+                                    <option value="{{$key}}" {{$key == $yrs ? 'selected' : ''}}>{{$key}}</option>
                                     @endforeach
                                 </select>
                             </div>
                         </div>
 
-                        {{-- <div class="container"> --}}
-                            <button class="btn btn-sm btn-secondary noprint" onclick="window.print();">
+                        <div id="btnExport" class="mt-3 d-flex">
+                            <button class="btn btn-secondary noprint" onclick="window.print();">
                                 Print
                             </button>
-                        {{-- </div> --}}
+                        </div>
                 </div>
                 <div class="pb-20">
                     <table class="data-table table nowrap" id="myPenjualanTable">
@@ -226,7 +233,6 @@
     function refreshTable(){
         let bulan = $('#orByMo').val();
         let tahun = $('#orByYear').val();
-        console.log(bulan, tahun);
         $.ajax({
             method: 'GET',
             url: '/apoteker/laporan/penjualan/get',
@@ -235,6 +241,8 @@
                 year: tahun
             },
             success: function(response){
+                $('#mo').text(bulan);
+                $('#yrs').text(tahun);
                 $('#countData').text(response.data.length);
                 let nomArr = response.data;
                 let nom = [];
@@ -243,13 +251,13 @@
                 });
                 let totalSubtotal = nom.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
                 $('#countNominal').text(formatCurrency(totalSubtotal));
-                $('#myPenjualanTable').DataTable({
+                let table = $('#myPenjualanTable').DataTable({
                     data: response.data,
                     dom: 'Bfrtip',
                     buttons: [{
                         extend: 'colvis',
-                        text: 'Kustomisasi',
-                        className: 'noprint',
+                        text: 'Kustomisasi tabel',
+                        className: 'noprint ml-0',
                         titleAttr: 'Kustomisasi Tampilan tabel untuk di export'
                     }],
                     responsive: true,
@@ -319,6 +327,8 @@
                         console.log(xhr.responseText);
                     }
                 });
+                table.buttons().container().appendTo('#btnExport');
+                // table.draw();
                 $('#myPenjualanTable_filter').addClass('noprint');
             },
             error: function(error, xhr){
