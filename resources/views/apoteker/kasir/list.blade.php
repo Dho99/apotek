@@ -201,7 +201,7 @@
         $('#searchProduct').on('input', function() {
             let val = $(this).val();
             if (val) {
-                $('.col-lg-3.col-md-6.col-sm-12.mb-30').each(function() {
+                $('.col-lg-3.col-md-4.col-sm-4.mb-30').each(function() {
                     let text = $(this).text().toLowerCase();
                     if (text.includes(val.toLowerCase())) {
                         $(this).show();
@@ -210,7 +210,7 @@
                     }
                 });
             } else {
-                $('.col-lg-3.col-md-6.col-sm-12.mb-30').show();
+                $('.col-lg-3.col-md-4.col-sm-4.mb-30').show();
             }
         });
 

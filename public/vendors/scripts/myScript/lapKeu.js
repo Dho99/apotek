@@ -28,6 +28,10 @@ function changeKategori() {
 let kodeLaporan;
 
 function refreshTable() {
+    let monthVal = $('#orByMo').val();
+    let yearVal = $('#orByYear').val();
+    $('#month').text(monthVal);
+    $('#year').text(yearVal);
     const kategori = $("#categoryKeuangan").val();
     const kode = kodeLaporan !== '' ? kodeLaporan : '';
     const month = $("#orByMo").val();
@@ -54,50 +58,86 @@ function refreshTable() {
                 const hasil = response.data[0];
                 showModal(hasil);
             } else {
-                printable("#myKeuanganTable", response.data, [
-                    {
-                        render: function (data, type, row, meta) {
-                            return meta.row + meta.settings._iDisplayStart + 1;
-                        }
-                    },
-                    {
-                        render: function (data, type, row) {
-                            return moment(`${row.created_at}`).format(
-                                "DD/MM/YYYY"
-                            );
-                        }
-                    },
-                    {
-                        data: 'user.nama'
-                    },
-                    {
-                        data: 'keterangan'
-                    },
-                    {
-                        data: 'kategori'
-                    },
-                    {
-                        render: function (data, type, row, meta) {
-                            return (
-                                "Rp. " +
-                                $.fn.dataTable.render
-                                    .number(",", ".", 0, "")
-                                    .display(`${row.jumlah}`)
-                            );
+                let table = $('#myKeuanganTable').DataTable({
+                    data: response.data,
+                    dom: 'Blfrtip',
+                    buttons: [{
+                        extend: 'colvis',
+                        text: 'Kustomisasi tabel',
+                        className: 'noprint ml-0',
+                        titleAttr: 'Kustomisasi Tampilan tabel untuk di export'
+                    }],
+                    responsive: true,
+                    searching: true,
+                    lengthChange:true,
+                    destroy: true,
+                    columns: [
+                        {
+                            render: function (data, type, row, meta) {
+                                return meta.row + meta.settings._iDisplayStart + 1;
+                            }
+                        },
+                        {
+                            render: function (data, type, row) {
+                                return moment(`${row.created_at}`).format(
+                                    "DD/MM/YYYY"
+                                );
+                            }
+                        },
+                        {
+                            data: 'user.nama'
+                        },
+                        {
+                            data: 'keterangan'
+                        },
+                        {
+                            data: 'kategori'
+                        },
+                        {
+                            render: function (data, type, row, meta) {
+                                return (
+                                    "Rp. " +
+                                    $.fn.dataTable.render
+                                        .number(",", ".", 0, "")
+                                        .display(`${row.jumlah}`)
+                                );
 
+                            }
+                        },
+                        {
+                            data: null,
+                            render: function (data, type, row) {
+                                return `
+                                    <a class="text-primary mr-3 btn p-0" onclick="getDataKeuangan('${row.id}')">
+                                        <i class="dw dw-eye"></i> Detail
+                                    </a>
+                                    `;
+                            }
+                        },
+                    ],
+                    autoWidth: false,
+                    columnDefs: [{
+                        targets: "_all",
+                        defaultContent: ""
+                    }],
+                    "language": {
+                        paginate: {
+                            next: '<i class="ion-chevron-right"></i>',
+                            previous: '<i class="ion-chevron-left"></i>'
                         }
                     },
-                    {
-                        data: null,
-                        render: function (data, type, row) {
-                            return `
-                                <a class="text-primary mr-3 btn p-0" onclick="getDataKeuangan('${row.id}')">
-                                    <i class="dw dw-eye"></i> Detail
-                                </a>
-                                `;
-                        }
-                    },
-                ]);
+                    "lengthMenu": [
+                        [25, 50, 100, 125, -1],
+                        [25, 50, 100, 125, "All"]
+                    ],
+                    error: function(error, xhr) {
+                        console.error(error);
+                        console.log(xhr.responseText);
+                    }
+                });
+                table.buttons().container().appendTo('#btnExport');
+                $('#myKeuanganTable_filter').addClass('noprint');
+
             }
         },
         error: function (error, xhr) {

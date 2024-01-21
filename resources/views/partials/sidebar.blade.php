@@ -41,7 +41,7 @@
                     </li>
                     <li class="dropdown">
                         <a href="javascript:;"
-                            class="dropdown-toggle {{ $title == 'Tambah Obat' || $title == 'Daftar Obat' || $title == 'Transaksi Obat' || $title == 'Stock-in Obat' || $title == 'Detail Data Obat' || $title == 'Kategori Obat' ? 'active ' : '' }}">
+                            class="dropdown-toggle {{ $title == 'Tambah Obat' || $title == 'Daftar Obat' || $title == 'Transaksi Obat' || $title == 'Stock-in Obat' || $title == 'Detail Data Obat' || $title == 'Kategori Obat' || $title == 'Obat Kadaluarsa' ? 'active ' : '' }}">
                             <span class="micon icon-copy dw dw-folder"></span><span class="mtext">Obat</span>
                         </a>
                         <ul class="submenu">
@@ -52,6 +52,7 @@
                             <li><a href="/apoteker/obat/stock-in" class="{{ $title == 'Stock-in Obat' ? 'active' : '' }}">Stock-in
                                     Obat</a></li>
                             <li><a href="/obat/kategori" class="{{ $title == 'Kategori Obat' ? 'active' : '' }}">Kategori Obat</a></li>
+                            <li><a href="/apoteker/obat/kadaluarsa" class="{{ $title == 'Obat Kadaluarsa' ? 'active' : '' }}">Obat Kadaluarsa</a></li>
                         </ul>
                     </li>
                     <li class="drowpdown">

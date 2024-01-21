@@ -7,6 +7,7 @@ use App\Models\Kategori;
 use App\Models\Keuangan;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Validator;
 // use App\Events\UserNotification;
 
@@ -21,7 +22,7 @@ class ProdukController extends Controller
         return view('apoteker.obat.list', [
             'title' => 'Daftar Obat',
             'kategori' => $data,
-            'satuan' => Produk::groupBy('satuan')->get()
+            'satuan' => Produk::groupBy('satuan')->get(),
         ]);
     }
 
@@ -43,6 +44,7 @@ class ProdukController extends Controller
                 'expDate' => $item->expDate,
                 'diprosesPada' => $item->created_at->format('d-m-Y'),
                 'supplier' => isset($item->supplier->nama) ? $item->supplier->nama : 'Supplier telah tidak bekerja sama',
+                'status' => Carbon::now()->format('Y-m-d') == $item->expDate ? 'Kadaluarsa' : 'Normal',
             ];
         }
 
@@ -52,7 +54,9 @@ class ProdukController extends Controller
                 return response()->json(['data' => $data]);
             } else {
                 if ($filter !== '') {
-                    $filterKategori = Kategori::where('golongan', 'like', '%' . $filter . '%')->pluck('id')->toArray();
+                    $filterKategori = Kategori::where('golongan', 'like', '%' . $filter . '%')
+                        ->pluck('id')
+                        ->toArray();
 
                     $filterBarang = Produk::where(function ($query) use ($filterKategori) {
                         foreach ($filterKategori as $kategoriId) {
@@ -60,15 +64,13 @@ class ProdukController extends Controller
                         }
                     })->get();
 
-
-
                     $onlyFiltered = [];
                     foreach ($filterBarang as $item) {
                         $golonganObat = Kategori::whereIn('id', json_decode($item->golongan_id))
-                        ->pluck('golongan')
-                        ->toArray();
+                            ->pluck('golongan')
+                            ->toArray();
 
-                    $onlyFiltered[] = [
+                        $onlyFiltered[] = [
                             'kode' => $item->kode,
                             'namaProduk' => $item->namaProduk,
                             'golongan' => $golonganObat,
@@ -84,7 +86,7 @@ class ProdukController extends Controller
                 }
             }
         } else {
-            return response('Server disconnected',400);
+            return response('Server disconnected', 400);
         }
     }
 
@@ -107,96 +109,106 @@ class ProdukController extends Controller
 
     public function store(Request $request)
     {
-        foreach (json_decode($request->golongan) as $item){
-            $cekKategori = Kategori::where('id', $item)->get()->first();
-            if(isset($cekKategori)){
-                $golongan_id[] = $cekKategori->id;
-                // $golongan_id[] = 'Ada';
-            }else{
-                try {
-                    $kategoriBaru = Kategori::create([
-                        'golongan' => $item,
-                        'keterangan' => $item
-                    ]);
-                    $golongan_id[] = $kategoriBaru->id;
-                } catch (\Exception $e) {
-                    return response(500);
+        // $data = (Carbon::parse($request->expDate) > Carbon::now() ? 'true' : 'false');
+        // return response()->json(['data' => $data]);
+
+        if (Carbon::parse($request->expDate) < Carbon::now()) {
+            return response('Periksa kembali data tanggal kadaluarsa', 500);
+        } else {
+            foreach (json_decode($request->golongan) as $item) {
+                $cekKategori = Kategori::where('id', $item)
+                    ->get()
+                    ->first();
+                if (isset($cekKategori)) {
+                    $golongan_id[] = $cekKategori->id;
+                    // $golongan_id[] = 'Ada';
+                } else {
+                    try {
+                        $kategoriBaru = Kategori::create([
+                            'golongan' => $item,
+                            'keterangan' => $item,
+                        ]);
+                        $golongan_id[] = $kategoriBaru->id;
+                    } catch (\Exception $e) {
+                        return response(500);
+                    }
                 }
             }
-        }
 
-        $cekSupplier = Supplier::where('id', $request->supplier)->pluck('id')->first();
-        if(isset($cekSupplier)){
-            $supplier_id = $cekSupplier;
-        }else{
-            $newSupplier = Supplier::create([
-                'kode' => 'SUP-'.mt_rand(0000,9999),
-                'nama' => $request->supplier,
-                'alamat' => fake()->address(),
-                'noTel' => fake()->phoneNumber(),
-                'perwakilan' => fake()->name()
-            ]);
-            $supplier_id = $newSupplier->id;
-        }
+            $cekSupplier = Supplier::where('id', $request->supplier)
+                ->pluck('id')
+                ->first();
+            if (isset($cekSupplier)) {
+                $supplier_id = $cekSupplier;
+            } else {
+                $newSupplier = Supplier::create([
+                    'kode' => 'SUP-' . mt_rand(0000, 9999),
+                    'nama' => $request->supplier,
+                    'alamat' => fake()->address(),
+                    'noTel' => fake()->phoneNumber(),
+                    'perwakilan' => fake()->name(),
+                ]);
+                $supplier_id = $newSupplier->id;
+            }
 
-        $data = [
-            'kode' => $request->kode,
-            'namaProduk' => $request->namaProduk,
-            'satuan' => $request->satuan,
-            'stok' => $request->stok,
-            'harga' => $request->harga,
-            'hargabeli' => $request->hargabeli,
-            'supplier_id' => $supplier_id,
-            'golongan_id' => json_encode($golongan_id),
-            'expDate' => $request->expDate,
-            'image' => $request->image,
-            'deskripsi' =>$request->deskripsi
-        ];
+            $data = [
+                'kode' => $request->kode,
+                'namaProduk' => $request->namaProduk,
+                'satuan' => $request->satuan,
+                'stok' => $request->stok,
+                'harga' => $request->harga,
+                'hargabeli' => $request->hargabeli,
+                'supplier_id' => $supplier_id,
+                'golongan_id' => json_encode($golongan_id),
+                'expDate' => $request->expDate,
+                'image' => $request->image,
+                'deskripsi' => $request->deskripsi,
+            ];
 
-        $validator = Validator::make($data, [
-            'kode' => 'required',
-            'namaProduk' => 'required',
-            'satuan' => 'required',
-            'stok' => 'required',
-            'harga' => 'required',
-            'hargabeli' => 'required',
-            'supplier_id' => 'required',
-            'golongan_id' => 'required|json',
-            'expDate' => 'required',
-            'image' => 'image|file|max:2048',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
-
-        $saldo = Keuangan::orderBy('created_at', 'desc')
-            ->pluck('saldo')
-            ->first();
-        $total = $data['hargabeli'] * $data['stok'];
-
-        if ($total > $saldo) {
-            return response('Saldo tidak mencukupi, masukkan dana kas terlebih dahulu', 500);
-
-        } else {
-            Keuangan::create([
-                'keterangan' => 'Pembelian Produk ' . $data['namaProduk'],
-                'jumlah' => $total,
-                'user_id' => auth()->user()->id,
-                'saldo' => $saldo - $total,
-                'kategori' => 'Kredit',
+            $validator = Validator::make($data, [
+                'kode' => 'required',
+                'namaProduk' => 'required',
+                'satuan' => 'required',
+                'stok' => 'required',
+                'harga' => 'required',
+                'hargabeli' => 'required',
+                'supplier_id' => 'required',
+                'golongan_id' => 'required|json',
+                'expDate' => 'required',
+                'image' => 'image|file|max:2048',
             ]);
 
-            $validatedData = $data;
-            $validatedData['image'] = $data['image']->store('post-images');
-            $submit = Produk::create($validatedData);
+            if ($validator->fails()) {
+                return response()->json(['errors' => $validator->errors()], 422);
+            }
 
-            // event for All Users
-            // event(new UserNotification('Apoteker '.auth()->user()->nama.' berhasil Menambahkan data Obat '.$request->namaProduk, auth()->user()));
+            $saldo = Keuangan::orderBy('created_at', 'desc')
+                ->pluck('saldo')
+                ->first();
+            $total = $data['hargabeli'] * $data['stok'];
 
-            return response()->json(['message' => 'Data Berhasil Disimpan']);
+            if ($total > $saldo) {
+                return response('Saldo tidak mencukupi, masukkan dana kas terlebih dahulu', 500);
+            } else {
+                Keuangan::create([
+                    'keterangan' => 'Pembelian Produk ' . $data['namaProduk'],
+                    'jumlah' => $total,
+                    'user_id' => auth()->user()->id,
+                    'saldo' => $saldo - $total,
+                    'kategori' => 'Kredit',
+                ]);
+
+                $validatedData = $data;
+                $validatedData['image'] = $data['image']->store('post-images');
+                $submit = Produk::create($validatedData);
+
+                // event for All Users
+                // event(new UserNotification('Apoteker '.auth()->user()->nama.' berhasil Menambahkan data Obat '.$request->namaProduk, auth()->user()));
+
+                return response()->json(['message' => 'Data Berhasil Disimpan']);
+            }
+            return response('Gagal menyimpan Data', 400);
         }
-        return response('Gagal menyimpan Data', 400);
     }
 
     public function apotekerShow(Request $request, $kode)
@@ -207,22 +219,24 @@ class ProdukController extends Controller
             'datas' => $datas,
             'golongan' => Kategori::get(),
             'pemasok' => Supplier::all(),
-            'satuan' => Produk::groupBy('satuan')->pluck('satuan')
+            'satuan' => Produk::groupBy('satuan')->pluck('satuan'),
         ]);
     }
 
-
-    public function showDescription(Request $request, $kode){
-        if($request->ajax()){
-            $getData = Produk::where('kode', $kode)->pluck('deskripsi')->first();
-            if(isset($getData)){
+    public function showDescription(Request $request, $kode)
+    {
+        if ($request->ajax()) {
+            $getData = Produk::where('kode', $kode)
+                ->pluck('deskripsi')
+                ->first();
+            if (isset($getData)) {
                 $data = $getData;
-            }else{
+            } else {
                 return response('Data tidak ditemukan', 404);
             }
             return response()->json(['data' => $data]);
-        }else{
-            return response('Server Disconnected',400);
+        } else {
+            return response('Server Disconnected', 400);
         }
     }
 
@@ -231,14 +245,14 @@ class ProdukController extends Controller
      */
     public function apotekerGetProdukByKode(Request $request, $kode)
     {
-        if($request->ajax()){
+        if ($request->ajax()) {
             $data = Produk::where('kode', $kode)->get();
-            if(isset($data)){
+            if (isset($data)) {
                 return response()->json(['data' => $data], 200);
-            }else{
+            } else {
                 return response('Data tidak ditemukan', 404);
             }
-        }else{
+        } else {
             return response('Server disconnected', 400);
         }
     }
@@ -248,16 +262,18 @@ class ProdukController extends Controller
      */
     public function apotekerUpdate(Request $request, $kode)
     {
-        foreach (json_decode($request->golongan) as $item){
-            $cekKategori = Kategori::where('id', $item)->get()->first();
-            if(isset($cekKategori)){
+        foreach (json_decode($request->golongan) as $item) {
+            $cekKategori = Kategori::where('id', $item)
+                ->get()
+                ->first();
+            if (isset($cekKategori)) {
                 $golongan_id[] = $cekKategori->id;
                 // $golongan_id[] = 'Ada';
-            }else{
+            } else {
                 try {
                     $kategoriBaru = Kategori::create([
                         'golongan' => $item,
-                        'keterangan' => $item
+                        'keterangan' => $item,
                     ]);
                     $golongan_id[] = $kategoriBaru->id;
                 } catch (\Exception $e) {
@@ -266,21 +282,23 @@ class ProdukController extends Controller
             }
         }
 
-        $cekSupplier = Supplier::where('id', $request->supplier)->pluck('id')->first();
-        if(isset($cekSupplier)){
+        $cekSupplier = Supplier::where('id', $request->supplier)
+            ->pluck('id')
+            ->first();
+        if (isset($cekSupplier)) {
             $supplier_id = $cekSupplier;
-        }else{
+        } else {
             $newSupplier = Supplier::create([
-                'kode' => 'SUP-'.mt_rand(0000,9999),
+                'kode' => 'SUP-' . mt_rand(0000, 9999),
                 'nama' => $request->supplier,
                 'alamat' => fake()->address(),
                 'noTel' => fake()->phoneNumber(),
-                'perwakilan' => fake()->name(2)
+                'perwakilan' => fake()->name(2),
             ]);
             $supplier_id = $newSupplier->id;
         }
 
-       $data = [
+        $data = [
             'kode' => $request->kode,
             'namaProduk' => $request->namaProduk,
             'satuan' => $request->satuan,
@@ -289,7 +307,7 @@ class ProdukController extends Controller
             'supplier_id' => $supplier_id,
             'golongan_id' => $golongan_id,
             'expDate' => $request->expDate,
-            'deskripsi' => $request->deskripsi
+            'deskripsi' => $request->deskripsi,
         ];
 
         $validator = Validator::make($data, [
@@ -307,7 +325,7 @@ class ProdukController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-    //     // event All Users
+        //     // event All Users
 
         $validatedData = $data;
         $submit = Produk::where('kode', $kode)->update($validatedData);
@@ -345,38 +363,78 @@ class ProdukController extends Controller
     public function apotekerUpdateStock(Request $request, $kode)
     {
         if ($request->ajax()) {
-            if ($request->stok <= 0) {
-                return response()->json(['fail' => 'Stok yang dimasukkan tidak boleh bernilai 0']);
+            if (Carbon::parse($request->expDate) < Carbon::now()) {
+                return response('Periksa kembali data produk', 500);
             } else {
-                $saldo = Keuangan::orderBy('created_at', 'desc')
-                    ->pluck('saldo')
-                    ->first();
-                $stok = Produk::where('kode', $kode)->first();
-                $total = $request->stok * json_decode($stok->harga);
-                if (isset($stok)) {
-                    if ($total < $saldo) {
-                        Produk::where('kode', $kode)->update([
-                            'stok' => $stok->stok + $request->stok,
-                            'expDate' => $request->expDate,
-                        ]);
-                        Keuangan::create([
-                            'keterangan' => 'Pembelanjaan produk '.$stok->namaProduk,
-                            'jumlah' => $total,
-                            'user_id' => auth()->user()->id,
-                            'saldo' => $saldo - $total,
-                            'kategori' => 'Kredit'
-                        ]);
-                        // event(new UserNotification('Apoteker '.auth()->user()->nama.' berhasil Menambahkan Stok Obat '.$stok->namaProduk, auth()->user()));
-                        //event for all Users
-
-                        return response()->json(['message' => 'Stok berhasil Ditambahkan']);
-                    } else {
-                        return response()->json(['fail' => 'Saldo kas tidak mencukupi']);
-                    }
+                if ($request->stok <= 0) {
+                    return response()->json(['fail' => 'Stok yang dimasukkan tidak boleh bernilai 0']);
                 } else {
-                    return response()->json(['fail' => 'Data Obat tidak Ada']);
+                    $saldo = Keuangan::orderBy('created_at', 'desc')
+                        ->pluck('saldo')
+                        ->first();
+                    $stok = Produk::where('kode', $kode)->first();
+                    $total = $request->stok * json_decode($stok->harga);
+                    if (isset($stok)) {
+                        if ($total < $saldo) {
+                            Produk::where('kode', $kode)->update([
+                                'stok' => $stok->stok + $request->stok,
+                                'expDate' => $request->expDate,
+                            ]);
+                            Keuangan::create([
+                                'keterangan' => 'Pembelanjaan produk ' . $stok->namaProduk,
+                                'jumlah' => $total,
+                                'user_id' => auth()->user()->id,
+                                'saldo' => $saldo - $total,
+                                'kategori' => 'Kredit',
+                            ]);
+                            // event(new UserNotification('Apoteker '.auth()->user()->nama.' berhasil Menambahkan Stok Obat '.$stok->namaProduk, auth()->user()));
+                            //event for all Users
+
+                            return response()->json(['message' => 'Stok berhasil Ditambahkan']);
+                        } else {
+                            return response()->json(['fail' => 'Saldo kas tidak mencukupi']);
+                        }
+                    } else {
+                        return response()->json(['fail' => 'Data Obat tidak Ada']);
+                    }
                 }
             }
+        } else {
+            return response('Server disconnected', 400);
+        }
+    }
+
+    public function produkKadaluarsa()
+    {
+        return view('apoteker.obat.kadaluarsa', [
+            'title' => 'Obat Kadaluarsa',
+        ]);
+    }
+
+    public function filterProdukKadaluarsa(Request $request)
+    {
+        if ($request->ajax()) {
+            $now = Carbon::now();
+            $filterDate = $now->format('Y-m-d');
+            $data = Produk::where('expDate', $filterDate)->get();
+            $filterProduk = [];
+            foreach ($data as $item) {
+                $golongan = Kategori::whereIn('id', json_decode($item->golongan_id))->first();
+                $filterProduk[] = [
+                    'kode' => $item->kode,
+                    'namaProduk' => $item->namaProduk,
+                    'golongan' => $golongan->golongan,
+                    'deskripsi' => $item->deskripsi,
+                    'satuan' => $item->satuan,
+                    'stok' => $item->stok,
+                    'supplier' => Supplier::where('id', $item->supplier_id)
+                        ->pluck('nama')
+                        ->first(),
+                    'expDate' => $item->expDate,
+                    'status' => $filterDate == $item->expDate ? 'Kadaluarsa' : '',
+                ];
+            }
+            return response(['data' => $filterProduk]);
         } else {
             return response('Server disconnected', 400);
         }

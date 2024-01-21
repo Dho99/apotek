@@ -1,16 +1,23 @@
 @extends('layouts.main')
-@section('content')
+{{-- @section('content') --}}
+<script src="{{asset('vendors/scripts/myScript/lapKeu.js')}}"></script>
+{{-- @endsection --}}
 
-    <div class="xs-pd-20-10 pd-ltr-20">
+    <div class="xs-pd-20-10 pd-ltr-20 float-right container pl-5 py-5 mt-5">
         <div class="title pb-20 d-flex">
             <h2 class="h3 mb-0">{{ $title }}</h2>
-            <button class="btn btn-success ml-auto" onclick="tambahLaporan()">
+            <button class="btn btn-success ml-auto noprint" onclick="tambahLaporan()">
                 <span class="icon-copy dw dw-add"></span> Tambah Data
             </button>
         </div>
 
+        @php
+            $now = \Illuminate\Support\Carbon::now();
+            $month = $now->format('F');
+            $year = $now->format('Y');
+        @endphp
         {{-- @dd($keterangan) --}}
-        <div class="card-box mb-20">
+        <div class="card-box mb-20 noprint">
             <div class="pd-20">
                 <div class="row d-flex px-3">
                     <div class="font-20 px-3">Total Saldo</div>
@@ -26,7 +33,7 @@
                     </div>
                     <div class="col-lg-4">
                         <select name="" id="categoryKeuangan"
-                            class="form-control" onchange="refreshTable()">
+                            class="form-control noprint" onchange="refreshTable()">
                             <option value="" selected>Semua</option>
                             @foreach ($kategori as $item)
                                 <option value="{{ $item }}">{{ $item }}</option>
@@ -37,28 +44,38 @@
                 <div class="row">
                     <div class="col-lg-8 font-20">
                         Urutkan Per
+                        <span id="month">
+
+                        </span>
+                        <span id="year">
+
+                        </span>
                     </div>
                     <div class="col-lg-4 d-flex">
-                        <select name="" id="orByMo" class="form-control mx-1" onchange="refreshTable()">
+                        <select name="" id="orByMo" class="form-control mx-1 noprint" onchange="refreshTable()">
                             <option value="">Bulan</option>
                             @foreach ($perBulan as $key => $item)
-                                <option value="{{$key}}">{{$key}}</option>
+                                <option value="{{$key}}" {{$month == $key ? 'selected' : ''}}>{{$key}}</option>
                             @endforeach
                         </select>
 
-                        <select name="" id="orByYear" class="form-control mx-1" onchange="refreshTable()">
+                        <select name="" id="orByYear" class="form-control mx-1 noprint" onchange="refreshTable()">
                             <option value="">Tahun</option>
                             @foreach ($perTahun as $key => $item)
-                                <option value="{{$key}}">{{$key}}</option>
+                                <option value="{{$key}}" {{$year == $key ? 'selected' : ''}}>{{$key}}</option>
                             @endforeach
                         </select>
                     </div>
                 </div>
             </div>
         </div>
-
         <div class="card-box mb-30">
             <div class="pd-20">
+                <div id="btnExport" class="my-3 d-flex">
+                    <button class="btn btn-secondary noprint" onclick="window.print();">
+                        Print
+                    </button>
+                </div>
                     <table class="data-table table" id="myKeuanganTable">
                         <thead>
                             <tr>
@@ -102,11 +119,4 @@
             </div>
         </div>
     </div>
-    <script src="{{asset('vendors/scripts/myScript/lapKeu.js')}}"></script>
 
-    <script>
-        $().ready(function(){
-            $('#myPenjualanTable')
-        })
-    </script>
-@endsection

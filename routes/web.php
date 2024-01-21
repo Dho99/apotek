@@ -54,6 +54,8 @@ Route::controller(ProdukController::class)->group(function () {
         Route::get('/apoteker/obat/add/stock/{kode}', 'apotekerAddStock');
         Route::get('/apoteker/obat/get/{kode}', 'apotekerGetProdukByKode');
         Route::post('/apoteker/obat/add/update/stock/{kode}', 'apotekerUpdateStock');
+        Route::get('/apoteker/obat/kadaluarsa', 'produkKadaluarsa');
+        Route::get('/apoteker/obat/kadaluarsa/filter', 'filterProdukKadaluarsa');
     });
 
 });

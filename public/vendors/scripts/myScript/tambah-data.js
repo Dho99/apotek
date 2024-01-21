@@ -21,24 +21,24 @@ function submitNewObat(event, url) {
     }
     ajaxUpdate(url, "POST", formData);
 
-    $("#createNewObatForm input").val('');
+    $("#createNewObatForm input").val("");
     $("#golongan").val(null).trigger("change");
-    initSel2Tags('#golongan, #supplier');
+    initSel2Tags("#golongan, #supplier");
     undoChanges();
-    setTimeout(function() {
+    setTimeout(function () {
         window.location.href = "/apoteker/obat/list";
     }, 2000);
 }
 
 function randomized(event) {
     event.preventDefault();
-    $("#kodeObat").val('PRD-'+randomString());
+    $("#kodeObat").val("PRD-" + randomString());
 }
 
 function undoChanges() {
     $("#image").val("");
     $(".img-preview").hide();
-    $("#descriptionInput").val('');
+    $("#descriptionInput").val("");
 }
 
 function previewImage() {

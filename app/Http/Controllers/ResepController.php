@@ -95,15 +95,16 @@ class ResepController extends Controller
 
     public function apotekerIndexFilter(Request $request, $satuan)
     {
+        $date = Carbon::now()->format('Y-m-d');
         if ($request->ajax()) {
             if ($satuan === 'Semua') {
-                $data = Produk::get();
+                $data = Produk::whereDate('expDate', '>', $date)->get();
                 return response()->json(['data' => $data]);
             } else {
-                $data = Produk::where('satuan', '=', $satuan)->get();
+                $data = Produk::where('satuan', '=', $satuan)->whereDate('expDate', '>', $date)->get();
                 return response()->json(['data' => $data]);
             }
-            $data = Produk::all();
+            $data = Produk::whereDate('expDate', '>', $date)->get();
             return response()->json(['data' => $data]);
         }
     }

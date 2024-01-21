@@ -462,10 +462,16 @@
                         url: '/apoteker/obat/get/' + val,
                         method: 'GET',
                         success: function(response) {
+                            // console.log(response.data);
                             let hasil = response.data[0];
                             if (hasil === undefined)
                             {
                                 userMessage();
+                                val.val('');
+                                $('#codeProductInputField').focus();
+                            }
+                            else if (hasil.stok < 1){
+                                userMessage('Stok anda tidak mencukupi');
                                 val.val('');
                                 $('#codeProductInputField').focus();
                             }
@@ -511,9 +517,15 @@
 
             }
 
-            function userMessage() {
+            function userMessage(arg) {
+                let msg;
+                if(arg != undefined){
+                    msg = arg;
+                }else{
+                    msg = 'Masukkan kode barang dengan benar dan teliti';
+                }
                 inpf.addClass('form-control-danger');
-                formMsg.removeClass('d-none').text('Masukkan kode barang dengan benar dan teliti');
+                formMsg.removeClass('d-none').text(msg);
             }
 
             function removeUserMessage() {

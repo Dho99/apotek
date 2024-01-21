@@ -267,7 +267,7 @@
                 cache: false,
                 data: dataForm,
                 success: function(response) {
-                    // console.log(response.data);
+                    console.log(response.data);
                     successAlert(response.message);
                     emptyModal();
                     refreshTable();

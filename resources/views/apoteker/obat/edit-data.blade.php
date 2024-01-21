@@ -5,12 +5,26 @@
             <h2 class="h3 mb-0" id="title">{{ $title }}</h2>
         </div>
 
+        @php
+            $now = \Illuminate\Support\Carbon::now();
+            $expTime = $now->format('Y-m-d');
+            @endphp
         <div class="card-box mb-30">
             {{-- @dd($datas) --}}
             @foreach ($datas as $item)
-                <form id="createNewObatForm" onsubmit="submitNewObat(event, '/apoteker/obat/edit/{{ $item->kode }}')"
-                    enctype="multipart/form-data">
-                    <div class="p-5">
+            <form id="createNewObatForm" onsubmit="submitNewObat(event, '/apoteker/obat/edit/{{ $item->kode }}')"
+                enctype="multipart/form-data">
+                <div class="px-4 py-2">
+                        @if($expTime == $item->expDate)
+                        <div id="notification" class="pt-3 pb-1">
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <strong>Obat sudah Kadaluarsa</strong> Perbarui tanggal kadaluarsanya segera
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">×</span>
+                                </button>
+                            </div>
+                        </div>
+                        @endif
                         <div class="row my-3">
                             <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 mb-3">
                                 <label for="kode-obat">Kode Obat</label>
@@ -53,7 +67,7 @@
                                 <span class="float-right" data-toggle="tooltip"
                                     title="Digunakan Untuk Identifier Sebuah Produk">
                                     <i class="icon-copy dw dw-question font-20"></i></span>
-                                <input class="form-control" id="expDate" placeholder="Exp Date" name="expdate" required disabled value="{{$item->expDate}}"
+                                <input class="form-control {{$item->expDate ===$expTime ? 'text-danger form-control-danger' : ''}} " id="expDate" placeholder="Exp Date" name="expdate" required disabled value="{{$item->expDate}}"
                                     type="date" />
                             </div>
                         </div>

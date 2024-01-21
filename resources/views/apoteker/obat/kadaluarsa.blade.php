@@ -4,26 +4,7 @@
         <div class="title pb-20">
             <h2 class="h3 mb-0">{{ $title }}</h2>
         </div>
-        <div class="card-box mb-30">
-            <div class="pd-20">
-                <label for="">Filter Obat berdasarkan Kategori <span id="desc"></span> </label>
-                <div class="row d-flex mt-3">
-                    <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 pb-3 d-flex">
-                        <select id="filterSupplier" class="custom-select2 form-control rounded-right" onchange="refreshTable()">
-                            <option value="Semua">Semua</option>
-                            @foreach ($kategori as $item)
-                                <option value="{{ $item->golongan }}">{{ $item->golongan }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="col-xl-3 col-lg-12 col-md-12 col-sm-12 ml-auto">
-                        <a href="/apoteker/obat/create" class="btn btn-outline-success w-100">
-                            <span class="icon-copy dw dw-add"></span>
-                            Tambah Data
-                        </a>
-                    </div>
-                </div>
-            </div>
+        <div class="card-box mb-30 p-3">
             <div class="pb-20">
                 <table class="data-table table nowrap" id="myObatTable">
                     <thead>
@@ -36,7 +17,8 @@
                             <th>Unit</th>
                             <th>Pemasok</th>
                             <th>Status</th>
-                            <th class="datatable-nosort">Action</th>
+                            <th>Tanggal Kadaluarsa</th>
+                            <th>Aksi</th>
                         </tr>
                     </thead>
 
@@ -44,22 +26,21 @@
             </div>
         </div>
     </div>
-    <script>
+    {{-- <script>
         $().ready(function() {
             refreshTable();
         });
-    </script>
+    </script> --}}
 @endsection
 <script>
     function refreshTable() {
-        const kategori = $('#filterSupplier').val();
-        const url = '/obat/filter/'+kategori;
+        const url = '/apoteker/obat/kadaluarsa/filter';
         $.ajax({
             url: url,
             type: 'GET',
             success: function(response) {
-                // console.log(response.data);
-                updateTable('#myObatTable', response.data, [
+                console.log(response.data);
+                printable('#myObatTable', response.data, [
                     {
                         render: function(data, type, row, meta){
                             return meta.row + meta.settings._iDisplayStart + 1;
@@ -84,33 +65,37 @@
                         data: "supplier"
                     },
                     {
+                        data:null,
                         render: function(data, type, row){
                             return `
-                            <p class="${row.status == 'Kadaluarsa' ? 'text-danger' : 'text-success'}">${row.status}</p>
+                            <small class="badge badge-danger font-weight-normal">Telah Kadaluarsa</small>
                             `;
                         }
                     },
                     {
-                        render: function(data, type, row) {
-                            // Masukkan kode HTML aksi sesuai kebutuhan
-                            return `
+                        render: function(data, type, row){
+                            const date = new Date(row.expDate).toLocaleString();
+                            return `<p class="text-danger">${row.expDate}</p>`;
+                        }
+                    },
+                    {
+                        render: function(data, type, row){
+                                return `
                                 <div class="dropdown">
                                     <a class="btn btn-link font-24 p-0 line-height-1 no-arrow dropdown-toggle"
                                         href="#" role="button" data-toggle="dropdown">
                                         <i class="dw dw-more"></i>
                                     </a>
                                     <div class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list">
-                                        <a class="dropdown-item"  href="/apoteker/obat/show/${row.kode}">
-                                            <i class="dw dw-eye"></i> View
+                                        <a class="dropdown-item" onclick="if(confirm('Lanjutkan perbarui data obat ?')) {window.location.href='/apoteker/obat/show/${row.kode}'}">
+                                            <i class="icon-copy dw dw-settings2"></i> Perbarui
                                         </a>
-                                        <a class="dropdown-item text-danger" onclick="deleteDataObat('${row.kode}')"><i class="dw dw-delete-3"></i>
-                                            Delete</a>
                                     </div>
                                 </div>
                                 `;
-                        }
-                    },
 
+                            }
+                    }
                 ]);
             },
             error: function(error, xhr) {
@@ -118,17 +103,17 @@
                 console.log(xhr.responseText);
             }
         });
-        if (kategori === 'Semua') {
-            const desc = $("#desc").html('');
-        } else {
-            const desc = $("#desc").html(`${kategori}`);
-        }
+        // if (kategori === 'Semua') {
+        //     const desc = $("#desc").html('');
+        // } else {
+        //     const desc = $("#desc").html(`${kategori}`);
+        // }
     };
 
 
-    function deleteDataObat(kode) {
-        const kodeForDelete = kode;
-        const url = '/apoteker/obat/list/delete/';
-        deleteData(url, kodeForDelete);
-    }
+    // function deleteDataObat(kode) {
+    //     const kodeForDelete = kode;
+    //     const url = '/apoteker/obat/list/delete/';
+    //     deleteData(url, kodeForDelete);
+    // }
 </script>
