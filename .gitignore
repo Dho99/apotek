@@ -3,6 +3,7 @@
 /public/hot
 /storage/*.key
 /public/storage
+.env
 .env.backup
 .env.production
 .phpunit.result.cache
@@ -15,4 +16,4 @@ yarn-error.log
 /.idea
 /.vscode
 node_modules
-.env
+
