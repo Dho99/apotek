@@ -19,17 +19,17 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-                'username' => fake()->unique()->userName(),
-                'kode' => Str::random(3).'-'.mt_rand(100,999),
-                'nama' => fake()->name(),
-                'email' => fake()->unique()->safeEmail(),
-                'password' => bcrypt('password'),
-                'telp' => fake()->unique()->phoneNumber(),
-                'alamat' => fake()->address(),
-                'status' => 'Aktif',
-                'level' => mt_rand(0,3),
-                'profile' => 'default',
-                'tanggal_lahir' => fake()->dateTimeThisDecade()
+                // 'username' => fake()->unique()->userName(),
+                // 'kode' => Str::random(3).'-'.mt_rand(100,999),
+                // 'nama' => fake()->name(),
+                // 'email' => fake()->unique()->safeEmail(),
+                // 'password' => bcrypt('password'),
+                // 'telp' => fake()->unique()->phoneNumber(),
+                // 'alamat' => fake()->address(),
+                // 'status' => 'Aktif',
+                // 'level' => mt_rand(0,3),
+                // 'profile' => 'default',
+                // 'tanggal_lahir' => fake()->dateTimeThisDecade()
         ];
     }
 }

@@ -12,18 +12,20 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('penjualans', function (Blueprint $table) {
-            $table->id()->uniqid();
+            $table->id()->unique();
             $table->string('kodePenjualan');
             $table->json('produk_id');
-            $table->foreignId('apoteker_id');
-            $table->foreignId('dokter_id');
-            $table->foreignId('pasien_id');
+            $table->unsignedBigInteger('apoteker_id');
+            $table->unsignedBigInteger('dokter_id');
             $table->string('kategoriPenjualan');
             $table->json('harga');
             $table->integer('dsc');
             $table->json('jumlah');
             $table->integer('subtotal')->default(null);
             $table->timestamps();
+
+            $table->foreign('apoteker_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('dokter_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
         });
     }
 

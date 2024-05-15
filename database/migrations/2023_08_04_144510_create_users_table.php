@@ -12,8 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->id()->uniqid();
+            $table->id()->unique();
             $table->string('username', 100);
+            $table->string('no_rekam_medis')->nullable();
+            $table->boolean('gender');
             $table->string('kode', 50);
             $table->string('nama', 50);
             $table->string('email', 50);
@@ -21,12 +23,15 @@ return new class extends Migration
             $table->string('telp', 20);
             $table->string('alamat', 100);
             $table->string('status', 10);
-            $table->integer('level')->default(null);
-            $table->date('tanggal_lahir')->default(null);
-            $table->string('profile')->default(null);
-            $table->string('kategoriDokter', 50)->default(null);
+            $table->bigInteger('roleId')->unsigned();
+            $table->date('tanggal_lahir')->nullable();
+            $table->string('profile')->nullable();
+            $table->string('kategoriDokter', 50)->nullable();
             $table->boolean('isPresent')->nullable();
+            $table->json('jamPraktek')->nullable();
             $table->timestamps();
+
+            $table->foreign('roleId')->references('id')->on('roles')->onUpdate('cascade')->onDelete('cascade');
         });
     }
 

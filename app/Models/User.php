@@ -19,23 +19,6 @@ class User extends Authenticatable
      */
     protected $primaryKey = 'id';
     // protected $table = 'users';
-
-    protected $fillable = [
-        'username',
-        'kode',
-        'nama',
-        'email',
-        'password',
-        'telp',
-        'alamat',
-        'status',
-        'kategoriDokter',
-        'level',
-        'profile',
-        'tanggal_lahir',
-        'isPresent'
-    ];
-
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -55,10 +38,8 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    protected function level(): Attribute
+    protected function role()
     {
-        return new Attribute(
-            get: fn ($value) =>  ["Dokter", "Apoteker", "Kasir", "Pasien"][$value],
-        );
+        return $this->belongsTo(\App\Models\Role::class, 'roleId');
     }
 }

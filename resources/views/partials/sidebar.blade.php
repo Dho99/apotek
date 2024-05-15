@@ -7,10 +7,16 @@
             <i class="ion-close-round"></i>
         </div>
     </div>
-    @if (auth()->user()->level === 'Dokter')
+    @if (auth()->user()->role->roleName === 'Dokter')
         <div class="menu-block customscroll mt-4">
             <div class="sidebar-menu">
                 <ul id="accordion-menu">
+                    <li>
+                        <a href="/dokter/dashboard"
+                            class="dropdown-toggle no-arrow {{ $title == 'Dashboard' ? 'active ' : '' }}">
+                            <span class="micon icon-copy dw dw-home"></span><span class="mtext">Dashboard</span>
+                        </a>
+                    </li>
                     <li>
                         <a href="/dokter/resep/create"
                             class="dropdown-toggle no-arrow {{ $title == 'Buat Resep' ? 'active ' : '' }}">
@@ -28,7 +34,7 @@
         </div>
     @endif
 
-    @if (auth()->user()->level === 'Apoteker')
+    @if (auth()->user()->role->roleName === 'Apoteker')
         <div class="menu-block customscroll mt-4">
             <div class="sidebar-menu">
                 <ul id="accordion-menu">
@@ -101,7 +107,7 @@
         </div>
     @endif
 
-    {{-- @if (auth()->user()->level === 'Kasir')
+    @if (auth()->user()->role->roleName === 'Kasir')
         <div class="menu-block customscroll mt-4">
             <div class="sidebar-menu">
                 <ul id="accordion-menu">
@@ -127,6 +133,6 @@
                 </ul>
             </div>
         </div>
-    @endif --}}
+    @endif
 </div>
 

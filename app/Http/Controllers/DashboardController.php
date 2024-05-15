@@ -85,6 +85,7 @@ class DashboardController extends Controller
         ]);
     }
 
+
     public function countProduct(Request $request){
         if($request->ajax()){
             $obat = Produk::all();

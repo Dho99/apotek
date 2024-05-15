@@ -15,11 +15,9 @@ class CheckRole
      */
     public function handle(Request $request, Closure $next, $level)
     {
-        if(auth()->user()->level === $level){
+        if(auth()->user()->role->roleName === $level){
             return $next($request);
         }
-
-        return response()->json(['You do not have permission to access for this page.']);
-        /* return response()->view('errors.check-permission'); */
+        return response()->view('errors.403');
     }
 }

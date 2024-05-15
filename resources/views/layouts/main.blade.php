@@ -20,21 +20,22 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
     <link rel="stylesheet" href="{{ asset('vendors/styles/pagination.css') }}">
     <link rel="stylesheet" type="text/css" href="https://unpkg.com/trix@2.0.0/dist/trix.css">
+    @yield('plugins')
 </head>
 
 
 <body class="body">
     @include('partials.navbar')
     @include('partials.sidebar')
-    @include('partials.notification-bar')
+    {{-- @include('partials.notification-bar') --}}
     <div class="mobile-menu-overlay"></div>
 
 
     <div class="main-container noprint">
         {{-- @dd(auth()->user()) --}}
-        @yield('content')
-
         <div class="container">
+            @yield('content')
+
         </div>
     </div>
 
@@ -82,13 +83,7 @@
     <script src="{{ asset('vendors/scripts/myScript/jquery.mask.min.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
     <script type="text/javascript" src="https://unpkg.com/trix@2.0.0/dist/trix.umd.min.js"></script>
-
-    {{-- @vite(['resources/js/app.js'])
-    @php
-        $level = \App\Models\User::where('id', auth()->user()->id)
-            ->pluck('level')
-            ->first();
-    @endphp --}}
+    @stack('scripts')
     <script>
         function initSel2Tags(arg){
             $(arg).select2({
@@ -98,71 +93,7 @@
         }
         $().ready(function() {
             refreshTable();
-        //     let level = '//variabel level dari user menggunakan blade syntax template';
-
-        //     const public = Echo.channel('public-notif');
-
-        //     public.subscribed(() => {}).listen('.notif-msg', (event) => {
-        //         appendNotif(event.user.nama, event.message);
-        //         appendNotifBadge(event.level);
-        //     });
-
-        //     const channel = Echo.private('private.notif.' + level);
-
-        //     channel.subscribed(() => {}).listen('.notif-msg', (event) => {
-        //         console.log(event);
-        //         const user = event.user;
-        //         const message = event.message;
-        //         const link = event.links;
-        //         const linkPlchdr = event.linkPlaceholder;
-        //         switch (event.level) {
-        //             case '0':
-        //                 appendNotif(user.nama, message, link, linkPlchdr);
-        //                 break;
-        //             case '1':
-        //                 appendNotif(user.nama, message, link, linkPlchdr);
-        //                 break;
-        //             case '2':
-        //                 appendNotif(user.nama, message, link, linkPlchdr);
-        //                 break;
-        //             default:
-        //                 console.log('You aren' / 't the member!');
-        //         }
-        //         refreshTable();
-        //     });
-
-        //     function appendNotif(name, message, link, plchldr) {
-        //         const notifwrapper = $('#sidebarWrapper');
-        //         notifwrapper.append(`
-        //     <div class="container-fluid bg-light py-2 my-1 text-dark">
-        //         <div class="row d-flex py-2 px-3">
-        //             <div class="col-xl-12 col-md-12">
-        //                 <p class="font-weight-bold font-18 mb-0">${name}</p>
-        //                 <p class="mb-1">${message}</p>
-        //                 ${
-        //                     link !== undefined ?
-        //                     `<a class="btn btn-sm btn-success mt-1" href="${link}">${plchldr}</a>` :
-        //                     ''
-        //                 }
-        //                 </div>
-        //                 </div>
-        //     </div>
-        //     `);
-        //     }
-
-        //     function appendNotifBadge(level){
-        //         const curLevel = {{\App\Models\User::where('id', auth()->user()->id)->pluck('level')->first()}};
-        //         if(level == curLevel){
-        //             $('.dropdown-toggle.no-arrow.text-dark').append(`
-        //                 <span class="badge notification-active"></span>
-        //             `);
-        //         }
-        //     }
-
-
         });
-    </script>
-    <script>
         function printable(table, data, column) {
             $(table).empty();
             $(table).DataTable({

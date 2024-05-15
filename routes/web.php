@@ -10,6 +10,7 @@ use App\Http\Controllers\KeuanganController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PenjualanController;
+use App\Http\Controllers\DashboardDokterController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -27,17 +28,23 @@ Route::controller(AuthController::class)->group(function () {
     Route::get('/logout', 'logout');
 });
 
+
+Route::prefix('dokter')->middleware(['auth','user-access:Dokter'])->group(function(){
+    Route::controller(DashboardDokterController::class)->group(function(){
+        Route::get('/dashboard','index');
+    });
+});
 Route::controller(DashboardController::class)->group(function () {
     Route::middleware(['auth', 'user-access:Apoteker'])->group(function () {
         Route::get('/apoteker/dashboard', 'apotekerIndex');
         Route::get('/apoteker/count/produk/dashboard','countProduct');
         Route::get('/apoteker/count/kas/dashboard','countKas');
     });
-    Route::middleware(['auth', 'user-access:Dokter'])->group(function () {
-        Route::get('/dokter/dashboard', 'dokterIndex', function(){
-            event(new UserNotification('Selamat datang ' . auth()->user()));
-        });
-    });
+    // Route::middleware(['auth', 'user-access:Dokter'])->group(function () {
+    //     Route::get('/dokter/dashboard', 'dokterIndex', function(){
+    //         event(new UserNotification('Selamat datang ' . auth()->user()));
+    //     });
+    // });
 });
 
 Route::controller(ProdukController::class)->group(function () {
