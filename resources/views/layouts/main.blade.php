@@ -11,7 +11,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet" />
     <!-- CSS -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" type="text/css" href="{{ asset('vendors/styles/core.css') }}" />
     <link rel="stylesheet" type="text/css" href="{{ asset('vendors/styles/icon-font.min.css') }}" />
     <link rel="stylesheet" type="text/css" href="{{ asset('vendors/styles/style.min.css') }}" />
@@ -35,7 +34,6 @@
         {{-- @dd(auth()->user()) --}}
         <div class="container">
             @yield('content')
-
         </div>
     </div>
 
@@ -72,7 +70,7 @@
         </div>
     </div>
 
-
+    {{-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> --}}
     <script src="{{ asset('vendors/scripts/core.js') }}"></script>
     <script src="{{ asset('vendors/scripts/script.min.js') }}"></script>
     <script src="{{ asset('vendors/scripts/layout-settings.js') }}"></script>
@@ -91,9 +89,9 @@
                 placeholder: 'Pilih opsi berikut atau tambahkan opsi baru'
             });
         }
-        $().ready(function() {
-            refreshTable();
-        });
+        // $().ready(function() {
+        //     refreshTable();
+        // });
         function printable(table, data, column) {
             $(table).empty();
             $(table).DataTable({
