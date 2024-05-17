@@ -11,7 +11,7 @@
                 </div>
                 <div class="col-9 py-3">
                     <h6 class="mb-2">Jumlah Pasien Konsultasi</h6>
-                    <h3>{{$consultOrder}}</h3>
+                    <h3>{{ $consultOrder }}</h3>
                 </div>
             </div>
         </div>
@@ -22,7 +22,7 @@
                 </div>
                 <div class="col-9 py-3">
                     <h6 class="mb-2">Jumlah Pasien Lama</h6>
-                    <h3>{{$oldPatientCounts}}</h3>
+                    <h3>{{ $oldPatientCounts }}</h3>
                 </div>
             </div>
         </div>
@@ -33,14 +33,21 @@
                 </div>
                 <div class="col-9 py-3">
                     <h6 class="mb-2">Jumlah Pasien Baru</h6>
-                    <h3>{{$newPatientCounts}}</h3>
+                    <h3>{{ $newPatientCounts }}</h3>
                 </div>
             </div>
         </div>
         <div class="col-12 py-2 px-4">
             <div class="bg-body shadow rounded row p-3">
-              <h5>Grafik Pasien baru dan Lama</h5>
-              <div id="patientChart" class="w-100 mt-3"></div>
+                <div class="col-12 d-flex p-0 m-0">
+                    <h5>Grafik Pasien baru dan Lama</h5>
+                    <select name="" id="getChartGraphBtn" class="form-control form-control-sm w-25 ml-auto">
+                        <option value="week">1 Minggu</option>
+                        <option value="month">30 Hari</option>
+                        <option value="year">1 Tahun</option>
+                    </select>
+                </div>
+                <div id="patientChart" class="w-100 mt-3"></div>
             </div>
         </div>
 
@@ -48,60 +55,85 @@
 @endsection
 
 @push('scripts')
-<script>
-
-
-    $(function(){
-        let chartDataValues;
-
-        let chartDaysData = [];
-        let chartLabelsData = [];
-        $.ajax({
-            method: 'GET',
-            url: '{{url()->current()}}',
-            success: ((response) => {
-                chartDataValues = (response.chartData);
-            }),
-            error: ((xhr, error) => {
-                console.log(xhr.responseText);
-            })
-        }).done(() => {
-            let cVal = chartDataValues.values();
-            for(let value of cVal){
-                chartDaysData.push(value[1]);
-                chartLabelsData.push(value[0]);
-            }
-            console.log(chartLabelsData);
-            console.log(chartDaysData);
-            chartGraph.render();
+    <script>
+        $(function() {
+            $('#getChartGraphBtn').val('week').change();
         });
 
-        let chartData = {
-            chart: {
-                type: 'area',
-                height: 350,
-            },
-            stroke:{
-                curve: 'smooth'
-            },
-            series: [
-            {
-                name: 'Pasien Lama',
-                data: chartDaysData
-            },
-            {
-                name: 'Pasien Baru'
+        let chartDataValues = [];
+        let chartDaysData = [];
+        let chartLabelsData = [];
+        let chartOldPatientsData = [];
+        let chartNewPatientsData = [];
+
+        $('#getChartGraphBtn').on('change', function() {
+            $.ajax({
+                method: 'GET',
+                url: '{{ url()->current() }}',
+                data: {
+                    'time': $(this).val()
+                },
+                success: ((response) => {
+                    chartDataValues = response.chartData;
+                    chartDaysData = [];
+                    chartLabelsData = [];
+                    chartOldPatientsData = [];
+                    chartNewPatientsData = [];
+                }),
+                error: ((xhr, error) => {
+                    console.log(xhr.responseText);
+                }),
+            }).done(() => {
+                let cVal = chartDataValues.values();
+                for (let value of cVal) {
+                    chartDaysData.push(value[1]);
+                    chartLabelsData.push(value[0]);
+                    chartOldPatientsData.push(value[2]);
+                    chartNewPatientsData.push(value[3]);
+                }
+                renderChart();
+            });
+        });
+
+
+        function renderChart() {
+            let chartData = {
+                chart: {
+                    type: 'area',
+                    height: 350,
+                    toolbar: {
+                        show: false
+                    },
+                    zoom: {
+                        enabled: false
+                    },
+                    stacked: true,
+                },
+                noData: {
+                    text: 'Fetching...'
+                },
+                colors: ['#66DA26', '#2E93fA'],
+                series: [],
+                xaxis: {
+                    categories: chartLabelsData,
+                    labels: {
+                        show: false
+                    },
+                },
             }
-        ],
-            xaxis: {
-                categories: chartLabelsData
-            }
+
+            let chartGraph = new ApexCharts(document.querySelector('#patientChart'), chartData);
+            chartGraph.render();
+
+            chartGraph.updateSeries([{
+                    name: 'Pasien Lama',
+                    data: chartOldPatientsData,
+                },
+                {
+                    name: 'Pasien Baru',
+                    data: chartNewPatientsData,
+                }
+            ]);
         }
-
-        let chartGraph = new ApexCharts(document.querySelector('#patientChart'), chartData);
-        // chartGraph.render();
-    });
-
-</script>
-
+    </script>
 @endpush

@@ -12,14 +12,46 @@ class DashboardDokterController extends Controller
     {
         if($request->ajax()){
 
-            $dateOfDays = [];
-            $weekDays = range(6,0);
-            foreach($weekDays as $d){
-                $consult = Kunjungan::whereDay('created_at',now()->subDays($d)->format('d'))->count();
-                array_push($dateOfDays, [now()->subDays($d)->locale('id_ID')->dayName, $consult]);
+            if($request->time === 'week'){
+                $weekDays = range(6,0);
+                $dateOfDays = [];
+                foreach($weekDays as $d){
+                    $consult = Kunjungan::whereDay('created_at',now()->subDays($d)->format('d'))->with('patient')->get();
+                    $oldPatient = 0;
+                    $newPatient = 0;
+                    foreach($consult as $c){
+                        if($c->patient->created_at->gte(now()->subdays(30))){
+                            $newPatient++;
+                        }else{
+                            $oldPatient++;
+                        }
+                    }
+                    array_push($dateOfDays, [now()->subDays($d)->locale('id_ID')->dayName, count($consult), $oldPatient, $newPatient]);
+                }
+
+                return response()->json(['chartData' => $dateOfDays], 200);
+            }
+            if($request->time === 'month'){
+                $weekDays = range(30,0);
+                $dateOfDays = [];
+                foreach($weekDays as $d){
+                    $consult = Kunjungan::whereDay('created_at', now()->subDays($d))->with('patient')->get();
+                    $oldPatient = 0;
+                    $newPatient = 0;
+                    foreach($consult as $c){
+                        if($c->patient->created_at->gte(now()->subdays(30))){
+                            $newPatient++;
+                        }else{
+                            $oldPatient++;
+                        }
+                    }
+                    // array_push($dateOfDays, $consult);
+                    array_push($dateOfDays, [now()->subDays($d)->locale('id_ID')->format('d'), count($consult), $oldPatient, $newPatient]);
+                }
+
+                return response()->json(['chartData' => $dateOfDays], 200);
             }
 
-            return response()->json(['chartData' => $dateOfDays], 200);
 
         }else{
             $userId = auth()->user()->id;
