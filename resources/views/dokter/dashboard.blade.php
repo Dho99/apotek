@@ -46,16 +46,36 @@
 
     </div>
 @endsection
-@php
-    echo($chartData);
-@endphp
 
 @push('scripts')
 <script>
+
+
     $(function(){
-        let newPatientArrays = [];
-        let newPatients = '{{json_decode($chartData)[0]}}';
-        console.log(newPatients);
+        let chartDataValues;
+
+        let chartDaysData = [];
+        let chartLabelsData = [];
+        $.ajax({
+            method: 'GET',
+            url: '{{url()->current()}}',
+            success: ((response) => {
+                chartDataValues = (response.chartData);
+            }),
+            error: ((xhr, error) => {
+                console.log(xhr.responseText);
+            })
+        }).done(() => {
+            let cVal = chartDataValues.values();
+            for(let value of cVal){
+                chartDaysData.push(value[1]);
+                chartLabelsData.push(value[0]);
+            }
+            console.log(chartLabelsData);
+            console.log(chartDaysData);
+            chartGraph.render();
+        });
+
         let chartData = {
             chart: {
                 type: 'area',
@@ -67,19 +87,19 @@
             series: [
             {
                 name: 'Pasien Lama',
-                data: [1,2,3,4,5,1996,1997, 1998,1999]
+                data: chartDaysData
             },
             {
                 name: 'Pasien Baru'
             }
         ],
             xaxis: {
-                categories: [1991,1992,1993,1994,1995,1996,1997, 1998,1999]
+                categories: chartLabelsData
             }
         }
 
         let chartGraph = new ApexCharts(document.querySelector('#patientChart'), chartData);
-        chartGraph.render();
+        // chartGraph.render();
     });
 
 </script>
