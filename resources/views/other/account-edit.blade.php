@@ -95,7 +95,7 @@
                                 <label for="nama" class="font-weight-bold">Level</label>
                                 <span><i class="icon-copy bi bi-info-circle float-right font-20 mb-2" data-toggle="tooltip"
                                         title="Tooltip on top"></i></span>
-                                <input type="text" class="form-control" name="level" value="{{ $item->level }}"
+                                <input type="text" class="form-control" name="level" @if(auth()->user()->role->roleName !== 'Administrator') disabled @endif value="{{ $item->role->roleName }}"
                                     required>
                             </div>
                             <div class="col-xl-12 my-3">

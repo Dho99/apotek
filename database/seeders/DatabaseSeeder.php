@@ -40,7 +40,10 @@ class DatabaseSeeder extends Seeder
             'profile' => 'default',
             'tanggal_lahir' => fake()->dateTimeThisDecade(),
             'kategoriDokter' => 'Umum',
-            'jamPraktek' => json_encode([now(), now()->addDay()])
+            'jamPraktek' => json_encode([
+                'start' => now()->format('H:i'),
+                'end' => now()->addHours(6)->format('H:i')
+            ]),
         ]);
         User::create([
             'username' => Str::slug(fake()->unique()->userName()),

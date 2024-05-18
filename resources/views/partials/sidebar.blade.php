@@ -17,7 +17,7 @@
                             <span class="micon icon-copy dw dw-home"></span><span class="mtext">Dashboard</span>
                         </a>
                     </li>
-                    <li>
+                    {{-- <li>
                         <a href="/dokter/resep/create"
                             class="dropdown-toggle no-arrow {{ $title == 'Buat Resep' ? 'active ' : '' }}">
                             <span class="micon icon-copy dw dw-edit-file"></span><span class="mtext">Buat Resep</span>
@@ -28,7 +28,7 @@
                             class="dropdown-toggle no-arrow {{ $title == 'Rekap Resep' ? 'active ' : '' }}">
                             <span class="micon icon-copy dw dw-file"></span><span class="mtext">Rekap Resep</span>
                         </a>
-                    </li>
+                    </li> --}}
                 </ul>
             </div>
         </div>

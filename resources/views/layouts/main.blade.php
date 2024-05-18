@@ -21,7 +21,7 @@
     <link rel="stylesheet" type="text/css" href="https://unpkg.com/trix@2.0.0/dist/trix.css">
     @yield('plugins')
 </head>
-
+@yield('styles')
 
 <body class="body">
     @include('partials.navbar')
@@ -196,7 +196,7 @@
                 cache: false,
                 data: dataForm,
                 success: function(response) {
-                    console.log(response.data);
+                    // console.log(response.data);
                     successAlert(response.message);
                     emptyModal();
                     refreshTable();
@@ -207,6 +207,28 @@
                     console.error(error);
                     console.log(xhr.responseText);
                 }
+            });
+        }
+
+        function asyncAjaxUpdate(url, method, dataForm){
+            return new Promise((resolve, reject) => {
+                $.ajax({
+                    url: url,
+                    method: method,
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr("content")
+                    },
+                    // processData: false,
+                    // contentType: false,
+                    cache: false,
+                    data: dataForm,
+                    success: function(response) {
+                        resolve(response);
+                    },
+                    error: function(xhr) {
+                        reject(xhr.responseText);
+                    }
+                });
             });
         }
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Dokter;
 use App\Models\Kunjungan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -92,13 +93,37 @@ class DashboardDokterController extends Controller
                 }
             }
 
+            // $userData = json_decode(auth()->user()->jamPraktek);
+
+
             return view('dokter.dashboard', [
                 'title' => 'Dashboard',
                 'consultOrder' => count($patients),
                 'oldPatientCounts' => $patientsTime['old'],
                 'newPatientCounts' => $patientsTime['new'],
+                'practiceTime' => json_decode(auth()->user()->jamPraktek)
             ]);
 
+        }
+    }
+
+    public function updatePracticeTime(Request $request)
+    {
+        $startTime = Carbon::parse($request->start);
+        $endTime = Carbon::parse($request->end);
+        if($startTime <= $endTime){
+            try{
+                $jamPraktek = [
+                    'start' => $startTime->format('H:i'),
+                    'end' => $endTime->format('H:i')
+                ];
+                $dokter = Dokter::where('id', auth()->user()->id)->update(['jamPraktek' => json_encode($jamPraktek)]);
+                return response(['message' => 'Data Updated Successfully'], 200);
+            }catch(\Exception $e){
+                return response($e->getMessage, 500);
+            }
+        }else{
+            return response('Cannot Update Jam Praktek, Please check it again', 500);
         }
     }
 }

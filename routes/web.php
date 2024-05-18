@@ -32,6 +32,7 @@ Route::controller(AuthController::class)->group(function () {
 Route::prefix('dokter')->middleware(['auth','user-access:Dokter'])->group(function(){
     Route::controller(DashboardDokterController::class)->group(function(){
         Route::get('/dashboard','index');
+        Route::put('/update/practice/time', 'updatePracticeTime')->name('updatePracticeTime');
     });
 });
 Route::controller(DashboardController::class)->group(function () {

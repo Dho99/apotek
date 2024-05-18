@@ -1,13 +1,42 @@
 @extends('layouts.main')
-{{-- @section('plugins')
-    <link rel="stylesheet" href="{{asset('src/plugins/apexcharts/apexcharts.css')}}">
-@endsection --}}
+@section('styles')
+ <style>
+    .rounded-left{
+        background-color: #7dd0a4 ;
+    }
+ </style>
+@endsection
 @section('content')
     <div class="row w-100">
-        <div class="col-lg-4 col-md-12 col-6 py-2 px-4">
+        <div class="col-12 py-2 px-4">
             <div class="bg-body shadow rounded row">
-                <div class="col-3 bg-dark rounded-left">
-                    s
+                <div class="col-3 rounded-left d-flex ">
+                    <h1 class="icon-copy dw dw-time-management text-light fw-bold m-auto"></h1>
+                </div>
+                <div class="col-9 py-3">
+                    <h6 class="mb-2">Jam Praktek Anda </h6>
+                    <div class="row w-100 my-3">
+                        <div class="input-group mb-3 col-lg-6 col-md-6 col-12">
+                            <div class="input-group-prepend">
+                            <label class="input-group-text border" for="inputGroupSelect01">Dari</label>
+                            </div>
+                        <input type="time" class="form-control" id="start" value="{{$practiceTime->start}}" disabled>
+                        </div>
+                        <div class="input-group mb-3 col-lg-6 col-md-6 col-12">
+                            <div class="input-group-prepend">
+                            <label class="input-group-text border" for="inputGroupSelect01">Sampai</label>
+                            </div>
+                        <input type="time" class="form-control" id="end" value="{{$practiceTime->end}}" disabled>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 col-md-6 col-12 py-2 px-4">
+            <div class="bg-body shadow rounded row">
+                <div class="col-3 rounded-left d-flex ">
+                    <h1 class="icon-copy dw dw-user-3 text-light fw-bold m-auto"></h1>
                 </div>
                 <div class="col-9 py-3">
                     <h6 class="mb-2">Jumlah Pasien Konsultasi</h6>
@@ -15,10 +44,10 @@
                 </div>
             </div>
         </div>
-        <div class="col-lg-4 col-md-6 col-6 py-2 px-4">
+        <div class="col-lg-6 col-md-6 col-12 py-2 px-4">
             <div class="bg-body shadow rounded row">
-                <div class="col-3 bg-dark rounded-left">
-                    s
+                <div class="col-3 rounded-left d-flex">
+                    <h1 class="icon-copy dw dw-id-card2 m-auto text-light"></h1>
                 </div>
                 <div class="col-9 py-3">
                     <h6 class="mb-2">Jumlah Pasien Lama</h6>
@@ -26,10 +55,10 @@
                 </div>
             </div>
         </div>
-        <div class="col-lg-4 col-md-6 col-6 py-2 px-4">
+        <div class="col-12 py-2 px-4">
             <div class="bg-body shadow rounded row">
-                <div class="col-3 bg-dark rounded-left">
-                    s
+                <div class="col-3 rounded-left d-flex">
+                    <h1 class="icon-copy dw dw-add-user m-auto text-light m-auto"></h1>
                 </div>
                 <div class="col-9 py-3">
                     <h6 class="mb-2">Jumlah Pasien Baru</h6>
@@ -37,6 +66,7 @@
                 </div>
             </div>
         </div>
+
         <div class="col-12 py-2 px-4">
             <div class="bg-body shadow rounded row p-3">
                 <div class="col-12 d-flex p-0 m-0">
@@ -134,5 +164,25 @@
                 }
             ]);
         }
+
+
+        // $('#updatePracticeTime').on('click', function(){
+        //     let startData = $('#start').val();
+        //     let endData = $('#end').val();
+        //     // console.log(startData, endData)
+        //     let dataForm = {
+        //         'start' : startData,
+        //         'end' : endData
+        //     };
+        //     asyncAjaxUpdate('{{route("updatePracticeTime")}}', 'PUT', dataForm).then((response) => {
+        //         successAlert(response.message);
+        //     }).catch((error) => {
+        //         errorAlert(error);
+        //         $('#start').val('{{$practiceTime->start}}');
+        //         $('#end').val('{{$practiceTime->end}}');
+        //     });
+        // });
+
+
     </script>
 @endpush
