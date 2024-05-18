@@ -46,7 +46,28 @@ class DashboardDokterController extends Controller
                         }
                     }
                     // array_push($dateOfDays, $consult);
-                    array_push($dateOfDays, [now()->subDays($d)->locale('id_ID')->format('d'), count($consult), $oldPatient, $newPatient]);
+                    array_push($dateOfDays, [now()->subDays($d)->locale('id_ID')->format('d F'), count($consult), $oldPatient, $newPatient]);
+                }
+
+                return response()->json(['chartData' => $dateOfDays], 200);
+            }
+
+            if($request->time === 'year'){
+                $weekDays = range(11,0);
+                $dateOfDays = [];
+                foreach($weekDays as $d){
+                    $consult = Kunjungan::whereMonth('created_at', now()->subMonth($d))->with('patient')->get();
+                    $oldPatient = 0;
+                    $newPatient = 0;
+                    foreach($consult as $c){
+                        if($c->patient->created_at->gte(now()->subdays(30))){
+                            $newPatient++;
+                        }else{
+                            $oldPatient++;
+                        }
+                    }
+                    // array_push($dateOfDays, $consult);
+                    array_push($dateOfDays, [now()->subMonth($d)->locale('id_ID')->format('F Y'), count($consult), $oldPatient, $newPatient]);
                 }
 
                 return response()->json(['chartData' => $dateOfDays], 200);

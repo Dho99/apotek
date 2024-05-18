@@ -79,6 +79,7 @@
                     chartLabelsData = [];
                     chartOldPatientsData = [];
                     chartNewPatientsData = [];
+                    // console.log(chartDataValues);
                 }),
                 error: ((xhr, error) => {
                     console.log(xhr.responseText);
@@ -116,14 +117,12 @@
                 series: [],
                 xaxis: {
                     categories: chartLabelsData,
-                    labels: {
-                        show: false
-                    },
                 },
             }
 
             let chartGraph = new ApexCharts(document.querySelector('#patientChart'), chartData);
             chartGraph.render();
+            // chartGraph.render();
 
             chartGraph.updateSeries([{
                     name: 'Pasien Lama',
