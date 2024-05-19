@@ -166,22 +166,6 @@
         }
 
 
-        // $('#updatePracticeTime').on('click', function(){
-        //     let startData = $('#start').val();
-        //     let endData = $('#end').val();
-        //     // console.log(startData, endData)
-        //     let dataForm = {
-        //         'start' : startData,
-        //         'end' : endData
-        //     };
-        //     asyncAjaxUpdate('{{route("updatePracticeTime")}}', 'PUT', dataForm).then((response) => {
-        //         successAlert(response.message);
-        //     }).catch((error) => {
-        //         errorAlert(error);
-        //         $('#start').val('{{$practiceTime->start}}');
-        //         $('#end').val('{{$practiceTime->end}}');
-        //     });
-        // });
 
 
     </script>

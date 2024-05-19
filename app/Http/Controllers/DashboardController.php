@@ -19,14 +19,17 @@ class DashboardController extends Controller
     {
         $patients = Pasien::getAll();
         $doctors = Dokter::getAll();
-        $kunjungans = Kunjungan::getAll();
+        $kunjunganToday = Kunjungan::today();
+        $localeDate =  Carbon::now()->locale('id_ID');
 
         return view('apoteker.dashboard', [
             'title' => 'Dashboard',
             'isPresent' => Dokter::isPresent(),
-            'countKunjungan' => count($kunjungans),
-            'countDokter' => count($doctors),
-            'countPatients' => count($patients)
+            'countKunjungan' => count($kunjunganToday),
+            'countDokter' => $doctors,
+            'countPatients' => count($patients),
+            'dateOfDay' => $localeDate->dayName.', '.$localeDate->format('d').' '.$localeDate->monthName.' '.$localeDate->format('Y'),
+            'thisYear' => $localeDate
         ]);
     }
 

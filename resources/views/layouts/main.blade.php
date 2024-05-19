@@ -21,17 +21,7 @@
     <link rel="stylesheet" type="text/css" href="https://unpkg.com/trix@2.0.0/dist/trix.css">
     @yield('plugins')
 </head>
-<style>
-    .footer{
-        left: 250;
-        bottom: 0;
-    }
-    @media screen and (width <= 1300px){
-        .footer{
-            left: 0 !important;
-        }
-    }
-</style>
+
 @yield('styles')
 
 <body class="body bg-light h-auto position-relative">
@@ -44,14 +34,17 @@
     <div class="main-container noprint">
         {{-- @dd(auth()->user()) --}}
         <div class="container pb-5 mt-3">
+            <div class="title d-flex">
+                <h2 class="mb-0">{{ $title }}</h2>
+            </div>
             @yield('content')
 
         </div>
     </div>
-    <footer class="position-fixed fixed-bottom bg-lightgreen footer d-inline-flex justify-content-center">
-        <div class="container py-3 px-5 d-inline-flex">
-            <h6>Aplikasi Klinik</h6>
-            <h6 class="ml-auto">Pharmapal</h6>
+    <footer class="position-fixed fixed-bottom bg-lightgreen footer d-inline-flex justify-content-end w-screen" style="z-index: 100;">
+        <div class="py-3 px-5 d-inline-flex ">
+                <h6 class="text-left">Aplikasi Klinik | Pharmapal</h6>
+
         </div>
     </footer>
 
@@ -87,7 +80,6 @@
         </div>
     </div>
 
-    {{-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> --}}
     <script src="{{ asset('vendors/scripts/core.js') }}"></script>
     <script src="{{ asset('vendors/scripts/script.min.js') }}"></script>
     <script src="{{ asset('vendors/scripts/layout-settings.js') }}"></script>
@@ -100,15 +92,12 @@
     <script type="text/javascript" src="https://unpkg.com/trix@2.0.0/dist/trix.umd.min.js"></script>
     @stack('scripts')
     <script>
-        function initSel2Tags(arg){
+        function initSel2Tags(arg) {
             $(arg).select2({
                 tags: true,
                 placeholder: 'Pilih opsi berikut atau tambahkan opsi baru'
             });
         }
-        // $().ready(function() {
-        //     refreshTable();
-        // });
         function printable(table, data, column) {
             $(table).empty();
             $(table).DataTable({
@@ -133,8 +122,7 @@
                     [25, 50, 100, 125, "All"]
                 ],
                 dom: 'Bfrtip',
-                buttons: [
-                    {
+                buttons: [{
                         extend: 'colvis',
                         titleAttr: 'Kustomisasi Tampilan tabel untuk di export'
                     },
@@ -144,19 +132,19 @@
                         exportOptions: {
                             columns: ':visible',
                         }
-                    },{
+                    }, {
                         extend: 'excel',
                         text: 'Excel',
                         exportOptions: {
                             columns: ':visible'
                         },
-                    },{
+                    }, {
                         extend: 'pdf',
                         text: 'PDF',
                         exportOptions: {
                             columns: ':visible'
                         }
-                    },{
+                    }, {
                         extend: 'print',
                         text: 'Print',
                         exportOptions: {
@@ -227,7 +215,7 @@
             });
         }
 
-        function asyncAjaxUpdate(url, method, dataForm){
+        function asyncAjaxUpdate(url, method, dataForm) {
             return new Promise((resolve, reject) => {
                 $.ajax({
                     url: url,
@@ -235,8 +223,6 @@
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr("content")
                     },
-                    // processData: false,
-                    // contentType: false,
                     cache: false,
                     data: dataForm,
                     success: function(response) {

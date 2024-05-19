@@ -13,7 +13,7 @@ class Dokter extends Model
 
     protected function getAll()
     {
-        return $this->where('roleId', 1)->get();
+        return $this->where('roleId', 2)->get();
     }
 
     protected function isPresent()

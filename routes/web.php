@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ResepController;
+use App\Http\Controllers\DokterController;
 use App\Http\Controllers\ProdukController;
 use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\KeuanganController;
@@ -32,17 +33,22 @@ Route::controller(AuthController::class)->group(function () {
 Route::prefix('dokter')->middleware(['auth','user-access:Dokter'])->group(function(){
     Route::controller(DashboardDokterController::class)->group(function(){
         Route::get('/dashboard','index');
-        // Route::put('/update/practice/time', 'updatePracticeTime')->name('updatePracticeTime');
+
     });
 });
-Route::controller(DashboardController::class)->group(function () {
-    Route::prefix('administrator')->middleware(['auth', 'user-access:Administrator'])->group(function () {
+Route::prefix('administrator')->middleware(['auth', 'user-access:Administrator'])->group(function () {
+    Route::controller(DashboardController::class)->group(function () {
         Route::get('/dashboard', 'apotekerIndex');
         Route::get('/count/produk/dashboard','countProduct');
         Route::get('/count/kas/dashboard','countKas');
     });
 
+    Route::controller(DokterController::class)->group(function(){
+       Route::put('/update/practice/time', 'updatePracticeTime')->name('updatePracticeTime');
+    });
+
 });
+
 
 // Route::controller(ProdukController::class)->group(function () {
 //     Route::get('/obat/filter/{filter}', 'filterProduk');
@@ -64,15 +70,15 @@ Route::controller(DashboardController::class)->group(function () {
 
 // });
 
-Route::controller(SupplierController::class)->group(function () {
-    Route::middleware(['auth', 'user-access:Apoteker'])->group(function () {
-        Route::get('/apoteker/pemasok/get', 'apotekerGetSupplier');
-        Route::get('/apoteker/pemasok/list', 'apotekerIndex');
-        Route::get('/apoteker/pemasok/get/{kode}', 'apotekerFindSupplier');
-        Route::post('/apoteker/pemasok/update', 'apotekerUpdateSupplier');
-        Route::get('/apoteker/pemasok/delete/{kode}', 'apotekerDeleteSupplier');
-    });
-});
+// Route::controller(SupplierController::class)->group(function () {
+//     Route::middleware(['auth', 'user-access:Apoteker'])->group(function () {
+//         Route::get('/apoteker/pemasok/get', 'apotekerGetSupplier');
+//         Route::get('/apoteker/pemasok/list', 'apotekerIndex');
+//         Route::get('/apoteker/pemasok/get/{kode}', 'apotekerFindSupplier');
+//         Route::post('/apoteker/pemasok/update', 'apotekerUpdateSupplier');
+//         Route::get('/apoteker/pemasok/delete/{kode}', 'apotekerDeleteSupplier');
+//     });
+// });
 
 // Route::controller(ResepController::class)->group(function () {
 //     Route::get('/katalog/filter/{satuan}', 'apotekerIndexFilter');
@@ -122,30 +128,30 @@ Route::controller(UserController::class)->group(function () {
 
 });
 
-Route::controller(PenjualanController::class)->group(function () {
-    Route::post('/resep/antrian/proses', 'store');
-    Route::middleware(['auth', 'user-access:Apoteker'])->group(function () {
-        Route::get('/apoteker/laporan/penjualan', 'index');
-        Route::get('/apoteker/laporan/penjualan/get/{year}', 'getDataPenjualan');
-        Route::get('/apoteker/laporan/penjualan/inovice/{kode}', 'apotekerGetInvoice');
-        Route::get('/apoteker/laporan/penjualan/get', 'show');
-    });
-});
+// Route::controller(PenjualanController::class)->group(function () {
+//     Route::post('/resep/antrian/proses', 'store');
+//     Route::middleware(['auth', 'user-access:Apoteker'])->group(function () {
+//         Route::get('/apoteker/laporan/penjualan', 'index');
+//         Route::get('/apoteker/laporan/penjualan/get/{year}', 'getDataPenjualan');
+//         Route::get('/apoteker/laporan/penjualan/inovice/{kode}', 'apotekerGetInvoice');
+//         Route::get('/apoteker/laporan/penjualan/get', 'show');
+//     });
+// });
 
-Route::controller(KategoriController::class)->group(function(){
-    Route::middleware(['auth','user-access:Apoteker'])->group(function(){
-        Route::get('/obat/kategori', 'index');
-        Route::get('/obat/kategori/all', 'getAllKategories');
-        Route::get('/obat/kategori/get/{kategori}', 'show');
-        Route::post('/obat/kategori/update', 'updateKategories');
-        Route::get('/obat/kategori/delete/{golongan}', 'deleteKategori');
-    });
-});
+// Route::controller(KategoriController::class)->group(function(){
+//     Route::middleware(['auth','user-access:Apoteker'])->group(function(){
+//         Route::get('/obat/kategori', 'index');
+//         Route::get('/obat/kategori/all', 'getAllKategories');
+//         Route::get('/obat/kategori/get/{kategori}', 'show');
+//         Route::post('/obat/kategori/update', 'updateKategories');
+//         Route::get('/obat/kategori/delete/{golongan}', 'deleteKategori');
+//     });
+// });
 
-Route::controller(KeuanganController::class)->group(function(){
-    Route::middleware(['auth', 'user-access:Apoteker'])->group(function(){
-        Route::get('/apoteker/laporan/keuangan', 'index');
-        Route::get('/apoteker/laporan/keuangan/get/', 'getByKategori');
-        Route::post('/apoteker/laporan/keuangan/create', 'create');
-    });
-});
+// Route::controller(KeuanganController::class)->group(function(){
+//     Route::middleware(['auth', 'user-access:Apoteker'])->group(function(){
+//         Route::get('/apoteker/laporan/keuangan', 'index');
+//         Route::get('/apoteker/laporan/keuangan/get/', 'getByKategori');
+//         Route::post('/apoteker/laporan/keuangan/create', 'create');
+//     });
+// });

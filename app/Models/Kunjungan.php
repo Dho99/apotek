@@ -16,8 +16,14 @@ class Kunjungan extends Model
         return $this->all();
     }
 
+    protected function today()
+    {
+        return $this->whereDay('created_at', now()->format('d'))->get();
+    }
+
     public function patient()
     {
         return $this->belongsTo(\App\Models\Pasien::class, 'pasienId');
     }
+
 }
