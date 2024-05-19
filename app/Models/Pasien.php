@@ -11,4 +11,9 @@ class Pasien extends Model
     protected $table = 'users';
     protected $guarded = ['id', 'kategoriDokter','jamPraktek'];
 
+    protected function getAll()
+    {
+        return $this->where('roleId', 3)->get();
+    }
+
 }

@@ -32,41 +32,37 @@ Route::controller(AuthController::class)->group(function () {
 Route::prefix('dokter')->middleware(['auth','user-access:Dokter'])->group(function(){
     Route::controller(DashboardDokterController::class)->group(function(){
         Route::get('/dashboard','index');
-        Route::put('/update/practice/time', 'updatePracticeTime')->name('updatePracticeTime');
+        // Route::put('/update/practice/time', 'updatePracticeTime')->name('updatePracticeTime');
     });
 });
 Route::controller(DashboardController::class)->group(function () {
-    Route::middleware(['auth', 'user-access:Apoteker'])->group(function () {
-        Route::get('/apoteker/dashboard', 'apotekerIndex');
-        Route::get('/apoteker/count/produk/dashboard','countProduct');
-        Route::get('/apoteker/count/kas/dashboard','countKas');
-    });
-    // Route::middleware(['auth', 'user-access:Dokter'])->group(function () {
-    //     Route::get('/dokter/dashboard', 'dokterIndex', function(){
-    //         event(new UserNotification('Selamat datang ' . auth()->user()));
-    //     });
-    // });
-});
-
-Route::controller(ProdukController::class)->group(function () {
-    Route::get('/obat/filter/{filter}', 'filterProduk');
-    Route::get('/obat/description/{kode}', 'showDescription');
-    Route::middleware(['auth', 'user-access:Apoteker'])->group(function () {
-        Route::post('/apoteker/obat/create/store/', 'store');
-        Route::get('/apoteker/obat/list/delete/{kode}', 'destroy');
-        Route::get('/apoteker/obat/list', 'apotekerIndex');
-        Route::get('/apoteker/obat/stock-in', 'apotekerStockIn');
-        Route::get('/apoteker/obat/create', 'apotekerCreate');
-        Route::get('/apoteker/obat/show/{kode}', 'apotekerShow');
-        Route::post('/apoteker/obat/edit/{kode}', 'apotekerUpdate');
-        Route::get('/apoteker/obat/add/stock/{kode}', 'apotekerAddStock');
-        Route::get('/apoteker/obat/get/{kode}', 'apotekerGetProdukByKode');
-        Route::post('/apoteker/obat/add/update/stock/{kode}', 'apotekerUpdateStock');
-        Route::get('/apoteker/obat/kadaluarsa', 'produkKadaluarsa');
-        Route::get('/apoteker/obat/kadaluarsa/filter', 'filterProdukKadaluarsa');
+    Route::prefix('administrator')->middleware(['auth', 'user-access:Administrator'])->group(function () {
+        Route::get('/dashboard', 'apotekerIndex');
+        Route::get('/count/produk/dashboard','countProduct');
+        Route::get('/count/kas/dashboard','countKas');
     });
 
 });
+
+// Route::controller(ProdukController::class)->group(function () {
+//     Route::get('/obat/filter/{filter}', 'filterProduk');
+//     Route::get('/obat/description/{kode}', 'showDescription');
+//     Route::middleware(['auth', 'user-access:Apoteker'])->group(function () {
+//         Route::post('/apoteker/obat/create/store/', 'store');
+//         Route::get('/apoteker/obat/list/delete/{kode}', 'destroy');
+//         Route::get('/apoteker/obat/list', 'apotekerIndex');
+//         Route::get('/apoteker/obat/stock-in', 'apotekerStockIn');
+//         Route::get('/apoteker/obat/create', 'apotekerCreate');
+//         Route::get('/apoteker/obat/show/{kode}', 'apotekerShow');
+//         Route::post('/apoteker/obat/edit/{kode}', 'apotekerUpdate');
+//         Route::get('/apoteker/obat/add/stock/{kode}', 'apotekerAddStock');
+//         Route::get('/apoteker/obat/get/{kode}', 'apotekerGetProdukByKode');
+//         Route::post('/apoteker/obat/add/update/stock/{kode}', 'apotekerUpdateStock');
+//         Route::get('/apoteker/obat/kadaluarsa', 'produkKadaluarsa');
+//         Route::get('/apoteker/obat/kadaluarsa/filter', 'filterProdukKadaluarsa');
+//     });
+
+// });
 
 Route::controller(SupplierController::class)->group(function () {
     Route::middleware(['auth', 'user-access:Apoteker'])->group(function () {
@@ -78,32 +74,28 @@ Route::controller(SupplierController::class)->group(function () {
     });
 });
 
-Route::controller(ResepController::class)->group(function () {
-    Route::get('/katalog/filter/{satuan}', 'apotekerIndexFilter');
-    Route::post('/resep/reject','rejectResep');
-    Route::post('/resep/confirm','confirmResep');
-    Route::get('/resep/get/{kode}', 'getResepByKode');
+// Route::controller(ResepController::class)->group(function () {
+//     Route::get('/katalog/filter/{satuan}', 'apotekerIndexFilter');
+//     Route::post('/resep/reject','rejectResep');
+//     Route::post('/resep/confirm','confirmResep');
+//     Route::get('/resep/get/{kode}', 'getResepByKode');
 
-    Route::middleware(['auth', 'user-access:Apoteker'])->group(function () {
-        Route::get('/apoteker/resep/not-processed', 'notProcessedResep');
-        Route::get('/apoteker/resep/antrian', 'apotekerIndex');
-        Route::get('/apoteker/resep/list', 'apotekerListResep');
-        Route::post('/apoteker/resep/proses/{kode}', 'apotekerProsesResep');
-        Route::get('/apoteker/resep/proses/transaksi/{kode}', 'apotekerGetResepByKode');
-        Route::get('/apoteker/transaksi/resep', 'kasirWithResep');
-        Route::post('/apoteker/transaksi/resep/create', 'kasirCreateResep');
-    });
-    Route::middleware(['auth', 'user-access:Dokter'])->group(function () {
-        Route::get('/dokter/resep/create', 'dokterCreate');
-        Route::get('/dokter/resep/list', 'dokterListResep');
-        Route::get('/dokter/resep/create/getAllResep', 'getResep');
-        Route::post('/dokter/resep/create/new', 'dokterStore');
-    });
-    // Route::middleware(['auth','user-access:Kasir'])->group(function(){
-    //     Route::get('/kasir/transaksi/nonresep', 'kasirNonResep');
-
-    // });
-});
+//     Route::middleware(['auth', 'user-access:Apoteker'])->group(function () {
+//         Route::get('/apoteker/resep/not-processed', 'notProcessedResep');
+//         Route::get('/apoteker/resep/antrian', 'apotekerIndex');
+//         Route::get('/apoteker/resep/list', 'apotekerListResep');
+//         Route::post('/apoteker/resep/proses/{kode}', 'apotekerProsesResep');
+//         Route::get('/apoteker/resep/proses/transaksi/{kode}', 'apotekerGetResepByKode');
+//         Route::get('/apoteker/transaksi/resep', 'kasirWithResep');
+//         Route::post('/apoteker/transaksi/resep/create', 'kasirCreateResep');
+//     });
+//     Route::middleware(['auth', 'user-access:Dokter'])->group(function () {
+//         Route::get('/dokter/resep/create', 'dokterCreate');
+//         Route::get('/dokter/resep/list', 'dokterListResep');
+//         Route::get('/dokter/resep/create/getAllResep', 'getResep');
+//         Route::post('/dokter/resep/create/new', 'dokterStore');
+//     });
+// });
 
 Route::controller(UserController::class)->group(function () {
     Route::get('/account/manage/{kode}', 'apotekerShow');

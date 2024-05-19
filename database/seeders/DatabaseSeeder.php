@@ -50,12 +50,12 @@ class DatabaseSeeder extends Seeder
             'kode' => 'AP-'.mt_rand(100,999),
             'nama' => fake()->name(),
             'gender' => 0,
-            'email' => 'admintest123@example.org',
+            'email' => 'admintest@example.org',
             'password' => bcrypt('password'),
             'telp' => fake()->unique()->phoneNumber(),
             'alamat' => fake()->address(),
             'status' => 'Aktif',
-            'roleId' => 4,
+            'roleId' => 5,
             'profile' => 'default',
             'tanggal_lahir' => fake()->dateTimeThisDecade()
         ]);
@@ -66,7 +66,7 @@ class DatabaseSeeder extends Seeder
             'no_rekam_medis' => mt_rand(000001, 999999),
             'nama' => fake()->name(),
             'gender' => 0,
-            'email' => 'admintest123@example.org',
+            'email' => 'pasientest@example.org',
             'password' => bcrypt('password'),
             'telp' => fake()->unique()->phoneNumber(),
             'alamat' => fake()->address(),

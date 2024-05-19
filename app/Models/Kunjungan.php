@@ -11,6 +11,10 @@ class Kunjungan extends Model
     protected $primaryKey = 'id';
     protected $guarded = ['id'];
 
+    protected function getAll()
+    {
+        return $this->all();
+    }
 
     public function patient()
     {

@@ -11,4 +11,14 @@ class Dokter extends Model
     protected $table = 'users';
     protected $guarded = ['id', 'no_rekam_medis'];
 
+    protected function getAll()
+    {
+        return $this->where('roleId', 1)->get();
+    }
+
+    protected function isPresent()
+    {
+        return $this->where('isPresent', 1)->get();
+    }
+
 }

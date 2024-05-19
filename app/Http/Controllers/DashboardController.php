@@ -4,8 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Resep;
+use App\Models\Dokter;
+use App\Models\Pasien;
 use App\Models\Produk;
 use App\Models\Keuangan;
+use App\Models\Kunjungan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 // use App\Events\UserNotification;
@@ -14,74 +17,16 @@ class DashboardController extends Controller
 {
     public function apotekerIndex()
     {
-        $data = Resep::where('isProceedByApoteker', '1')
-            ->orderBy('created_at', 'desc')
-            ->get()
-            ->take(3);
-        $dataNotProceed = Resep::where([
-                'isProceed' => '1',
-                'isProceedByApoteker' => '0'
-            ])
-            ->with('pasien', 'dokter')
-            ->orderBy('created_at', 'desc')
-            ->get();
-        $dataSend = Resep::where([
-            'dokter_id' => '0',
-            'isProceed' => '0'
-        ])
-        ->with('pasien','dokter')
-        ->orderBy('created_at','desc')
-        ->get();
-
-        $decodedData = [];
-
-
-        if (isset($data)) {
-            foreach ($data as $item) {
-                $dataProduk = Produk::whereIn('id', json_decode($item['obat_id']))
-                    ->pluck('namaProduk')
-                    ->toArray();
-                $dataUser = User::all();
-                $bornAt = Carbon::parse(
-                    $dataUser
-                        ->where('id', $item->pasien_id)
-                        ->pluck('tanggal_lahir')
-                        ->first(),
-                )->format('Y');
-                $now = Carbon::now()->format('Y');
-                $age = $now - $bornAt;
-
-                $decodedData[] = [
-                    'id' => $item->id,
-                    'kode' => $item->kode,
-                    'namaProduk' => $dataProduk,
-                    'pasien_id' => $dataUser
-                        ->where('id', $item->pasien_id)
-                        ->pluck('nama')
-                        ->first(),
-                    'gejala' => $item->gejala,
-                    'jumlah' => json_decode($item->jumlah, true),
-                    'dokter_id' => $dataUser->where('id', $item->dokter_id)->first(),
-                    'umur' => $age,
-                    'catatan' => json_decode($item->catatan),
-                    'isProceed' => $item->isProceed,
-                    'isProceedByApoteker' => $item->isProceedByApoteker,
-                    'satuan' => json_decode($item->satuan),
-                    'created_at' => $item->created_at,
-                ];
-            }
-        }
+        $patients = Pasien::getAll();
+        $doctors = Dokter::getAll();
+        $kunjungans = Kunjungan::getAll();
 
         return view('apoteker.dashboard', [
             'title' => 'Dashboard',
-            'dataProcessed' => $decodedData,
-            'dataNotProceed' => $dataNotProceed,
-            'dataTerkirim' => $dataSend,
-            'isPresent' => User::where(['level' => 0, 'isPresent' => 1])->get(),
-            // 'obat' => Produk::all(),
-            // 'kas' => Keuangan::orderBy('created_at', 'desc')
-            //     ->pluck('saldo')
-            //     ->first(),
+            'isPresent' => Dokter::isPresent(),
+            'countKunjungan' => count($kunjungans),
+            'countDokter' => count($doctors),
+            'countPatients' => count($patients)
         ]);
     }
 

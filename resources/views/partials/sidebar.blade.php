@@ -1,4 +1,4 @@
-<div class="left-side-bar sidebar-light shadow bg-lightgreen">
+<div class="left-side-bar sidebar-light shadow bg-lightgreen" style="z-index: 10000">
     <div class="brand-logo border-0 shadow-0">
         <a href="#" class="light-logo m-0 p-0">
             <img src="{{asset('src/images/logo-pharmapal.png')}}" style="min-width: 248px; height: 72px;" alt="">
@@ -34,7 +34,7 @@
         </div>
     @endif
 
-    @if (auth()->user()->role->roleName === 'Apoteker')
+    @if (auth()->user()->role->roleName === 'Administrator')
         <div class="menu-block customscroll mt-4">
             <div class="sidebar-menu">
                 <ul id="accordion-menu">
@@ -135,4 +135,5 @@
         </div>
     @endif
 </div>
+
 

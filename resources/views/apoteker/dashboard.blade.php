@@ -1,9 +1,9 @@
 @extends('layouts.main')
 @section('content')
-    <div class="xs-pd-20-10 pd-ltr-20">
-        <div class="title pb-20 d-flex">
+    <div class="">
+        <div class="title d-flex">
             <h2 class="mb-0">{{ $title }}</h2>
-            <button class="btn btn-sm btn-outline-success ml-auto" id="fastTransaction">
+            <button class="btn btn-sm btn-outline-success ml-auto shadow px-2" id="fastTransaction">
                 <span class="font-weight-normal d-flex align-items-center">
                     <i class="icon-copy dw dw-flash font-weight-bold font-20 mr-2"></i>
                     Transaksi Cepat
@@ -11,232 +11,75 @@
             </button>
         </div>
         {{-- @dd($dataTerkirim) --}}
-        <div class="row pb-10">
-            <div class="col-xl-6 col-lg-6 col-md-12 mb-20 ">
-                <div class="card-box height-100-p widget-style3">
-                    <div class="d-flex flex-wrap">
-                        <div class="widget-data">
-                            <div class="font-20 text-secondary weight-500">
-                                Diagram Penjualan
-                            </div>
+        <div class="row my-3">
+            <div class="col-lg-4 col-md-6 col-12 mb-20">
+                <div class="bg-white shadow rounded-lg">
+                    <div class="row pt-2 py-3 px-4">
+                        <div class="col-12 d-flex">
+                            <h6 class="d-flex align-items-center">Jumlah Pasien</h6>
+                            <div class="badge bg-lightgreen ml-auto">2059</div>
                         </div>
-                        <div id="chart3" class="container"></div>
-                        <a href="/apoteker/laporan/penjualan" class="text-dark mb-3 px-4">Lihat Selengkapnya</a>
-                    </div>
-                </div>
-
-            </div>
-
-            <div class="col-xl-6 col-lg-6 col-md-12 mb-20">
-                <div class="card-box widget-style3" style="height: 70%;">
-                    <div class="d-flex flex-wrap">
-                        <div class="widget-data w-100">
-                            <div class="font-20 text-secondary weight-500">
-                                Data Stock Obat
-                            </div>
-
-                            <div class="container-fluid my-3 rounded-lg" id="countProduct">
-
-                            </div>
-
-                                <a href="/apoteker/obat/list" class="px-3 mb-4 text-dark">Lihat Selengkapnya</a>
-
+                        <div class="col-12 my-2">
+                            <h4>{{$countPatients}} <span class="ml-3">Pasien</span></h4>
                         </div>
-
-                    </div>
-                </div>
-                <div class="card-box widget-style3 my-3">
-                    <div class="d-flex flex-wrap">
-                        <div class="widget-data w-100">
-                            <div class="font-20 text-secondary weight-500">
-                                Saldo Kas
-                                <div class="font-24 text-dark my-1 font-weight-bold" id="kas"></div>
-                            </div>
-                            <a href="/apoteker/laporan/keuangan">Lihat Selengkapnya</a>
+                        <div class="col-12 my-2">
+                            <a href="/" class="text-success text-decoration-none weight-700">Lihat Detail</a>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="row pb-10">
-            <div class="col-xl-7 col-lg-8 col-md-12 col-sm-12 mb-20">
-                <div class="card-box height-100-p widget-style3">
-                    <div class="d-flex flex-wrap">
-                        <div class="widget-data w-100">
-                            <div class="font-20 text-secondary pb-3 weight-500">
-                                Daftar Resep Masuk
-                            </div>
-
-                            {{-- @dd($data) --}}
-                            @forelse ($dataTerkirim as $item)
-                                <div class="bg-lightgreen my-3 rounded-lg">
-                                    <div class="row py-1 w-100 m-auto text-center align-items-center">
-                                        <div class="col-xl-1 col-md-4 col-sm-6">
-                                            <div class="rounded-lg py-2">
-                                                {{ $item->kode }}
-                                            </div>
-                                        </div>
-                                        <div class="col-xl-3 col-md-4 col-sm-6">
-                                            <div class="rounded-lg px-0 py-0">
-                                                {{ $item->created_at->diffForHumans() }}
-                                            </div>
-                                        </div>
-                                        <div class="col-xl-4 col-md-4 col-sm-6">
-                                            <div class="rounded-lg py-2">
-                                                {{ $item->pasien->nama }}
-                                            </div>
-                                        </div>
-
-                                        <div
-                                            class="col-xl-3 col-md-4 col-sm-6 text-center small align-items-center d-flex">
-                                            <div class="rounded-lg text-light bg-green disabled p-2 m-auto">
-                                                Sedang dikirim
-                                            </div>
-                                        </div>
-                                        <div class="col-xl-1 col-md-4 col-sm-6 ">
-                                            <button class="border-0 mt-1 bg-transparent text-center text-danger font-24"
-                                            data-toggle="modal"
-                                            data-target="#detail-resep-{{ $item->kode }}"
-                                            type="button">
-                                                <i class="icon-copy dw dw-edit"></i>
-                                            </button>
-                                            <div class="modal fade bs-example-modal-lg"
-                                                id="detail-resep-{{ $item->kode }}" tabindex="-1" role="dialog"
-                                                aria-labelledby="myLargeModalLabel" aria-hidden="true">
-                                                <div class="modal-dialog modal-dialog-centered">
-                                                    <div class="modal-content text-left">
-                                                        <div class="modal-body">
-                                                            <div class="font-20 font-weight-bold text-center pb-3">
-                                                                Data Resep yang dikirimkan
-                                                            </div>
-                                                                @php
-                                                                    $now =\Illuminate\Support\Carbon::now()->format('Y');
-                                                                    $age = $now - \Illuminate\Support\Carbon::parse($item->pasien->tanggal_lahir)->format('Y');
-                                                                @endphp
-                                                            <div class="row border-bottom">
-                                                                <div class="col-lg-6">
-                                                                    <p class="font-weight-bold">Pasien</p>
-                                                                    <p class="mb-1 font-18">{{ $item->pasien->nama }}</p>
-                                                                    <p>Umur : {{$age}}</p>
-                                                                </div>
-                                                                <div class="col-lg-6 text-right">
-                                                                    <p>{{ $item->created_at->diffForHumans() }}</p>
-                                                                </div>
-                                                            </div>
-                                                            <div class="row mt-3">
-                                                                <div class="col-lg-12">
-                                                                    <p class="font-weight-bold">Gejala</p>
-                                                                    <p class="mb-1 font-18">{{ $item->gejala }}</p>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            @empty
-                            @endforelse
-
-
-
-                            @forelse ($dataNotProceed as $item)
-                                <div class="bg-lightgreen my-3 rounded-lg">
-                                    <div class="row py-1 w-100 m-auto text-center align-items-center">
-                                        <div class="col-xl-1 col-md-4 col-sm-6">
-                                            <div class="rounded-lg py-2">
-                                                {{ $item->kode }}
-                                            </div>
-                                        </div>
-                                        <div class="col-xl-3 col-md-4 col-sm-6">
-                                            <div class="rounded-lg px-0 py-0">
-                                                {{ $item->created_at->diffForHumans() }}
-                                            </div>
-                                        </div>
-                                        <div class="col-xl-4 col-md-4 col-sm-6">
-                                            <div class="rounded-lg py-2">
-                                                {{ $item->pasien->nama }}
-                                            </div>
-                                        </div>
-
-                                        <div
-                                            class="col-xl-3 col-md-4 col-sm-6 text-center small align-items-center d-flex">
-                                            <div class="rounded-lg text-light bg-orange py-2 px-1 m-auto">
-                                                Belum diproses
-                                            </div>
-                                        </div>
-                                        <div class="col-xl-1 col-md-4 col-sm-6 ">
-                                            <button class="border-0 mt-1 bg-transparent text-center text-danger font-24"
-                                                onclick="if (confirm('Lanjut ke halaman daftar resep?')) window.location.href='/apoteker/resep/list';">
-                                                <i class="icon-copy dw dw-edit"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            @empty
-                            @endforelse
-
-
-
-
-                            <a href="#" class="px-3 mb-4 text-dark sticky-bottom">Lihat Selengkapnya</a>
+            <div class="col-lg-4 col-md-6 col-12 mb-20">
+                <div class="bg-white shadow rounded-lg">
+                    <div class="row pt-2 py-3 px-4">
+                        <div class="col-12 d-flex">
+                            <h6 class="d-flex align-items-center">Jumlah Dokter</h6>
+                            <div class="badge bg-lightgreen ml-auto">2059</div>
+                        </div>
+                        <div class="col-12 my-2">
+                            <h4>{{$countDokter}} <span class="ml-3">Pasien</span></h4>
+                        </div>
+                        <div class="col-12 my-2">
+                            <a href="/" class="text-success text-decoration-none weight-700">Lihat Detail</a>
                         </div>
                     </div>
                 </div>
-
             </div>
 
-            <div class="col-xl-5 col-lg-4 col-md-12 col-sm-12 mb-20">
-                <div class="card-box height-100-p widget-style3">
-                    <div class="d-flex flex-wrap">
-                        <div class="widget-data w-100">
-                            <div class="font-20 pb-4 text-secondary weight-500">
-                                Data Dokter
-                            </div>
-                            @forelse ($isPresent as $item)
-                                <div class="container-fluid rounded-lg">
-                                    <div class="row bg-lightgreen py-2 text-center align-items-center">
-                                        <div class="col-xl-1 col-md-6">
-                                            <div class=" rounded-lg text-center">
-                                                {{ $item->kode }}
-                                            </div>
-                                        </div>
-                                        <div class="col-xl-5 col-md-6">
-                                            <div class="rounded-lg text-center">
-                                                @php
-                                                    $nama = explode(' ', $item->nama);
-                                                    $namaDepan = array_shift($nama);
-                                                @endphp
-                                                Dr. {{ $namaDepan }}
-
-                                            </div>
-                                        </div>
-                                        <div class="col-xl-3 col-md-6">
-                                            <div class=" rounded-lg text-center">
-                                                {{ $item->dokter->kategoriDokter }}
-                                            </div>
-                                        </div>
-                                        <div class="col-xl-3 col-md-6 w-50 m-auto">
-                                            <div class="small bg-info text-light rounded-lg text-center p-1">
-                                                Present
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            @empty
-                            @endforelse
-
-
+            <div class="col-lg-4 col-md-6 col-12 mb-20">
+                <div class="bg-white shadow rounded-lg">
+                    <div class="row pt-2 py-3 px-4">
+                        <div class="col-12 d-flex">
+                            <h6 class="d-flex align-items-center">Jumlah Kunjungan</h6>
+                            <div class="badge bg-lightgreen ml-auto">2059</div>
                         </div>
-                        {{-- <a href="#" class="px-3 mb-4 text-dark">Lihat Selengkapnya</a> --}}
+                        <div class="col-12 my-2">
+                            <h4>{{$countKunjungan}} <span class="ml-3">Pasien</span></h4>
+                        </div>
+                        <div class="col-12 my-2">
+                            <a href="/" class="text-success text-decoration-none weight-700">Lihat Detail</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12">
+                <div class="bg-white shadow rounded-lg">
+                    <div class="row pt-2 py-3 px-4">
+                        <div class="col-12 d-flex">
+                            <h6 class="d-flex align-items-center">Jumlah Kunjungan</h6>
+                            <div class="badge bg-lightgreen ml-auto">2059</div>
+                        </div>
+                        <div class="col-12 my-2">
+                            <h4>{{$countKunjungan}} <span class="ml-3">Pasien</span></h4>
+                        </div>
+                        <div class="col-12 my-2">
+                            <a href="/" class="text-success text-decoration-none weight-700">Lihat Detail</a>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-
-    </div>
 
     <script>
         let jumlah = 0;
@@ -513,7 +356,7 @@
                     Transaksi Cepat Non Resep
                 </div>
                 @php
-                    $pasiens = \App\Models\User::where('level', 3)->get();
+                    $pasiens = \App\Models\User::where('roleId', 3)->get();
                 @endphp
                 <div class="my-3">
                     <div class="mt-2 mb-3 text-left font-18 font-weight-bold w-75">

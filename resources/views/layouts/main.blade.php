@@ -21,22 +21,39 @@
     <link rel="stylesheet" type="text/css" href="https://unpkg.com/trix@2.0.0/dist/trix.css">
     @yield('plugins')
 </head>
+<style>
+    .footer{
+        left: 250;
+        bottom: 0;
+    }
+    @media screen and (width <= 1300px){
+        .footer{
+            left: 0 !important;
+        }
+    }
+</style>
 @yield('styles')
 
-<body class="body">
+<body class="body bg-light h-auto position-relative">
     @include('partials.navbar')
     @include('partials.sidebar')
     {{-- @include('partials.notification-bar') --}}
-    <div class="mobile-menu-overlay"></div>
+    {{-- <div class="mobile-menu-overlay"></div> --}}
 
 
     <div class="main-container noprint">
         {{-- @dd(auth()->user()) --}}
-        <div class="container">
+        <div class="container pb-5 mt-3">
             @yield('content')
+
         </div>
     </div>
-
+    <footer class="position-fixed fixed-bottom bg-lightgreen footer d-inline-flex justify-content-center">
+        <div class="container py-3 px-5 d-inline-flex">
+            <h6>Aplikasi Klinik</h6>
+            <h6 class="ml-auto">Pharmapal</h6>
+        </div>
+    </footer>
 
 
 
