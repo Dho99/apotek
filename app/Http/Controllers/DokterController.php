@@ -11,9 +11,18 @@ class DokterController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $dokters = Dokter::getAll();
+        if($request->ajax()){
+            return response()->json([
+                'dokters' => $dokters
+            ]);
+        }
+        return view('apoteker.dokter.list', [
+            'title' => 'Daftar Dokter',
+            'dokters' => $dokters
+        ]);
     }
 
     /**

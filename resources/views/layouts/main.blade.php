@@ -90,7 +90,7 @@
     <script src="{{ asset('vendors/scripts/myScript/jquery.mask.min.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
     <script type="text/javascript" src="https://unpkg.com/trix@2.0.0/dist/trix.umd.min.js"></script>
-    @stack('scripts')
+
     <script>
         function initSel2Tags(arg) {
             $(arg).select2({
@@ -328,7 +328,9 @@
                 },
             });
         }
+
     </script>
+    @stack('scripts')
     @if (auth()->user()->level == 'Apoteker')
         @if ($title === 'Dashboard' || $title === 'Laporan Penjualan')
             <script>
