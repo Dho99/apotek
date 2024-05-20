@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Role;
 use App\Models\Dokter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -19,7 +20,7 @@ class DokterController extends Controller
                 'dokters' => $dokters
             ]);
         }
-        return view('apoteker.dokter.list', [
+        return view('administrator.dokter.list', [
             'title' => 'Daftar Dokter',
             'dokters' => $dokters
         ]);
@@ -44,25 +45,61 @@ class DokterController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Dokter $dokter)
     {
-        //
+        $dokter->load('role');
+        return view('other.account-info', [
+            'title' => 'Info Akun',
+            'data' => $dokter
+        ]);
+        // return response()->json(['data' => $dokter], 200);
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Dokter $dokter)
     {
-        //
+        return view('other.account-edit', [
+            'title' => 'Edit Akun',
+            'data' => $dokter,
+            'roles' => Role::all()
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Dokter $dokter)
     {
-        //
+        $request->validate([
+            'profile' => 'nullable|max:5024',
+            'username' => 'required',
+            'nama' => 'required',
+            'email' => 'required',
+            'roleId' => 'required',
+            'start' => 'required',
+            'end' => 'required'
+        ]);
+
+
+        if(Carbon::parse($request->start) <= Carbon::parse($request->end))
+        {
+            $payload = $request->all();
+            $payload['jamPraktek'] = json_encode([
+                'start' => $request->start,
+                'end' => $request->end
+            ]);
+            try{
+                $update = $dokter->update($payload);
+                return redirect()->route('dokter.show',[$dokter->id]);
+            }catch(\Exception $e){
+                return response($e->getMessage());
+            }
+        }
+
+
+
     }
 
     /**

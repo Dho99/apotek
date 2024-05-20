@@ -22,7 +22,7 @@ class DashboardController extends Controller
         $kunjunganToday = Kunjungan::today();
         $localeDate =  Carbon::now()->locale('id_ID');
 
-        return view('apoteker.dashboard', [
+        return view('administrator.dashboard', [
             'title' => 'Dashboard',
             'isPresent' => Dokter::isPresent(),
             'countKunjungan' => count($kunjunganToday),

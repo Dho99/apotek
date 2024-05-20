@@ -21,4 +21,9 @@ class Dokter extends Model
         return $this->where('isPresent', 1)->get();
     }
 
+    public function role()
+    {
+        return $this->belongsTo(\App\Models\Role::class, 'roleId');
+    }
+
 }

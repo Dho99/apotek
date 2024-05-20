@@ -37,7 +37,7 @@ class DatabaseSeeder extends Seeder
             'alamat' => fake()->address(),
             'status' => 'Aktif',
             'roleId' => 2,
-            'profile' => 'default',
+            'profile' => '',
             'tanggal_lahir' => fake()->dateTimeThisDecade(),
             'kategoriDokter' => 'Umum',
             'jamPraktek' => json_encode([
@@ -56,7 +56,7 @@ class DatabaseSeeder extends Seeder
             'alamat' => fake()->address(),
             'status' => 'Aktif',
             'roleId' => 5,
-            'profile' => 'default',
+            'profile' => '',
             'tanggal_lahir' => fake()->dateTimeThisDecade()
         ]);
 
@@ -72,7 +72,7 @@ class DatabaseSeeder extends Seeder
             'alamat' => fake()->address(),
             'status' => 'Aktif',
             'roleId' => 4,
-            'profile' => 'default',
+            'profile' => '',
             'tanggal_lahir' => fake()->dateTimeThisDecade()
         ]);
 

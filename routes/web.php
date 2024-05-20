@@ -46,7 +46,7 @@ Route::prefix('administrator')->middleware(['auth', 'user-access:Administrator']
     Route::controller(DokterController::class)->group(function(){
        Route::put('/update/practice/time', 'updatePracticeTime')->name('updatePracticeTime');
     });
-    Route::resource('manage/dokter', DokterController::class);
+    Route::resource('manage/dokter', DokterController::class)->names('dokter');
 });
 
 
