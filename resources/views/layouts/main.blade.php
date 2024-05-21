@@ -27,6 +27,8 @@
 <body class="body bg-light h-auto position-relative">
     @include('partials.navbar')
     @include('partials.sidebar')
+    @include('sweetalert::alert')
+
     {{-- @include('partials.notification-bar') --}}
     {{-- <div class="mobile-menu-overlay"></div> --}}
 

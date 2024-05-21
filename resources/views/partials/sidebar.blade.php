@@ -27,7 +27,7 @@
             <div class="sidebar-menu">
                 <ul id="accordion-menu">
                     <li class="drowpdown">
-                        <a href="/apoteker/dashboard"
+                        <a href="/administrator/dashboard"
                             class="dropdown-toggle no-arrow {{ $title == 'Dashboard' ? 'active' : '' }}">
                             <span class="micon icon-copy dw dw-house"></span><span class="mtext">Dashboard</span>
                         </a>
@@ -56,7 +56,7 @@
                             <li><a href="/administrator/manage/dokter"
                                     class="{{ $title == 'Daftar Dokter' ? 'active' : '' }}">Daftar
                                     Dokter</a></li>
-                            <li><a href="/administrator/manage/dokter/create"
+                            <li><a href="{{route('user.create')}}"
                                     class="{{ $title === 'Tambah Dokter' ? 'active' : '' }}">Tambah
                                     Dokter</a></li>
 

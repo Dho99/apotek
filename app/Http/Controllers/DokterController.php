@@ -6,6 +6,8 @@ use App\Models\Role;
 use App\Models\Dokter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Storage;
+use Alert;
 
 class DokterController extends Controller
 {
@@ -31,7 +33,9 @@ class DokterController extends Controller
      */
     public function create()
     {
-        //
+        // return view('other.account-create',[
+        //     'title' => 'Buat data Dokter'
+        // ]);
     }
 
     /**
@@ -82,16 +86,28 @@ class DokterController extends Controller
             'end' => 'required'
         ]);
 
-
         if(Carbon::parse($request->start) <= Carbon::parse($request->end))
         {
             $payload = $request->all();
+
+            $payload['password'] = bcrypt($request->password);
+
+            if ($request->file('profile')) {
+                if(isset($dokter->profile)){
+                    $payload['profile'] = Storage::delete($dokter->profile);
+                }
+                $payload['profile'] = $request->file('profile')->store('profile-images');
+            }
+
             $payload['jamPraktek'] = json_encode([
                 'start' => $request->start,
                 'end' => $request->end
             ]);
+
             try{
+                // return response()->json(['payload' => $payload], 201);
                 $update = $dokter->update($payload);
+                Alert::success('Success', 'Data Dokter berhasil Dihapus');
                 return redirect()->route('dokter.show',[$dokter->id]);
             }catch(\Exception $e){
                 return response($e->getMessage());
@@ -105,9 +121,20 @@ class DokterController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Dokter $dokter, Request $request)
     {
-        //
+        if(isset($dokter->profile)){
+            Storage::delete($dokter->profile);
+        }
+
+        $dokter->delete();
+
+        if($request->ajax()){
+            return response()->json(['message' => 'Data Dokter berhasil Dihapus'], 200);
+        }else{
+            Alert::success('Success', 'Data Dokter berhasil Dihapus');
+            return redirect()->back();
+        }
     }
 
 

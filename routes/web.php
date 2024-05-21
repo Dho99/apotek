@@ -46,7 +46,11 @@ Route::prefix('administrator')->middleware(['auth', 'user-access:Administrator']
     Route::controller(DokterController::class)->group(function(){
        Route::put('/update/practice/time', 'updatePracticeTime')->name('updatePracticeTime');
     });
-    Route::resource('manage/dokter', DokterController::class)->names('dokter');
+
+    Route::prefix('manage')->group(function(){
+        Route::resource('dokter', DokterController::class)->names('dokter');
+        Route::resource('user', UserController::class)->names('user');
+    });
 });
 
 
@@ -103,30 +107,31 @@ Route::prefix('administrator')->middleware(['auth', 'user-access:Administrator']
 //     });
 // });
 
-Route::controller(UserController::class)->group(function () {
-    Route::get('/account/manage/{kode}', 'apotekerShow');
-    Route::get('/account/edit/{kode}', 'apotekerEdit');
-    Route::post('/account/update/{kode}', 'apotekerUpdate');
 
-    Route::middleware(['auth', 'user-access:Apoteker'])->group(function () {
-        Route::get('/apoteker/user/list', 'apotekerListPasien');
-        Route::get('/apoteker/user/get/{level}', 'apotekerGetUserByLevel');
-        Route::get('/apoteker/user/show/get/{kode}', 'apotekerGetUser');
-        Route::post('/apoteker/user/update/', 'apotekerUpdateUser');
-        Route::get('/apoteker/user/delete/{kode}', 'apotekerDeleteUser');
-        Route::get('/kasir/pasien/get/{kode}', 'kasirGetPasienByKode');
-    });
+// Route::controller(UserController::class)->group(function () {
+//     Route::get('/account/manage/{kode}', 'apotekerShow');
+//     Route::get('/account/edit/{kode}', 'apotekerEdit');
+//     Route::post('/account/update/{kode}', 'apotekerUpdate');
 
-    Route::middleware(['auth', 'user-access:Kasir'])->group(function(){
-        Route::get('/kasir/pasien/create', 'kasirCreatePasien');
-        Route::get('/kasir/pasien/list', 'kasirPasienList');
-        Route::get('/kasir/pasien/get', 'kasirGetPasien');
-        Route::get('/kasir/pasien/delete/{kode}', 'kasirDeletePasien');
-        Route::post('/kasir/pasien/update/', 'kasirUpdatePasien');
-    });
+//     Route::middleware(['auth', 'user-access:Apoteker'])->group(function () {
+//         Route::get('/apoteker/user/list', 'apotekerListPasien');
+//         Route::get('/apoteker/user/get/{level}', 'apotekerGetUserByLevel');
+//         Route::get('/apoteker/user/show/get/{kode}', 'apotekerGetUser');
+//         Route::post('/apoteker/user/update/', 'apotekerUpdateUser');
+//         Route::get('/apoteker/user/delete/{kode}', 'apotekerDeleteUser');
+//         Route::get('/kasir/pasien/get/{kode}', 'kasirGetPasienByKode');
+//     });
+
+//     Route::middleware(['auth', 'user-access:Kasir'])->group(function(){
+//         Route::get('/kasir/pasien/create', 'kasirCreatePasien');
+//         Route::get('/kasir/pasien/list', 'kasirPasienList');
+//         Route::get('/kasir/pasien/get', 'kasirGetPasien');
+//         Route::get('/kasir/pasien/delete/{kode}', 'kasirDeletePasien');
+//         Route::post('/kasir/pasien/update/', 'kasirUpdatePasien');
+//     });
 
 
-});
+// });
 
 // Route::controller(PenjualanController::class)->group(function () {
 //     Route::post('/resep/antrian/proses', 'store');

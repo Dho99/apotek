@@ -45,8 +45,12 @@
                             <div class="d-flex">
                                 <a href="{{route('dokter.show',[$d->id])}}" class="btn btn-sm btn-secondary"><i
                                         class="icon-copy dw dw-edit1 d-flex align-items-center"></i></a>
-                                <a class="btn btn-sm btn-danger ms-auto"><i
-                                        class="icon-copy dw dw-trash d-flex align-items-center"></i></a>
+                                <form class="d-inline-flex" method="POST" action="{{route('dokter.destroy',[$d->id])}}">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-danger"><i
+                                        class="icon-copy dw dw-trash d-flex align-items-center"></i></button>
+                                </form>
                             </div>
                         </td>
                     </tr>
