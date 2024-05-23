@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use Alert;
 use App\Models\Role;
 use App\Models\Dokter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
-use Alert;
+use Illuminate\Support\Facades\Validator;
 
 class DokterController extends Controller
 {
@@ -33,9 +34,10 @@ class DokterController extends Controller
      */
     public function create()
     {
-        // return view('other.account-create',[
-        //     'title' => 'Buat data Dokter'
-        // ]);
+        return view('other.account-create',[
+            'title' => 'Buat data Dokter',
+            'roles' => Role::all()
+        ]);
     }
 
     /**
@@ -43,8 +45,59 @@ class DokterController extends Controller
      */
     public function store(Request $request)
     {
-        //
+       $validate = $request->validate([
+            'nama' => 'required|min:10',
+            'username' => 'required|unique:users,username',
+            'email' => 'required|email',
+            'password' => 'required|min:8',
+            'profile' => 'nullable|max:5024',
+            'start' => 'required|date_format:H:i',
+            'end' => 'required|date_format:H:i|after:start',
+            'telp' => 'required|unique:users,telp',
+            'kategoriDokter' => 'required'
+       ]);
+
+
+       $validate['kode'] = $this->generateKode()['kode'];
+       $validate['roleId'] = 2;
+       $validate['jamPraktek'] = json_encode([
+            'start' => $validate['start'],
+            'end' => $validate['end']
+       ]);
+       $validate['password'] = bcrypt($request->password);
+
+
+       if($request->file('profile')){
+            $validate['profile'] = $request->profile->store('profile-images');
+       }
+
+       try{
+            $create = Dokter::create($validate);
+            Alert::success('Success', 'Data Dokter berhasil Dibuat');
+            return redirect()->route('dokter.index');
+       }catch(\Exception $e){
+            Alert::error('Error', $e->getMessage());
+            return redirect()->back();
+       }
     }
+
+    private function generateKode()
+    {
+        $kode = [
+            'kode' => 'DOK-'.mt_rand(00000, 99999)
+        ];
+
+        $validateKode = Validator::make($kode, [
+            'kode' => 'unique:users,kode'
+        ]);
+
+        if($validateKode->fails()){
+           return $this->generateKode();
+        }else{
+            return $kode;
+        }
+    }
+
 
     /**
      * Display the specified resource.

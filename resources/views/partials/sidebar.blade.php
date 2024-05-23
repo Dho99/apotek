@@ -56,7 +56,7 @@
                             <li><a href="/administrator/manage/dokter"
                                     class="{{ $title == 'Daftar Dokter' ? 'active' : '' }}">Daftar
                                     Dokter</a></li>
-                            <li><a href="{{route('user.create')}}"
+                            <li><a href="{{route('dokter.create')}}"
                                     class="{{ $title === 'Tambah Dokter' ? 'active' : '' }}">Tambah
                                     Dokter</a></li>
 

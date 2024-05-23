@@ -89,7 +89,7 @@
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
                                         <td>{{ $dokter->nama }}</td>
-                                        <td>Dokter {{ $dokter->kategoriDokter }}</td>
+                                        <td>{{ $dokter->kategoriDokter }}</td>
                                         <td id="startTime{{$dokter->kode}}">{{ $start }}</td>
                                         <td id="endTime{{$dokter->kode}}">{{ $end }}</td>
                                         <td>

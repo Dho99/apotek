@@ -9,11 +9,11 @@
 @section('content')
     <div class="mt-4 pb-5">
 
-        <form action="{{ route('user.store') }}" method="POST" enctype="multipart/form-data">
+        <form action="{{$title === 'Buat data Dokter' ? route('dokter.store') : route('user.store')}}" method="POST" enctype="multipart/form-data">
 
         @csrf
         <div class="card-box shadow-lg m-auto mb-5 py-4">
-            @if ($errors)
+            {{-- @if ($errors)
                 <div class="container">
                     @foreach ($errors->all() as $err)
                         <div class="alert alert-danger mt-3" role="alert">
@@ -21,7 +21,7 @@
                         </div>
                     @endforeach
                 </div>
-            @endif
+            @endif --}}
             <div class="modal fade bs-example-modal-lg" id="edit-image-account-modal" tabindex="-1" role="dialog"
                 aria-labelledby="myLargeModalLabel" aria-hidden="true">
 
@@ -82,49 +82,103 @@
                 <div class="my-3 col-xl-6">
                     <div class="col-xl-12 my-3">
                         <label for="username" class="font-weight-bold">Username</label>
-                        <input type="text" class="form-control" value="" name="username" required>
+                        <input type="text" class="form-control  @error('username') is-invalid @enderror" value="{{old('username')}}" name="username" required>
+                        @error('username')
+                            <div class="form-control-feedback text-danger">
+                                {{$message}}
+                            </div>
+                        @enderror
                     </div>
                     <div class="col-xl-12 my-3">
                         <label for="nama" class="font-weight-bold">Nama Lengkap</label>
-                        <input type="text" class="form-control" name="nama" value="" required>
-                    </div>
-                    <div class="col-xl-12 my-3">
-                        <label for="nama" class="font-weight-bold">Email</label>
-                        <input type="text" class="form-control" name="email" value="" required>
-                    </div>
-
-                    <div class="col-xl-12 my-3">
-                        <label for="nama" class="font-weight-bold">Peran</label>
-                        <select name="roleId" id="roleSelect" class="form-control"
-                            @if (auth()->user()->role->roleName !== 'Administrator') disabled @endif>
-                            <option value="">Choose Role</option>
-                            @foreach ($roles as $r)
-                                <option value="{{ $r->id }}">
-                                    {{ $r->roleName }}</option>
-                            @endforeach
-                        </select>
+                        <input type="text" class="form-control @error('nama') is-invalid @enderror" name="nama" value="{{old('nama')}}" required>
+                        @error('nama')
+                            <div class="form-control-feedback text-danger">
+                                {{$message}}
+                            </div>
+                        @enderror
                     </div>
 
-                    <div id="forDoctorEl" class="d-none">
+                    @if($title === 'Buat data Dokter')
+
+                    <div class="col-xl-12 my-3">
+                        <label for="nama" class="font-weight-bold">Spesialis Dokter</label>
+                        <input type="text" class="form-control @error('kategoriDokter') is-invalid @enderror" name="kategoriDokter" value="{{old('kategoriDokter')}}" required>
+                        @error('kategoriDokter')
+                            <div class="form-control-feedback text-danger">
+                                {{$message}}
+                            </div>
+                        @enderror
+                    </div>
+
+
                         <div class="col-12 row mx-0 px-0 py-3" id="practiceTimeForm">
                             <h5 class="text-center col-12 mb-1">Jam Praktek</h5>
                             <div class="col-lg-6 col-12">
                                 <label for="nama" class="font-weight-bold">Mulai</label>
-                                <input type="time" class="form-control" name="start" value="">
+                                <input type="time" class="form-control @error('start') is-invalid @enderror" id="start" name="start" value="{{old('start')}}">
+                                @error('start')
+                                <div class="form-control-feedback text-danger">
+                                    {{$message}}
+                                </div>
+                                @enderror
                             </div>
                             <div class="col-lg-6 col-12">
                                 <label for="nama" class="font-weight-bold">Akhir</label>
-                                <input type="time" class="form-control" name="end" value="">
+                                <input type="time" class="form-control  @error('end') is-invalid @enderror" id="end" name="end" value="{{old('end')}}">
+                                @error('end')
+                                <div class="form-control-feedback text-danger">
+                                    {{$message}}
+                                </div>
+                                @enderror
                             </div>
                         </div>
-                    </div>
+
+                    @else
+
+                        <div class="col-xl-12 my-3">
+                            <label for="nama" class="font-weight-bold">Peran</label>
+                            <select name="roleId" id="roleSelect" class="form-control"
+                                @if (auth()->user()->role->roleName !== 'Administrator') disabled @endif>
+                                <option value="">Choose Role</option>
+                                @foreach ($roles as $r)
+                                    <option value="{{ $r->id }}">
+                                        {{ $r->roleName }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                    @endif
 
                     <div class="col-xl-12 my-3">
+                        <label for="nama" class="font-weight-bold">Email</label>
+                        <input type="text" class="form-control @error('email') is-invalid @enderror" name="email" value="{{old('email')}}" required>
+                        @error('email')
+                            <div class="form-control-feedback text-danger">
+                                {{$message}}
+                            </div>
+                        @enderror
+                    </div>
+                    <div class="col-xl-12 my-3">
+                        <label for="nama" class="font-weight-bold">No Telephone</label>
+                        <input type="tel" class="form-control @error('telp') is-invalid @enderror" name="telp" value="{{old('telp')}}" required>
+                        @error('telp')
+                            <div class="form-control-feedback text-danger">
+                                {{$message}}
+                            </div>
+                        @enderror
+                    </div>
+                    <div class="col-xl-12 my-3">
                         <label for="nama" class="font-weight-bold">Password</label>
-                        <input type="password" class="form-control" name="password" id="pass1" required
+                        <input type="password" class="form-control  @error('password') is-invalid @enderror" name="password" id="pass1" required
                             oninput="validate1()" onblur="cancelValidate()">
                         <p id="vpass1" class="text-danger font-14"></p>
                     </div>
+
+                    {{-- <div id="forDoctorEl" class="d-none"> --}}
+
+                    {{-- </div> --}}
+
                     <div class="col-xl-12 mt-4 d-flex">
                         <button type="button" class="btn btn-success w-75 m-auto" id="submitBtn"
                             disabled>Simpan</button>
@@ -173,24 +227,22 @@
                 errorAlert('Periksa Kembali data Anda !');
                 $('#roleSelect').addClass('is-invalid');
                 event.preventDefault();
-            }else if($('#roleSelect').val() == '2'){
-                if($('#start').val() === '' || $('#end').val() === ''){
-                    event.preventDefault();
-                    $('#start, #end').addClass('is-invalid');
-                }
             } else {
                 $('form').submit();
             }
         });
 
-        $('#roleSelect').on('change', function(){
-            let practiceFormEl = $('#forDoctorEl');
-            if($(this).val() == '2'){
-                practiceFormEl.removeClass('d-none');
-            }else{
-                practiceFormEl.addClass('d-none');
-            }
-        });
+        // $('#roleSelect').on('change', function(){
+        //     let practiceFormEl = $('#forDoctorEl');
+        //     let form = $('form');
+        //     if($(this).val() == '2'){
+        //         practiceFormEl.removeClass('d-none');
+        //         form.attr('action', '{{route("dokter.store")}}');
+        //     }else{
+        //         practiceFormEl.addClass('d-none');
+        //         form.attr('action','{{route("user.store")}}');
+        //     }
+        // });
 
 
 
