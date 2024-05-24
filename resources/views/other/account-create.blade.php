@@ -9,19 +9,10 @@
 @section('content')
     <div class="mt-4 pb-5">
 
-        <form action="{{$title === 'Buat data Dokter' ? route('dokter.store') : route('user.store')}}" method="POST" enctype="multipart/form-data">
+        <form action="{{route($create_type.'.store')}}" method="POST" enctype="multipart/form-data">
 
         @csrf
         <div class="card-box shadow-lg m-auto mb-5 py-4">
-            {{-- @if ($errors)
-                <div class="container">
-                    @foreach ($errors->all() as $err)
-                        <div class="alert alert-danger mt-3" role="alert">
-                            {{ $err }}
-                        </div>
-                    @endforeach
-                </div>
-            @endif --}}
             <div class="modal fade bs-example-modal-lg" id="edit-image-account-modal" tabindex="-1" role="dialog"
                 aria-labelledby="myLargeModalLabel" aria-hidden="true">
 
@@ -80,6 +71,19 @@
                     </div>
                 </div>
                 <div class="my-3 col-xl-6">
+                    @if($create_type == 'pasien')
+
+                        <div class="col-xl-12 my-3">
+                            <label for="username" class="font-weight-bold">No Rekam Medis</label>
+                            <input type="text" class="form-control  @error('no_rekam_medis') is-invalid @enderror" value="{{old('username')}}" name="no_rekam_medis" required>
+                            @error('no_rekam_medis')
+                                <div class="form-control-feedback text-danger">
+                                    {{$message}}
+                                </div>
+                            @enderror
+                        </div>
+
+                    @endif
                     <div class="col-xl-12 my-3">
                         <label for="username" class="font-weight-bold">Username</label>
                         <input type="text" class="form-control  @error('username') is-invalid @enderror" value="{{old('username')}}" name="username" required>
@@ -99,17 +103,38 @@
                         @enderror
                     </div>
 
-                    @if($title === 'Buat data Dokter')
-
                     <div class="col-xl-12 my-3">
-                        <label for="nama" class="font-weight-bold">Spesialis Dokter</label>
-                        <input type="text" class="form-control @error('kategoriDokter') is-invalid @enderror" name="kategoriDokter" value="{{old('kategoriDokter')}}" required>
-                        @error('kategoriDokter')
+                        <label for="nama" class="font-weight-bold">Alamat</label>
+                        <textarea type="text" class="form-control @error('alamat') is-invalid @enderror" name="alamat" value="{{old('alamat')}}" required></textarea>
+                        @error('alamat')
                             <div class="form-control-feedback text-danger">
                                 {{$message}}
                             </div>
                         @enderror
                     </div>
+
+
+                    <div class="col-xl-12 my-3">
+                        <label for="nama" class="font-weight-bold">Tanggal Lahir</label>
+                        <input type="date" class="form-control @error('tanggal_lahir') is-invalid @enderror" name="tanggal_lahir" value="{{old('tanggal_lahir')}}" required>
+                        @error('tanggal_lahir')
+                            <div class="form-control-feedback text-danger">
+                                {{$message}}
+                            </div>
+                        @enderror
+                    </div>
+
+                    @if($create_type == 'dokter')
+
+                        <div class="col-xl-12 my-3">
+                            <label for="nama" class="font-weight-bold">Spesialis Dokter</label>
+                            <input type="text" class="form-control @error('kategoriDokter') is-invalid @enderror" name="kategoriDokter" value="{{old('kategoriDokter')}}" required>
+                            @error('kategoriDokter')
+                                <div class="form-control-feedback text-danger">
+                                    {{$message}}
+                                </div>
+                            @enderror
+                        </div>
 
 
                         <div class="col-12 row mx-0 px-0 py-3" id="practiceTimeForm">
@@ -134,21 +159,19 @@
                             </div>
                         </div>
 
-                    @else
-
-                        <div class="col-xl-12 my-3">
-                            <label for="nama" class="font-weight-bold">Peran</label>
-                            <select name="roleId" id="roleSelect" class="form-control"
-                                @if (auth()->user()->role->roleName !== 'Administrator') disabled @endif>
-                                <option value="">Choose Role</option>
-                                @foreach ($roles as $r)
-                                    <option value="{{ $r->id }}">
-                                        {{ $r->roleName }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-
                     @endif
+
+                    <div class="col-xl-12 my-3">
+                        <label for="nama" class="font-weight-bold">Peran</label>
+                        <select name="roleId" id="roleSelect" class="form-control" disabled>
+                            <option value="">Choose Role</option>
+                            @foreach ($roles as $r)
+                                <option value="{{ $r->id }}" @if($r->roleName === \Illuminate\Support\Str::title($create_type)) selected @endif>{{ $r->roleName }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+
 
                     <div class="col-xl-12 my-3">
                         <label for="nama" class="font-weight-bold">Email</label>
@@ -180,7 +203,7 @@
                     {{-- </div> --}}
 
                     <div class="col-xl-12 mt-4 d-flex">
-                        <button type="button" class="btn btn-success w-75 m-auto" id="submitBtn"
+                        <button type="submit" class="btn btn-success w-75 m-auto" id="submitBtn"
                             disabled>Simpan</button>
                     </div>
                 </div>
@@ -222,15 +245,15 @@
             }
         }
 
-        $('#submitBtn').on('click', function(event) {
-            if ($('#roleSelect').val() === '') {
-                errorAlert('Periksa Kembali data Anda !');
-                $('#roleSelect').addClass('is-invalid');
-                event.preventDefault();
-            } else {
-                $('form').submit();
-            }
-        });
+        // $('#submitBtn').on('click', function(event) {
+        //     if ($('#roleSelect').val() === '') {
+        //         errorAlert('Periksa Kembali data Anda !');
+        //         $('#roleSelect').addClass('is-invalid');
+        //         event.preventDefault();
+        //     } else {
+        //         $('form').submit();
+        //     }
+        // });
 
         // $('#roleSelect').on('change', function(){
         //     let practiceFormEl = $('#forDoctorEl');

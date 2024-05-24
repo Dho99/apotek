@@ -32,15 +32,13 @@
                             <label for="nama" class="font-weight-bold">Peran</label>
                             <input type="text" class="form-control" name="nama" value="{{ $data->role->roleName }}" readonly>
                         </div>
-                        @if($data->role->roleName == 'Dokter')
-                            <div class="col-xl-12 mt-4 d-flex">
-                                <a href="{{route('dokter.edit', [$data->id])}}" class="btn btn-success m-auto w-50">Edit Akun</a>
-                            </div>
-                        @else
-                            <div class="col-xl-12 mt-4 d-flex">
-                                <a href="/account/edit/{{$data->kode}}" class="btn btn-success m-auto w-50">Edit Akun</a>
-                            </div>
-                        @endif
+                        @php
+                            $role = \Illuminate\Support\Str::lower($data->role->roleName);
+                        @endphp
+                        <div class="col-xl-12 mt-4 d-flex">
+                            <a href="{{route($role.'.edit', [$data->id])}}" class="btn btn-success m-auto w-50">Edit Akun</a>
+                        </div>
+
                     </div>
                 </div>
             </div>

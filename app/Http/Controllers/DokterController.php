@@ -36,7 +36,8 @@ class DokterController extends Controller
     {
         return view('other.account-create',[
             'title' => 'Buat data Dokter',
-            'roles' => Role::all()
+            'roles' => Role::all(),
+            'create_type' => 'dokter'
         ]);
     }
 

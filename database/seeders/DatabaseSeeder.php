@@ -71,7 +71,7 @@ class DatabaseSeeder extends Seeder
             'telp' => fake()->unique()->phoneNumber(),
             'alamat' => fake()->address(),
             'status' => 'Aktif',
-            'roleId' => 4,
+            'roleId' => 3,
             'profile' => '',
             'tanggal_lahir' => fake()->dateTimeThisDecade()
         ]);

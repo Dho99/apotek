@@ -34,15 +34,15 @@
                     </li>
                     <li class="dropdown">
                         <a href="javascript:;"
-                            class="dropdown-toggle {{ $title == 'Tambah Obat' || $title == 'Daftar Obat' || $title == 'Transaksi Obat' || $title == 'Stock-in Obat' || $title == 'Detail Data Obat' || $title == 'Kategori Obat' || $title == 'Obat Kadaluarsa' ? 'active ' : '' }}">
+                            class="dropdown-toggle {{ $title == 'Daftar Pasien' || $title == 'Tambah Pasien' ? 'active ' : '' }}">
                             <span class="micon icon-copy dw dw-file-22"></span><span class="mtext">Pasien</span>
                         </a>
                         <ul class="submenu">
-                            <li><a href="/apoteker/obat/list"
-                                    class="{{ $title == 'Daftar Obat' || $title == 'Detail Data Obat' ? 'active' : '' }}">Daftar
+                            <li><a href="{{route('pasien.index')}}"
+                                    class="{{ $title == 'Daftar Pasien' ? 'active' : '' }}">Daftar
                                     Pasien</a></li>
-                            <li><a href="/apoteker/obat/create"
-                                    class="{{ $title === 'Tambah Data Obat' ? 'active' : '' }}">Tambah
+                            <li><a href="{{route('pasien.create')}}"
+                                    class="{{ $title === 'Tambah Pasien' ? 'active' : '' }}">Tambah
                                     Pasien</a></li>
 
                         </ul>

@@ -10,144 +10,183 @@
     <div class="mt-4 pb-5">
 
         {{-- @foreach ($data as $item) --}}
-        @if ($data->role->roleName == 'Dokter')
-            <form action="{{ route('dokter.update', [$data->id]) }}" method="POST" enctype="multipart/form-data">
-                @method('PUT')
-            @else
-                <form action="/account/update/{{ $data->kode }}" method="POST" enctype="multipart/form-data">
-        @endif
+        @php
+            $role = \Illuminate\Support\Str::lower($data->role->roleName);
+        @endphp
 
-        @csrf
-        <div class="card-box shadow-lg m-auto mb-5 py-4">
-            @if ($errors)
-                <div class="container">
-                    @foreach ($errors->all() as $err)
-                        <div class="alert alert-danger mt-3" role="alert">
-                            {{ $err }}
-                        </div>
-                    @endforeach
-                </div>
-            @endif
-            <div class="modal fade bs-example-modal-lg" id="edit-image-account-modal" tabindex="-1" role="dialog"
-                aria-labelledby="myLargeModalLabel" aria-hidden="true">
+        <form action="{{ route($role.'.update', [$data->id]) }}" method="POST" enctype="multipart/form-data">
+            @method('PUT')
 
-                <div class="modal-dialog modal-lg modal-dialog-centered">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h4 class="modal-title" id="myLargeModalLabel">
-                                Edit Foto Profil
-                            </h4>
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
-                                ×
-                            </button>
-                        </div>
-                        <div class="modal-body d-flex">
-                            <div class="container row m-auto">
-                                <div class="col-xl-12 mb-3">
-                                    <input type="file" src="" alt="" id="image" class="form-control"
-                                        name="profile" onchange="previewImage()" value="">
+            @csrf
+            <div class="card-box shadow-lg m-auto mb-5 py-4">
+                {{-- @if ($errors)
+                    <div class="container">
+                        @foreach ($errors->all() as $err)
+                            <div class="alert alert-danger mt-3" role="alert">
+                                {{ $err }}
+                            </div>
+                        @endforeach
+                    </div>
+                @endif --}}
+                <div class="modal fade bs-example-modal-lg" id="edit-image-account-modal" tabindex="-1" role="dialog"
+                    aria-labelledby="myLargeModalLabel" aria-hidden="true">
+
+                    <div class="modal-dialog modal-lg modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title" id="myLargeModalLabel">
+                                    Edit Foto Profil
+                                </h4>
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                    ×
+                                </button>
+                            </div>
+                            <div class="modal-body d-flex">
+                                <div class="container row m-auto">
+                                    <div class="col-xl-12 mb-3">
+                                        <input type="file" src="" alt="" id="image"
+                                            class="form-control" name="profile" onchange="previewImage()" value="">
+                                    </div>
+                                    <img src=""
+                                        class="img-preview rounded-circle img-fluid account-img border border-success d-none">
                                 </div>
-                                <img src=""
-                                    class="img-preview rounded-circle img-fluid account-img border border-success d-none">
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                                    onclick="undoChanges()">
+                                    Batal
+                                </button>
+                                <button type="button" class="btn btn-primary" data-dismiss="modal">
+                                    Simpan
+                                </button>
                             </div>
                         </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="undoChanges()">
-                                Batal
-                            </button>
-                            <button type="button" class="btn btn-primary" data-dismiss="modal">
-                                Simpan
-                            </button>
+                    </div>
+                </div>
+
+                <div class="container  m-auto row">
+                    <div class="col-xl-6 d-flex">
+                        <div class="da-card m-auto rounded-circle border border-success">
+                            <div class="da-card-photo">
+                                <div class="account-img">
+                                    <img src="{{ asset('storage/' . $data->profile) }}" class="w-100 h-100"
+                                        id="myProfile" />
+                                </div>
+                                <div class="da-overlay">
+                                    <div class="da-social">
+                                        <ul class="clearfix">
+                                            <li>
+                                                <a href="#" data-toggle="modal"
+                                                    data-target="#edit-image-account-modal" type="button"
+                                                    class="text-decoration-none d-flex">
+                                                    <i class="icon-copy dw dw-pencil-1 border-light m-auto"></i>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="my-3 col-xl-6">
+                        @if ($data->role->roleName == 'Pasien')
+                            <div class="col-xl-12 my-3">
+                                <label for="username" class="font-weight-bold">No Rekam Medis</label>
+                                <input type="text" class="form-control" value="{{ $data->no_rekam_medis }}"
+                                    name="no_rekam_medis" required disabled>
+                            </div>
+                        @endif
+                        <div class="col-xl-12 my-3">
+                            <label for="username" class="font-weight-bold">Username</label>
+                            <input type="text" class="form-control @error('username') is-invalid @enderror" value="{{ $data->username }}" name="username"
+                                required>
+                            @error('username')
+                                <div class="form-control-feedback text-danger">
+                                    {{$message}}
+                                </div>
+                            @enderror
+                        </div>
+                        <div class="col-xl-12 my-3">
+                            <label for="nama" class="font-weight-bold">Nama Lengkap</label>
+                            <input type="text" class="form-control @error('nama') is-invalid @enderror" name="nama" value="{{ $data->nama }}" required>
+                            @error('nama')
+                                <div class="form-control-feedback text-danger">
+                                    {{$message}}
+                                </div>
+                            @enderror
+                        </div>
+                        <div class="col-xl-12 my-3">
+                            <label for="nama" class="font-weight-bold">Alamat</label>
+                            <textarea name="alamat" class="form-control @error('alamat') is-invalid @enderror" id="">{{ $data->alamat }}</textarea>
+                            @error('alamat')
+                                <div class="form-control-feedback text-danger">
+                                    {{$message}}
+                                </div>
+                            @enderror
+                        </div>
+                        <div class="col-xl-12 my-3">
+                            <label for="nama" class="font-weight-bold">Email</label>
+                            <input type="text" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ $data->email }}" required>
+                            @error('email')
+                                <div class="form-control-feedback text-danger">
+                                    {{$message}}
+                                </div>
+                            @enderror
+                        </div>
+                        <div class="col-xl-12 my-3">
+                            <label for="nama" class="font-weight-bold">Tanggal Lahir</label>
+                            <input type="date" class="form-control @error('tanggal_lahir') is-invalid @enderror" name="tanggal_lahir"
+                                value="{{ $data->tanggal_lahir }}" required>
+                                @error('tanggal_lahir')
+                                    <div class="form-control-feedback text-danger">
+                                        {{$message}}
+                                    </div>
+                                @enderror
+                        </div>
+                        @if ($data->role->roleName === 'Dokter')
+                            @php
+                                $practiceTime = json_decode($data->jamPraktek);
+                                $start = $practiceTime->start;
+                                $end = $practiceTime->end;
+                            @endphp
+                            <div class="col-12 row mx-0 px-0 py-3">
+                                <h5 class="text-center col-12 mb-1">Jam Praktek</h5>
+                                <div class="col-lg-6 col-12">
+                                    <label for="nama" class="font-weight-bold">Mulai</label>
+                                    <input type="time" class="form-control @error('start') is-invalid @enderror" name="start"
+                                        value="{{ $start }}">
+                                        @error('start')
+                                            <div class="form-control-feedback text-danger">
+                                                {{$message}}
+                                            </div>
+                                        @enderror
+                                </div>
+                                <div class="col-lg-6 col-12">
+                                    <label for="nama" class="font-weight-bold">Akhir</label>
+                                    <input type="time" class="form-control @error('end') is-invalid @enderror" name="end"
+                                        value="{{ $end }}">
+                                        @error('end')
+                                            <div class="form-control-feedback text-danger">
+                                                {{$message}}
+                                            </div>
+                                        @enderror
+                                </div>
+                            </div>
+                        @endif
+
+                        <div class="col-xl-12 my-3">
+                            <label for="nama" class="font-weight-bold">Password</label>
+                            <input type="password" class="form-control" name="password" id="pass1" required
+                                oninput="validate1()" onblur="cancelValidate()">
+                            <p id="vpass1" class="text-danger font-14"></p>
+                        </div>
+                        <div class="col-xl-12 mt-4 d-flex">
+                            <button type="submit" class="btn btn-success w-75 m-auto" id="submitBtn"
+                                disabled>Simpan</button>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <div class="container  m-auto row">
-                <div class="col-xl-6 d-flex">
-                    <div class="da-card m-auto rounded-circle border border-success">
-                        <div class="da-card-photo">
-                            <div class="account-img">
-                                <img src="{{ asset('storage/' . $data->profile) }}" class="w-100 h-100" id="myProfile" />
-                            </div>
-                            <div class="da-overlay">
-                                <div class="da-social">
-                                    <ul class="clearfix">
-                                        <li>
-                                            <a href="#" data-toggle="modal" data-target="#edit-image-account-modal"
-                                                type="button" class="text-decoration-none d-flex">
-                                                <i class="icon-copy dw dw-pencil-1 border-light m-auto"></i>
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="my-3 col-xl-6">
-                    <div class="col-xl-12 my-3">
-                        <label for="username" class="font-weight-bold">Username</label>
-                        <span><i class="icon-copy bi bi-info-circle float-right font-20 mb-2" data-toggle="tooltip"
-                                title="Tooltip on top"></i></span>
-                        <input type="text" class="form-control" value="{{ $data->username }}" name="username" required>
-                    </div>
-                    <div class="col-xl-12 my-3">
-                        <label for="nama" class="font-weight-bold">Nama Lengkap</label>
-                        <span><i class="icon-copy bi bi-info-circle float-right font-20 mb-2" data-toggle="tooltip"
-                                title="Tooltip on top"></i></span>
-                        <input type="text" class="form-control" name="nama" value="{{ $data->nama }}" required>
-                    </div>
-                    <div class="col-xl-12 my-3">
-                        <label for="nama" class="font-weight-bold">Email</label>
-                        <span><i class="icon-copy bi bi-info-circle float-right font-20 mb-2" data-toggle="tooltip"
-                                title="Tooltip on top"></i></span>
-                        <input type="text" class="form-control" name="email" value="{{ $data->email }}" required>
-                    </div>
-                    <div class="col-xl-12 my-3">
-                        <label for="nama" class="font-weight-bold">Peran</label>
-                        <select name="roleId" id="roleSelect" class="form-control"
-                            @if (auth()->user()->role->roleName !== 'Administrator') disabled @endif>
-                            <option value="">Choose Role</option>
-                            @foreach ($roles as $r)
-                                <option value="{{ $r->id }}" {{ $r->id == $data->role->id ? 'selected' : '' }}>
-                                    {{ $r->roleName }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    @if ($data->role->roleName === 'Dokter')
-                        @php
-                            $practiceTime = json_decode($data->jamPraktek);
-                            $start = $practiceTime->start;
-                            $end = $practiceTime->end;
-                        @endphp
-                        <div class="col-12 row mx-0 px-0 py-3">
-                            <h5 class="text-center col-12 mb-1">Jam Praktek</h5>
-                            <div class="col-lg-6 col-12">
-                                <label for="nama" class="font-weight-bold">Mulai</label>
-                                <input type="time" class="form-control" name="start" value="{{ $start }}">
-                            </div>
-                            <div class="col-lg-6 col-12">
-                                <label for="nama" class="font-weight-bold">Akhir</label>
-                                <input type="time" class="form-control" name="end" value="{{ $end }}">
-                            </div>
-                        </div>
-                    @endif
-                    <div class="col-xl-12 my-3">
-                        <label for="nama" class="font-weight-bold">Password</label>
-                        <span><i class="icon-copy bi bi-info-circle float-right font-20 mb-2" data-toggle="tooltip"
-                                title="Tooltip on top"></i></span>
-                        <input type="password" class="form-control" name="password" id="pass1" required
-                            oninput="validate1()" onblur="cancelValidate()">
-                        <p id="vpass1" class="text-danger font-14"></p>
-                    </div>
-                    <div class="col-xl-12 mt-4 d-flex">
-                        <button type="button" class="btn btn-success w-75 m-auto" id="submitBtn"
-                            disabled>Simpan</button>
-                    </div>
-                </div>
-            </div>
-        </div>
         </form>
         {{-- @endforeach --}}
     </div>
@@ -184,15 +223,15 @@
             }
         }
 
-        $('#submitBtn').on('click', function(event) {
-            if ($('#roleSelect').val() === '') {
-                errorAlert('Periksa Kembali data Anda !');
-                $('#roleSelect').addClass('is-invalid');
-                event.preventDefault();
-            } else {
-                $('form').submit();
-            }
-        })
+        // $('#submitBtn').on('click', function(event) {
+        //     if ($('#roleSelect').val() === '') {
+        //         errorAlert('Periksa Kembali data Anda !');
+        //         $('#roleSelect').addClass('is-invalid');
+        //         event.preventDefault();
+        //     } else {
+        //         $('form').submit();
+        //     }
+        // });
 
         function undoChanges() {
             const myProfileImage = document.getElementById('myProfile');

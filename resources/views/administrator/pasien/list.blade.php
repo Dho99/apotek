@@ -8,44 +8,30 @@
 @endsection
 @section('content')
     <div class="container bg-white rounded py-3 px-2 mt-3">
-        <table id="dokterTable" class="table text-center" style="width: 100%;">
+        <table id="dokterTable" class="table" style="width: 100%;">
             <thead>
                 <tr>
-                    <th data-dt-order="disable">No</th>
-                    <th>Nama Dokter</th>
-                    <th>Spesialis Dokter</th>
-                    <th colspan="2" data-dt-order="disable" class="text-center">Jam Praktek</th>
-                    <th>Jumlah Konsultasi</th>
+                    <th>No</th>
+                    <th>No Rekam Medis</th>
+                    <th>Nama Pasien</th>
+                    <th>Gender</th>
+                    <th>Tanggal Lahir</th>
                     <th>Aksi</th>
                 </tr>
-                <tr>
-                    <th colspan="3" data-dt-order="disable"></th>
-                    <th>Mulai</th>
-                    <th>Akhir</th>
-                    <th colspan="2" data-dt-order="disable"></th>
-                </tr>
             </thead>
-            <tbody>
-                @foreach ($dokters as $d)
-                    {{-- @dd($d) --}}
-                    @php
-                        $practiceTime = json_decode($d->jamPraktek);
-                        $start = $practiceTime->start;
-                        $end = $practiceTime->end;
-                        $countKonsultasi = \App\Models\Kunjungan::where('dokterId', $d->id)->count();
-                    @endphp
+            <tbody class="">
+                @foreach ($pasiens as $d)
                     <tr>
                         <td>{{ $loop->iteration }}</td>
+                        <td class="text-center">{{ $d->no_rekam_medis }}</td>
                         <td>{{ $d->nama }}</td>
-                        <td>{{ $d->kategoriDokter }}</td>
-                        <td>{{ $start }}</td>
-                        <td>{{ $end }}</td>
-                        <td>{{ $countKonsultasi . ' Konsultasi' }} </td>
+                        <td>{{ $d->gender = 1 ? 'Pria' : 'Wanita' }}</td>
+                        <td>{{ \Illuminate\Support\Carbon::parse($d->tanggal_lahir)->format('d F Y') }}</td>
                         <td class="">
                             <div class="d-flex">
-                                <a href="{{route('dokter.show',[$d->id])}}" class="btn btn-sm btn-secondary"><i
+                                <a href="{{route('pasien.show',[$d->id])}}" class="btn btn-sm btn-secondary"><i
                                         class="icon-copy dw dw-edit1 d-flex align-items-center"></i></a>
-                                <form class="d-inline-flex" method="POST" action="{{route('dokter.destroy',[$d->id])}}">
+                                <form class="d-inline-flex" method="POST" action="{{route('pasien.destroy',[$d->id])}}">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-sm btn-danger"><i

@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ResepController;
 use App\Http\Controllers\DokterController;
+use App\Http\Controllers\PasienController;
 use App\Http\Controllers\ProdukController;
 use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\KeuanganController;
@@ -50,6 +51,7 @@ Route::prefix('administrator')->middleware(['auth', 'user-access:Administrator']
     Route::prefix('manage')->group(function(){
         Route::resource('dokter', DokterController::class)->names('dokter');
         Route::resource('user', UserController::class)->names('user');
+        Route::resource('pasien', PasienController::class)->names('pasien');
     });
 });
 
