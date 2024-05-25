@@ -62,12 +62,33 @@
 
                         </ul>
                     </li>
+
+                    <li class="dropdown">
+                        <a href="javascript:;"
+                            class="dropdown-toggle {{ $title == 'Daftar Kunjungan' || $title == 'Tambah Kunjungan' ? 'active ' : '' }}">
+                            <span class="micon icon-copy dw dw-file-22"></span><span class="mtext">Kunjungan</span>
+                        </a>
+                        <ul class="submenu">
+                            <li><a href="{{route('kunjungan.index')}}"
+                                    class="{{ $title == 'Daftar Kunjungan' ? 'active' : '' }}">Daftar
+                                    Kunjungan</a></li>
+                            <li><a href="{{route('kunjungan.create')}}"
+                                    class="{{ $title === 'Tambah Kunjungan' ? 'active' : '' }}">Tambah
+                                    Kunjungan</a></li>
+
+                        </ul>
+                    </li>
+
                     <li class="dropdown">
                         <a href="javascript:;"
                             class="dropdown-toggle {{ $title == 'Laporan Penjualan' || $title == 'Laporan Keuangan' ? 'active' : '' }}">
                             <span class="micon icon-copy dw dw-file"></span><span class="mtext">Laporan</span>
                         </a>
                         <ul class="submenu">
+                            <li>
+                                <a href="{{route('laporanKunjungan')}}"
+                                    class="{{ $title == 'Laporan Penjualan' ? 'active' : '' }}">Kunjungan</a>
+                            </li>
                             <li>
                                 <a href="/apoteker/laporan/penjualan"
                                     class="{{ $title == 'Laporan Penjualan' ? 'active' : '' }}">Penjualan</a>
@@ -78,6 +99,7 @@
                             </li>
                         </ul>
                     </li>
+
                 </ul>
             </div>
         </div>

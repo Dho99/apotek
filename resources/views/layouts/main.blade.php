@@ -331,6 +331,20 @@
             });
         }
 
+        function decisionAlert(title, message){
+            return new Promise((resolve, reject) => {
+                swal({
+                    title: title,
+                    text: message,
+                    type: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, delete it !',
+                }).then(() => {
+                    resolve(true);
+                });
+            });
+        }
+
     </script>
     @stack('scripts')
     @if (auth()->user()->level == 'Apoteker')

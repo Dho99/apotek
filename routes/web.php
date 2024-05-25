@@ -7,11 +7,14 @@ use App\Http\Controllers\ResepController;
 use App\Http\Controllers\DokterController;
 use App\Http\Controllers\PasienController;
 use App\Http\Controllers\ProdukController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\KeuanganController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\KunjunganController;
 use App\Http\Controllers\PenjualanController;
+use App\Http\Controllers\AdministratorController;
 use App\Http\Controllers\DashboardDokterController;
 /*
 |--------------------------------------------------------------------------
@@ -50,8 +53,15 @@ Route::prefix('administrator')->middleware(['auth', 'user-access:Administrator']
 
     Route::prefix('manage')->group(function(){
         Route::resource('dokter', DokterController::class)->names('dokter');
-        Route::resource('user', UserController::class)->names('user');
+        Route::resource('administrator', AdministratorController::class)->names('administrator');
         Route::resource('pasien', PasienController::class)->names('pasien');
+    });
+
+    Route::resource('kunjungan', KunjunganController::class)->names('kunjungan');
+
+    Route::controller(ReportController::class)->prefix('laporan')->group(function(){
+        Route::get('/kunjungan','laporanKunjungan')->name('laporanKunjungan');
+
     });
 });
 

@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->bigInteger('pasienId')->unsigned();
             $table->bigInteger('dokterId')->unsigned();
-            $table->json('diagnosa');
-            $table->json('tindakan');
+            $table->string('diagnosa');
+            $table->string('tindakan');
             $table->timestamps();
 
             $table->foreign('pasienId')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');

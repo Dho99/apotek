@@ -2,21 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Kunjungan;
-use App\Http\Requests\Request;
-use Alert;
+use App\Models\User;
+use Illuminate\Http\Request;
 
-class KunjunganController extends Controller
+class AdministratorController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return view('administrator.kunjungan.daftar', [
-            'title' => 'Daftar Kunjungan',
-            'kunjungan' => Kunjungan::all()
-        ]);
+        //
     }
 
     /**
@@ -24,9 +20,7 @@ class KunjunganController extends Controller
      */
     public function create()
     {
-        return view('administrator.kunjungan.create', [
-            'title' => 'Buat Data Kunjungan'
-        ]);
+        //
     }
 
     /**
@@ -40,7 +34,7 @@ class KunjunganController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Kunjungan $kunjungan)
+    public function show(User $User)
     {
         //
     }
@@ -48,7 +42,7 @@ class KunjunganController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Kunjungan $kunjungan)
+    public function edit(User $User)
     {
         //
     }
@@ -56,7 +50,7 @@ class KunjunganController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Kunjungan $kunjungan)
+    public function update(Request $request, User $User)
     {
         //
     }
@@ -64,10 +58,8 @@ class KunjunganController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Kunjungan $kunjungan)
+    public function destroy(User $User)
     {
-        $kunjungan->delete();
-        Alert::success('Success','Data Kunjungan berhasil Dihapus');
-        return redirect()->back();
+        //
     }
 }
