@@ -144,6 +144,8 @@ class PasienController extends Controller
      */
     public function destroy(Pasien $pasien)
     {
-        //
+        $pasien->delete();
+        Alert::success('Success','Data Pasien berhasil Dihapus');
+        return redirect()->back();
     }
 }
