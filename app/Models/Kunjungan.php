@@ -22,4 +22,9 @@ class Kunjungan extends Model
         return $this->belongsTo(\App\Models\Pasien::class, 'pasienId');
     }
 
+    public function dokter()
+    {
+        return $this->belongsTo(\App\Models\Dokter::class, 'dokterId');
+    }
+
 }

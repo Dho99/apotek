@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Kunjungan;
-use App\Http\Requests\Request;
 use Alert;
+use App\Models\User;
+use App\Models\Pasien;
+use App\Models\Kunjungan;
+use Illuminate\Http\Request;
+use Exception as ex;
 
 class KunjunganController extends Controller
 {
@@ -15,7 +18,7 @@ class KunjunganController extends Controller
     {
         return view('administrator.kunjungan.daftar', [
             'title' => 'Daftar Kunjungan',
-            'kunjungan' => Kunjungan::all()
+            'kunjungan' => Kunjungan::with('patient')->get()
         ]);
     }
 
@@ -25,24 +28,57 @@ class KunjunganController extends Controller
     public function create()
     {
         return view('administrator.kunjungan.create', [
-            'title' => 'Buat Data Kunjungan'
+            'title' => 'Buat Data Kunjungan',
+            'no_rm' => Pasien::getAll()
         ]);
     }
+
 
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
-        //
+        $getPasien = Pasien::where('kode', $request->kode)->first();
+        $request['no_rekam_medis'] = $getPasien->no_rekam_medis;
+        $request['pasienId'] = $getPasien->id;
+        if(isset($request->no_rekam_medis)){
+            if($getPasien->status !== 'Aktif'){
+                Alert::info('Informasi','Pasien Tidak Aktif, lakukan registrasi Ulang');
+                return redirect()->back();
+            }else{
+                $validate = $request->validate([
+                    // 'no_rekam_medis' => 'required',
+                    'keluhan' => 'required|min:10',
+                    'pasienId' => 'required'
+                ]);
+                try{
+                    Kunjungan::create($validate);
+                    Alert::success('Success','Data Kunjungan berhasil Disimpan');
+                    return redirect()->back();
+                }catch(ex $e){
+                    Alert::error('Terjadi Kesalahan',$e->getMessage());
+                    return redirect()->back();
+                }
+            }
+        }else{
+            return response()->json(['data' => '404'], 201);
+
+        }
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Kunjungan $kunjungan)
+    public function show(Kunjungan $kunjungan, Request $request)
     {
-        //
+        $kunjungan->load('patient','dokter');
+        if($request->ajax()){
+            return response()->json(['result' => $kunjungan], 200);
+        }else{
+
+        }
+
     }
 
     /**

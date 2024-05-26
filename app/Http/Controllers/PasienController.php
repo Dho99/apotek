@@ -59,13 +59,17 @@ class PasienController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Pasien $pasien)
+    public function show(Pasien $pasien, Request $request)
     {
-        $pasien->load('role');
-        return view('other.account-info', [
-            'title' => 'Detail data Pasien',
-            'data' => $pasien,
-        ]);
+        if($request->ajax()){
+            return response()->json(['result' => $pasien], 200);
+        }else{
+            $pasien->load('role');
+            return view('other.account-info', [
+                'title' => 'Detail data Pasien',
+                'data' => $pasien,
+            ]);
+        }
     }
 
     /**

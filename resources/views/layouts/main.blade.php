@@ -15,7 +15,7 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('vendors/styles/icon-font.min.css') }}" />
     <link rel="stylesheet" type="text/css" href="{{ asset('vendors/styles/style.min.css') }}" />
     <link rel="stylesheet" type="text/css" href="{{ asset('src/plugins/datatables/css/dataTables.min.css') }}" />
-    <link rel="stylesheet" type="text/css" href="{{ asset('src/plugins/sweetalert2/sweetalert2.css') }}" />
+    <link rel="stylesheet" type="text/css" href="{{ asset('src/plugins/sweetalert2/sweetalert2.min.css') }}" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
     <link rel="stylesheet" href="{{ asset('vendors/styles/pagination.css') }}">
     <link rel="stylesheet" type="text/css" href="https://unpkg.com/trix@2.0.0/dist/trix.css">
@@ -87,7 +87,7 @@
     <script src="{{ asset('vendors/scripts/layout-settings.js') }}"></script>
     <script src="{{ asset('src/plugins/datatables/js/dataTables.min.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
-    <script src="{{ asset('src/plugins/sweetalert2/sweetalert2.all.js') }}"></script>
+    <script src="{{ asset('src/plugins/sweetalert2/sweetalert2.all.min.js') }}"></script>
     <script src="{{ asset('src/plugins/apexcharts/apexcharts.min.js') }}"></script>
     <script src="{{ asset('vendors/scripts/myScript/jquery.mask.min.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
@@ -296,10 +296,10 @@
 
         function successAlert(message) {
             $('#sa-success', function() {
-                swal({
+                Swal.fire({
                     title: 'Good job!',
                     text: `${message}`,
-                    type: 'success',
+                    icon: 'success',
                     confirmButtonClass: 'btn bg-success',
                 });
             });
@@ -307,8 +307,8 @@
 
         function errorAlert(message) {
             $('#sa-error', function() {
-                swal({
-                    type: 'error',
+                Swal.fire({
+                    icon: 'error',
                     title: 'Oops...',
                     text: `${message}`,
                     confirmButtonClass: 'btn bg-danger',
@@ -331,16 +331,20 @@
             });
         }
 
-        function decisionAlert(title, message){
+        function decisionAlert(title, message, cancelMessage){
             return new Promise((resolve, reject) => {
-                swal({
+                Swal.fire({
                     title: title,
                     text: message,
-                    type: 'warning',
+                    icon: 'warning',
                     showCancelButton: true,
                     confirmButtonText: 'Yes, delete it !',
-                }).then(() => {
-                    resolve(true);
+                }).then((result) => {
+                    if(result.isConfirmed){
+                        resolve(true);
+                    }else if(result.isDismissed){
+                        reject(cancelMessage);
+                    }
                 });
             });
         }

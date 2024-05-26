@@ -14,7 +14,8 @@ return new class extends Migration
         Schema::create('kunjungans', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('pasienId')->unsigned();
-            $table->bigInteger('dokterId')->unsigned();
+            $table->bigInteger('dokterId')->unsigned()->nullable();
+            $table->string('keluhan');
             $table->string('diagnosa');
             $table->string('tindakan');
             $table->timestamps();
