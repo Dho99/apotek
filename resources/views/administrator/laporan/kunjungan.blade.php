@@ -43,11 +43,11 @@
 
     <div class="container bg-white mt-3 py-3 px-2 rounded row mx-0">
         <div class="col-6">
-            <h5>Menampilkan data sejak <span id="filterIndicator">30 Hari Terakhir</span></h5>
+            <h5>Menampilkan data sejak 1 Tahun Terakhir</h5>
         </div>
-        <div class="col-3 d-flex ml-auto">
+        {{-- <div class="col-3 d-flex ml-auto">
             <button class="w-100 btn btn-sm btn-outline-success" onclick="openFilterModal()">Filter</button>
-        </div>
+        </div> --}}
         <div id="chart" class="my-4 col-12 border rounded"></div>
         {{-- </div>
 
@@ -83,49 +83,46 @@
 @push('scripts')
     <script>
         $(function() {
-            getReportData();
+            renderChart();
             $('#kunjunganTable').DataTable({
                 responsive: true,
             });
-            $('#filterByDate').hide();
         });
 
-        const openFilterModal = () => {
-            $('#filterModal').modal('show');
+        function renderChart(){
+            asyncAjaxUpdate('{{url()->current()}}','GET',null).then((response) => {
+                let options = {
+                    chart: {
+                        toolbar:{
+                            show: false,
+                        },
+                        type: 'area',
+                        height: '400',
+                        stacked: false,
+                    },
+                    stroke: {
+                        curve: 'smooth'
+                    },
+                    series: [
+                    {
+                        name: 'Jumlah Kunjungan',
+                        data: response.yearKunjungan
+                    },{
+                        name: 'Pasien Lama',
+                        data: response.oldPatient
+                    },{
+                        name: 'Pasien Baru',
+                        data: response.newPatient
+                    }],
+                    labels: response.monthName
+                }
+
+                var chart = new ApexCharts(document.querySelector("#chart"), options);
+                chart.render();
+            }).catch((error) => {
+                errorAlerrt(error);
+            });
         }
 
-        let startDate;
-        let endDate;
-
-        $('#filterMode').on('change', function(){
-            if($(this).val() === 'byDate'){
-                $('#filterByDate').show();
-            }else{
-                $('#filterByDate').hide();
-            }
-        });
-
-        const getReportData = () => {
-            let filterMode = $('#filterMode').val();
-            // if()
-        }
-
-
-        // var options = {
-        //     chart: {
-        //         type: 'line'
-        //     },
-        //     series: [{
-        //         name: 'sales',
-        //         data: [30, 40, 35, 50, 49, 60, 70, 91, 125]
-        //     }],
-        //     xaxis: {
-        //         categories: [1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999]
-        //     }
-        // }
-
-        // var chart = new ApexCharts(document.querySelector("#chart"), options);
-
-        // chart.render();
     </script>
 @endpush
