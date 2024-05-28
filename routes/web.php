@@ -61,6 +61,7 @@ Route::prefix('administrator')->middleware(['auth', 'user-access:Administrator']
 
     Route::controller(ReportController::class)->prefix('laporan')->group(function(){
         Route::get('/kunjungan','laporanKunjungan')->name('laporanKunjungan');
+        Route::get('/filter','filter')->name('filterKunjungan');
 
     });
 });

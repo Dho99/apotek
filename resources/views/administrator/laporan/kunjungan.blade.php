@@ -15,9 +15,9 @@
                         <div class="col-12">
                             <label for="">Pilih Mode</label>
                             <select name="" class="form-control" id="filterMode">
-                                <option class="h5 font-weight-normal" value="byDate">Berdasarkan Tanggal</option>
-                                <option class="h5 font-weight-normal" value="byMonth" selected>Berdasarkan Bulan</option>
-                                <option class="h5 font-weight-normal" value="byYear">Berdasarkan Tahun</option>
+                                <option class="font-weight-normal" value="byDate">Berdasarkan Tanggal</option>
+                                <option class="font-weight-normal" value="byMonth">Berdasarkan Bulan</option>
+                                <option class="font-weight-normal" value="byYear">Berdasarkan Tahun</option>
                             </select>
                             <div id="filterByDate" class="row mt-3">
                                 <div class="form-group col-6">
@@ -29,12 +29,30 @@
                                     <input type="date" name="" id="end" class="form-control">
                                 </div>
                             </div>
+                            <div id="filterByMonth" class="row mt-3">
+                                <div class="form-group col-6">
+                                    <label for="">Bulan</label>
+                                    <select name="" id="monthFilter" class="form-control"></select>
+                                </div>
+                                <div class="form-group col-6">
+                                    <label for="">Tahun</label>
+                                    <select name="" id="yearMonthPicker" class="form-control">
+                                    </select>
+                                </div>
+                            </div>
+                            <div id="filterByYear" class="row mt-3">
+                                <div class="col-12">
+                                    <label for="">Tahun</label>
+                                    <select name="" id="yearPicker" class="form-control">
+                                    </select>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary d-flex ml-auto">Understood</button>
+                    <button type="button" class="btn btn-success d-flex ml-auto">Filter</button>
                 </div>
             </div>
         </div>
@@ -45,9 +63,9 @@
         <div class="col-6">
             <h5>Menampilkan data sejak 1 Tahun Terakhir</h5>
         </div>
-        {{-- <div class="col-3 d-flex ml-auto">
+        <div class="col-lg-2 col-md-3 col-4 d-flex ml-auto">
             <button class="w-100 btn btn-sm btn-outline-success" onclick="openFilterModal()">Filter</button>
-        </div> --}}
+        </div>
         <div id="chart" class="my-4 col-12 border rounded"></div>
         {{-- </div>
 
@@ -79,26 +97,74 @@
             </table>
         </div>
     </div>
+    @php
+        $oldestYearData = \App\Models\Kunjungan::first()->pluck('created_at');
+        $parsedOldestYearData = \Illuminate\Support\Carbon::parse($oldestYearData[0])->format('Y');
+    @endphp
 @endsection
 @push('scripts')
+    <script src="{{asset('js/utility.js')}}"></script>
     <script>
         $(function() {
             renderChart();
             $('#kunjunganTable').DataTable({
                 responsive: true,
             });
+            $('#filterByMonth, #filterByYear').hide();
+            yearPickerOptions()
         });
+
+        const yearPickerOptions = () => {
+            let currentYear = new Date().getFullYear();
+            for(let i = '{{$parsedOldestYearData}}'; i <= currentYear; i++){
+                $('#yearPicker, #yearMonthPicker').append(`
+                    <option value="${i}">${i}</option>
+                `);
+            }
+        };
+
+        let startDate;
+        let endDate;
+
+        const getChartTitle = () => {
+            if(typeof startDate === 'undefined' || typeof endDate === 'undefined'){
+                return title = {
+                    text: 'Grafik Kunjungan sejak 1 Tahun terakhir'
+                };
+            }else{
+                return title = {
+                    text: `Grafik Kunjungan sejak ${formatDate(startDate)} hingga ${formatDate(endDate)}`
+                }
+            }
+        }
+
+        const openFilterModal = () => {
+            $('#filterModal').modal('show');
+        }
+
+        $('#filterMode').on('change', function(){
+            $('#filterByDate, #filterByMonth, #filterByYear').hide();
+            let selectedValue = $(this).val();
+            if(selectedValue === 'byDate'){
+                $('#filterByDate').show();
+            }else if(selectedValue === 'byMonth'){
+                $('#filterByMonth').show()
+            }else{
+                $('#filterByYear').show();
+            }
+        });
+
 
         function renderChart(){
             asyncAjaxUpdate('{{url()->current()}}','GET',null).then((response) => {
+                // console.log(response);
                 let options = {
+                    title: getChartTitle(),
                     chart: {
-                        toolbar:{
-                            show: false,
-                        },
                         type: 'area',
                         height: '400',
                         stacked: false,
+                        zoom: false
                     },
                     stroke: {
                         curve: 'smooth'

@@ -51,4 +51,10 @@ class ReportController extends Controller
 
     }
 
+    public function filter(Request $request){
+        if($request->ajax()){
+            
+        }
+    }
+
 }
