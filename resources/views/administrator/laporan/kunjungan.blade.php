@@ -37,7 +37,8 @@
                                             $monthRange = range(0, 11);
                                         @endphp
                                         @foreach ($monthRange as $m)
-                                            <option value="{{$m}}">{{\Illuminate\Support\Carbon::now()->subMonth($m)->monthName}}</option>
+                                            <option value="{{ $m }}">
+                                                {{ \Illuminate\Support\Carbon::now()->subMonth($m)->monthName }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -59,7 +60,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-success d-flex ml-auto">Filter</button>
+                    <button type="button" class="btn btn-success d-flex ml-auto" onclick="filterLaporan()">Filter</button>
                 </div>
             </div>
         </div>
@@ -73,7 +74,7 @@
         <div class="col-lg-2 col-md-3 col-4 d-flex ml-auto">
             <button class="w-100 btn btn-sm btn-outline-success" onclick="openFilterModal()">Filter</button>
         </div>
-        <div id="chart" class="my-4 col-12 border rounded"></div>
+        <div id="chart" class="my-4 col-12 border rounded py-3"></div>
         {{-- </div>
 
     <div class="container bg-white rounded py-3 px-2 mt-3"> --}}
@@ -110,40 +111,45 @@
     @endphp
 @endsection
 @push('scripts')
-    <script src="{{asset('js/utility.js')}}"></script>
+    <script src="{{ asset('js/utility.js') }}"></script>
     <script>
+        let method;
+
         $(function() {
             renderChart();
             $('#kunjunganTable').DataTable({
                 responsive: true,
+                destroy: true
             });
             $('#filterByMonth, #filterByYear').hide();
-            yearPickerOptions()
+            yearPickerOptions();
+            method = $('#filterMode').val();
         });
 
         const yearPickerOptions = () => {
             let currentYear = new Date().getFullYear();
-            for(let i = '{{$parsedOldestYearData}}'; i <= currentYear; i++){
+            for (let i = '{{ $parsedOldestYearData }}'; i <= currentYear; i++) {
                 $('#yearPicker, #yearMonthPicker').append(`
                     <option value="${i}">${i}</option>
                 `);
             }
         };
 
-        let startDate;
-        let endDate;
 
         const getChartTitle = () => {
             let title = {
                 align: 'center'
             };
 
-            if(typeof startDate === 'undefined' || typeof endDate === 'undefined'){
-                const text = {
+            let text = {};
+
+
+            if (typeof startDate === 'undefined' || typeof endDate === 'undefined') {
+                text = {
                     text: 'Grafik Kunjungan sejak 1 Tahun terakhir'
                 };
-            }else{
-                const text = {
+            } else {
+                text = {
                     text: `Grafik Kunjungan sejak ${formatDate(startDate)} hingga ${formatDate(endDate)}`
                 }
             }
@@ -155,22 +161,84 @@
             $('#filterModal').modal('show');
         }
 
-        $('#filterMode').on('change', function(){
+        $('#filterMode').on('change', function() {
             $('#filterByDate, #filterByMonth, #filterByYear').hide();
             let selectedValue = $(this).val();
-            if(selectedValue === 'byDate'){
+            method = selectedValue;
+            if (selectedValue === 'byDate') {
                 $('#filterByDate').show();
-            }else if(selectedValue === 'byMonth'){
+            } else if (selectedValue === 'byMonth') {
                 $('#filterByMonth').show()
-            }else{
+            } else {
                 $('#filterByYear').show();
             }
         });
 
 
-        function renderChart(){
-            asyncAjaxUpdate('{{url()->current()}}','GET',null).then((response) => {
-                // console.log(response);
+        const filterLaporan = () => {
+            let data = {
+                filterMethod: method,
+            };
+
+            let isGoFetch;
+
+            if (method == 'byDate') {
+                const startDate = $('input#start').val();
+                const endDate = $('input#end').val();
+                if (startDate !== '' || endDate !== '') {
+                    const methodParams = {
+                        startFilter: startDate,
+                        endFilter: endDate,
+                    };
+                    Object.assign(data, methodParams);
+                    isGoFetch = true;
+                } else {
+                    callError();
+                }
+            } else if (method == 'byMonth') {
+                const month = $('#monthFilter').val();
+                const year = $('#yearMonthFilter').val();
+                if (month !== '' || year !== '') {
+                    const methodParams = {
+                        monthFilter: month,
+                        yearFilter: year
+                    };
+                    Object.assign(data, methodParams);
+                    isGoFetch = true;
+                } else {
+                    callError();
+                }
+            } else if (method == 'byYear') {
+                const year = $('#yearPicker').val();
+                if (year !== '') {
+                    const methodParams = {
+                        yearFilter: year
+                    };
+                    Object.assign(data, methodParams);
+                    isGoFetch = true;
+                } else {
+                    callError();
+                }
+            } else {
+                errorAlert('Silakan pilih metode untuk Filter');
+            }
+
+            if (isGoFetch) {
+                asyncAjaxUpdate('{{ route('filterKunjungan') }}', 'GET', data).then((response) => {
+                    updatePageValues(response);
+                }).catch((error) => {
+                    errorAlert(error);
+                });
+            }
+
+        }
+
+        const callError = () => {
+            errorAlert('Silakan masukkan data yang diperlukan dengan benar');
+        };
+
+        function renderChart() {
+            asyncAjaxUpdate('{{ url()->current() }}', 'GET', null).then((response) => {
                 let options = {
                     title: getChartTitle(),
                     chart: {
@@ -182,14 +250,13 @@
                     stroke: {
                         curve: 'smooth'
                     },
-                    series: [
-                    {
+                    series: [{
                         name: 'Jumlah Kunjungan',
                         data: response.yearKunjungan
-                    },{
+                    }, {
                         name: 'Pasien Lama',
                         data: response.oldPatient
-                    },{
+                    }, {
                         name: 'Pasien Baru',
                         data: response.newPatient
                     }],
@@ -203,5 +270,59 @@
             });
         }
 
+        const updatePageValues = (params) => {
+            $('#filterModal').modal('hide');
+            if (typeof params.data.error !== 'undefined') {
+                errorAlert(params.data.error);
+            } else {
+                updateTable('#kunjunganTable', params.data, [{
+                        title: "No",
+                        data: null,
+                        render: function(data, type, row, meta) {
+                            return meta.row + meta.settings._iDisplayStart + 1;
+                        }
+                    },
+                    {
+                        title: "No. Rekam Medis",
+                        data: "patient.no_rekam_medis"
+                    },
+                    {
+                        title: "Nama",
+                        data: "patient.nama"
+                    },
+                    {
+                        title: "Gender",
+                        data: null,
+                        render: function(data, type, row) {
+                            return `${row.gender === '1' ? 'Pria' : 'Wanita'}`
+                        }
+                    },
+                    {
+                        title: "Status",
+                        data: null,
+                        render: function(data, type, row) {
+                            if (row.dokterId !== 'null') {
+                                return 'Belum Diproses';
+                            } else {
+                                return 'Sudah Diproses';
+                            }
+                        }
+                    },
+                    {
+                        title: "Diproses Oleh",
+                        data: null,
+                        render: function(data, type, row) {
+                            if (row.dokterId !== 'null') {
+                                return row.dokter.nama;
+                            } else {
+                                return 'Belum Ditindak';
+                            }
+                        }
+                    },
+                ])
+            }
+
+
+        }
     </script>
 @endpush

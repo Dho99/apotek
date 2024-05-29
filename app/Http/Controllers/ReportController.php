@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Kunjungan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Alert;
 
 class ReportController extends Controller
 {
@@ -53,7 +54,32 @@ class ReportController extends Controller
 
     public function filter(Request $request){
         if($request->ajax()){
-            
+            // $startDate = $request->startFilter;
+            // $endDate = $request->endFilter;
+            $filterMode = $request->filterMethod;
+            if($filterMode == 'byDate'){
+                $visitsData = $this->filterByDate(['startDate' => $request->startFilter, 'endDate' => $request->endFilter]);
+            }
+
+            // if($filterMode == 'byDate'){
+            //     $visitsData = Kunjungan::whereBetween('created_at', [Carbon::parse($startDate)->startOfDay(), Carbon::parse($endDate)->endOfDay()])->get();
+            // }elseif($filterMode == 'byMonth'){
+            //     $visitsData = Kunjungan::whereMonth($request)
+            // }
+            // if(isset())
+            return response()->json(['data' => $visitsData], 200);
+
+        }
+    }
+
+    protected function filterByDate($params){
+        $startDate = Carbon::parse($params['startDate'])->startOfDay();
+        $endDate = Carbon::parse($params['endDate'])->endOfDay();
+        if($startDate->gte($endDate)){
+            return ['error' => 'Data tidak boleh saling mendahului'];
+        }else{
+            $getVisitsData = Kunjungan::with('patient','dokter')->whereBetween('created_at',[$startDate, $endDate])->get();
+            return $getVisitsData;
         }
     }
 
