@@ -32,7 +32,14 @@
                             <div id="filterByMonth" class="row mt-3">
                                 <div class="form-group col-6">
                                     <label for="">Bulan</label>
-                                    <select name="" id="monthFilter" class="form-control"></select>
+                                    <select name="" id="monthFilter" class="form-control">
+                                        @php
+                                            $monthRange = range(0, 11);
+                                        @endphp
+                                        @foreach ($monthRange as $m)
+                                            <option value="{{$m}}">{{\Illuminate\Support\Carbon::now()->subMonth($m)->monthName}}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
                                 <div class="form-group col-6">
                                     <label for="">Tahun</label>
@@ -127,15 +134,21 @@
         let endDate;
 
         const getChartTitle = () => {
+            let title = {
+                align: 'center'
+            };
+
             if(typeof startDate === 'undefined' || typeof endDate === 'undefined'){
-                return title = {
+                const text = {
                     text: 'Grafik Kunjungan sejak 1 Tahun terakhir'
                 };
             }else{
-                return title = {
+                const text = {
                     text: `Grafik Kunjungan sejak ${formatDate(startDate)} hingga ${formatDate(endDate)}`
                 }
             }
+            Object.assign(title, text);
+            return title;
         }
 
         const openFilterModal = () => {
