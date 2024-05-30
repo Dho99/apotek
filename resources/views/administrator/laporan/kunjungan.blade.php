@@ -197,7 +197,7 @@
                 }
             } else if (method == 'byMonth') {
                 const month = $('#monthFilter').val();
-                const year = $('#yearMonthFilter').val();
+                const year = $('#yearMonthPicker').val();
                 if (month !== '' || year !== '') {
                     const methodParams = {
                         monthFilter: month,
@@ -224,7 +224,7 @@
             }
 
             if (isGoFetch) {
-                asyncAjaxUpdate('{{ route('filterKunjungan') }}', 'GET', data).then((response) => {
+                asyncAjaxUpdate('{{ route("filterKunjungan") }}', 'GET', data).then((response) => {
                     updatePageValues(response);
                 }).catch((error) => {
                     errorAlert(error);
@@ -271,10 +271,12 @@
         }
 
         const updatePageValues = (params) => {
+            console.log(params);
             $('#filterModal').modal('hide');
             if (typeof params.data.error !== 'undefined') {
                 errorAlert(params.data.error);
             } else {
+                updateChart(params);
                 updateTable('#kunjunganTable', params.data, [{
                         title: "No",
                         data: null,
@@ -312,17 +314,21 @@
                         title: "Diproses Oleh",
                         data: null,
                         render: function(data, type, row) {
-                            if (row.dokterId !== 'null') {
-                                return row.dokter.nama;
-                            } else {
-                                return 'Belum Ditindak';
+                            let dokterName;
+                            if(row.dokterId === null){
+                                dokterName = 'Belum Ditindak'
+                            }else{
+                                dokterName = row.dokter.nama;
                             }
+                            return dokterName;
                         }
                     },
                 ])
             }
+        }
 
-
+        const updateChart = (params) => {
+            
         }
     </script>
 @endpush
