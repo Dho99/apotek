@@ -192,6 +192,7 @@
                     };
                     Object.assign(data, methodParams);
                     isGoFetch = true;
+                    console.log(methodParams);
                 } else {
                     callError();
                 }
@@ -271,7 +272,6 @@
         }
 
         const updatePageValues = (params) => {
-            console.log(params);
             $('#filterModal').modal('hide');
             if (typeof params.data.error !== 'undefined') {
                 errorAlert(params.data.error);
@@ -328,7 +328,7 @@
         }
 
         const updateChart = (params) => {
-            
+
         }
     </script>
 @endpush
