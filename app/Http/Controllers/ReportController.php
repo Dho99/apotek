@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use Alert;
 use App\Models\Kunjungan;
+use App\Models\Penjualan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use Alert;
 
 class ReportController extends Controller
 {
@@ -122,7 +123,7 @@ class ReportController extends Controller
         }
     }
 
-    protected function filterByDate($params)
+    private function filterByDate($params)
     {
         $startDate = Carbon::parse($params['startDate'])->startOfDay();
         $endDate = Carbon::parse($params['endDate'])->endOfDay();
@@ -136,11 +137,10 @@ class ReportController extends Controller
             default:
                 $getVisitsData = Kunjungan::whereBetween('created_at', [Carbon::parse($params['startDate'])->startOfDay(), Carbon::parse($params['endDate'])->endOfDay()])->get();
                 return $getVisitsData;
-
         }
     }
 
-    protected function filterByMonth($params)
+    private function filterByMonth($params)
     {
         $month = now()
             ->subMonth($params['month'])
@@ -150,9 +150,58 @@ class ReportController extends Controller
         return $getVisitsData;
     }
 
-    protected function filterByYear($params)
+    private function filterByYear($params)
     {
         $getVisitsData = Kunjungan::whereYear('created_at', $params)->get();
         return $getVisitsData;
+    }
+
+    public function laporanPenjualan(Request $request)
+    {
+        if($request->ajax()){
+            $requestType = $request->filterMethod;
+            switch($requestType){
+                case 'byDate':
+                    $penjualans = $this->filterPenjualanByDate(['startDate' => $request->startFilter, 'endDate' => $request->endFilter]);
+                    break;
+                case 'byMonth':
+                    $penjualans = $this->filterPenjualanByMonth(['month' => $request->monthFilter, 'year' => $request->yearFilter]);
+                    break;
+                case 'byYear':
+                    $penjualans = $this->filterPenjualanByYear(['year' => $request->yearFilter]);
+                    break;
+                default:
+                    return;
+            }
+            return response()->json(['data' => $penjualans]);
+        }else{
+            return view('administrator.laporan.penjualan', [
+                'title' => 'Laporan Penjualan',
+                'penjualan' => Penjualan::whereYear('created_at',now()->format('Y'))->get()
+            ]);
+        }
+    }
+
+    private function filterPenjualanByDate($params)
+    {
+        $startDate = Carbon::parse($params['startDate']);
+        $endDate = Carbon::parse($params['endDate']);
+
+        if($startDate->gte($endDate)){
+            return ['error' => 'Data StartDate tidak boleh melebihi endDate'];
+        }else{
+            $getData = Penjualan::whereBetween('created_at',[$startDate, $endDate])->get();
+            return $getData;
+        }
+    }
+
+    private function filterPenjualanByMonth($params){
+        $getData = Penjualan::whereMonth('created_at',now()->subMonth($params['month'])->format('m'))->whereYear('created_at',$params['year'])->get();
+        return $getData;
+    }
+
+    private function filterPenjualanByYear($params){
+        $getData = Penjualan::whereYear('created_at', $params['year'])->get();
+        return $getData;
     }
 }

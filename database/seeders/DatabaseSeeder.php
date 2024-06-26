@@ -19,12 +19,13 @@ class DatabaseSeeder extends Seeder
         //     'name' => 'Test User',
         //     'email' => 'test@example.com',
         // ]);
+        $roleNames = array('Apoteker','Dokter','Pasien','Kasir','Administrator');
+        foreach($roleNames as $role){
+            \App\Models\Role::create(
+                ['roleName' => $role],
+            );
+        }
 
-        \App\Models\Role::create(['roleName' => 'Apoteker']);
-        \App\Models\Role::create(['roleName' => 'Dokter']);
-        \App\Models\Role::create(['roleName' => 'Pasien']);
-        \App\Models\Role::create(['roleName' => 'Kasir']);
-        \App\Models\Role::create(['roleName' => 'Administrator']);
 
         User::factory()->create([
             'username' => Str::slug(fake()->unique()->name()),

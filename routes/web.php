@@ -3,11 +3,14 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\KasirController;
 use App\Http\Controllers\ResepController;
 use App\Http\Controllers\DokterController;
 use App\Http\Controllers\PasienController;
 use App\Http\Controllers\ProdukController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\DropzoneController;
 use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\KeuanganController;
 use App\Http\Controllers\SupplierController;
@@ -55,17 +58,38 @@ Route::prefix('administrator')->middleware(['auth', 'user-access:Administrator']
         Route::resource('dokter', DokterController::class)->names('dokter');
         Route::resource('administrator', AdministratorController::class)->names('administrator');
         Route::resource('pasien', PasienController::class)->names('pasien');
+        Route::resource('kasir', KasirController::class)->names('kasir');
     });
 
     Route::resource('kunjungan', KunjunganController::class)->names('kunjungan');
 
+    // Route::post('upload/product/images',[ProductController::class, 'uploadImages'])->name('uploadProductImages');
+    Route::resource('products', ProductController::class)->names('products');
+
     Route::controller(ReportController::class)->prefix('laporan')->group(function(){
         Route::get('/kunjungan','laporanKunjungan')->name('laporanKunjungan');
         Route::get('/filter','filter')->name('filterKunjungan');
+        Route::get('/penjualan','laporanPenjualan')->name('laporanPenjualan');
 
     });
+
+    Route::post('kategori/create',[KategoriController::class,'updateKategori'])->name('updateKategori');
+    Route::resource('kategori',KategoriController::class)->names('kategori');
+    Route::resource('supplier',SupplierController::class)->names('supplier');
 });
 
+Route::prefix('kasir')->group(function(){
+    Route::get('/dashboard', [DashboardController::class, 'kasirIndex']);
+    Route::get('/products/expired',[ProductController::class, 'getExpiredProduct'])->name('products.kadaluarsa');
+    Route::resource('products', ProductController::class)->only([
+        'index','show'
+    ]);
+});
+
+Route::controller(DropzoneController::class)->prefix('file')->group(function(){
+    Route::post('upload/{path}','uploadFile')->name('uploadFile');
+    Route::post('delete','deleteFile')->name('deleteFile');
+});
 
 // Route::controller(ProdukController::class)->group(function () {
 //     Route::get('/obat/filter/{filter}', 'filterProduk');

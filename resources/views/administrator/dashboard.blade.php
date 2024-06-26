@@ -60,6 +60,42 @@
             </div>
         </div>
 
+        <div class="col-lg-6 col-md-6 col-12 mb-20">
+            <div class="bg-white shadow rounded-lg">
+                <div class="row pt-2 py-3 px-4">
+                    <div class="col-12 d-flex">
+                        <h6 class="d-flex align-items-center">Jumlah Transaksi</h6>
+                        <div class="badge bg-lightgreen ml-auto">{{$thisYear->format('Y') }}
+                        </div>
+                    </div>
+                    <div class="col-12 my-2">
+                        <h4>{{ $countTransaction }}</h4>
+                    </div>
+                    <div class="col-12 my-2">
+                        <a href="/" class="text-success text-decoration-none weight-700">Lihat Detail</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6 col-md-6 col-12 mb-20">
+            <div class="bg-white shadow rounded-lg">
+                <div class="row pt-2 py-3 px-4">
+                    <div class="col-12 d-flex">
+                        <h6 class="d-flex align-items-center">Nominal Transaksi</h6>
+                        <div class="badge bg-lightgreen ml-auto">{{$thisYear->format('Y')}}
+                        </div>
+                    </div>
+                    <div class="col-12 my-2">
+                        <h4>@currency($calculateTransaction)</h4>
+                    </div>
+                    <div class="col-12 my-2">
+                        <a href="/" class="text-success text-decoration-none weight-700">Lihat Detail</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="col-12">
             <div class="bg-white shadow rounded-lg">
                 <div class="row pt-2 py-3 px-4">

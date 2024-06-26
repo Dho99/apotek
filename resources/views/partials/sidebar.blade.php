@@ -62,10 +62,25 @@
 
                         </ul>
                     </li>
+                    <li class="dropdown">
+                        <a href="javascript:;"
+                            class="dropdown-toggle {{ $title == 'Tambah data Kasir' || $title == 'Daftar Kasir' ? 'active ' : '' }}">
+                            <span class="micon icon-copy dw dw-user-12"></span><span class="mtext">Kasir</span>
+                        </a>
+                        <ul class="submenu">
+                            <li><a href="/administrator/manage/kasir"
+                                    class="{{ $title == 'Daftar Kasir' ? 'active' : '' }}">Daftar
+                                    Kasir</a></li>
+                            <li><a href="{{route('kasir.create')}}"
+                                    class="{{ $title === 'Tambah data Kasir' ? 'active' : '' }}">Tambah
+                                    Kasir</a></li>
+
+                        </ul>
+                    </li>
 
                     <li class="dropdown">
                         <a href="javascript:;"
-                            class="dropdown-toggle {{ $title == 'Daftar Kunjungan' || $title == 'Tambah Kunjungan' ? 'active ' : '' }}">
+                            class="dropdown-toggle {{ $title == 'Daftar Kunjungan' || $title == 'Buat Data Kunjungan' ? 'active ' : '' }}">
                             <span class="micon icon-copy dw dw-file-22"></span><span class="mtext">Kunjungan</span>
                         </a>
                         <ul class="submenu">
@@ -73,7 +88,7 @@
                                     class="{{ $title == 'Daftar Kunjungan' ? 'active' : '' }}">Daftar
                                     Kunjungan</a></li>
                             <li><a href="{{route('kunjungan.create')}}"
-                                    class="{{ $title === 'Tambah Kunjungan' ? 'active' : '' }}">Tambah
+                                    class="{{ $title === 'Buat Data Kunjungan' ? 'active' : '' }}">Tambah
                                     Kunjungan</a></li>
 
                         </ul>
@@ -81,22 +96,49 @@
 
                     <li class="dropdown">
                         <a href="javascript:;"
-                            class="dropdown-toggle {{ $title == 'Laporan Penjualan' || $title == 'Laporan Keuangan' ? 'active' : '' }}">
+                            class="dropdown-toggle {{ $title == 'Laporan Penjualan' || $title == 'Laporan Kunjungan' ? 'active' : '' }}">
                             <span class="micon icon-copy dw dw-file"></span><span class="mtext">Laporan</span>
                         </a>
                         <ul class="submenu">
                             <li>
                                 <a href="{{route('laporanKunjungan')}}"
-                                    class="{{ $title == 'Laporan Penjualan' ? 'active' : '' }}">Kunjungan</a>
+                                    class="{{ $title == 'Laporan Kunjungan' ? 'active' : '' }}">Kunjungan</a>
                             </li>
                             <li>
-                                <a href="/apoteker/laporan/penjualan"
+                                <a href="{{route('laporanPenjualan')}}"
                                     class="{{ $title == 'Laporan Penjualan' ? 'active' : '' }}">Penjualan</a>
                             </li>
-                            <li>
-                                <a href="/apoteker/laporan/keuangan"
-                                    class="{{ $title == 'Laporan Keuangan' ? 'active' : '' }}">Keuangan</a>
-                            </li>
+                        </ul>
+                    </li>
+
+
+                    <li class="dropdown">
+                        <a href="javascript:;"
+                            class="dropdown-toggle {{ $title == 'Daftar Produk' || $title == 'Tambah Produk' || $title == 'Produk Kadaluarsa' ? 'active' : '' }}">
+                            <span class="micon icon-copy dw dw-folder"></span><span class="mtext">Produk</span>
+                        </a>
+                        <ul class="submenu">
+                            <li><a href="{{route('products.index')}}"
+                                    class="{{ $title == 'Daftar Produk' ? 'active' : '' }}">Daftar Produk</a></li>
+                            <li><a href="{{route('products.create')}}"
+                                    class="{{ $title == 'Tambah Produk' ? 'active' : '' }}">Tambah Produk</a></li>
+                            <li><a href="{{route('products.create')}}"
+                                    class="{{ $title == 'Produk Kadaluarsa' ? 'active' : '' }}">Produk Kadaluarsa</a></li>
+
+                        </ul>
+                    </li>
+
+                    <li class="dropdown">
+                        <a href="javascript:;"
+                            class="dropdown-toggle {{ $title == 'Supplier Produk' || $title == 'Kategori Produk' ? 'active' : '' }}">
+                            <span class="micon icon-copy dw dw-folder"></span><span class="mtext">Lainnya</span>
+                        </a>
+                        <ul class="submenu">
+                            <li><a href="{{route('supplier.index')}}"
+                                    class="{{ $title == 'Supplier Produk' ? 'active' : '' }}">Supplier Produk</a></li>
+                            <li><a href="{{route('kategori.index')}}"
+                                    class="{{ $title == 'Kategori Produk' ? 'active' : '' }}">Kategori Produk</a></li>
+
                         </ul>
                     </li>
 
@@ -109,16 +151,24 @@
         <div class="menu-block customscroll mt-4">
             <div class="sidebar-menu">
                 <ul id="accordion-menu">
+                    <li>
+                        <a href="/kasir/dashboard"
+                            class="dropdown-toggle no-arrow {{ $title == 'Dashboard' ? 'active ' : '' }}">
+                            <span class="micon icon-copy dw dw-home"></span><span class="mtext">Dashboard</span>
+                        </a>
+                    </li>
+
                     <li class="dropdown">
                         <a href="javascript:;"
-                            class="dropdown-toggle {{ $title == 'Tanpa Resep' || $title == 'Dengan Resep' ? 'active' : '' }}">
-                            <span class="micon icon-copy dw dw-folder"></span><span class="mtext">Pasien</span>
+                            class="dropdown-toggle {{ $title == 'Daftar Produk' || $title == 'Produk Kadaluarsa' ? 'active' : '' }}">
+                            <span class="micon icon-copy dw dw-folder"></span><span class="mtext">Produk</span>
                         </a>
                         <ul class="submenu">
-                            <li><a href="/kasir/transaksi/nonresep"
-                                    class="{{ $title == 'Tanpa Resep' ? 'active' : '' }}">Tanpa Resep</a></li>
-                            <li><a href="/kasir/transaksi/resep"
-                                    class="{{ $title == 'Dengan Resep' ? 'active' : '' }}">Dengan Resep</a></li>
+                            <li><a href="{{route('products.index')}}"
+                                    class="{{ $title == 'Daftar Produk' ? 'active' : '' }}">Daftar Produk</a></li>
+                            <li><a href="{{route('products.kadaluarsa')}}"
+                                    class="{{ $title == 'Produk Kadaluarsa' ? 'active' : '' }}">Produk Kadaluarsa</a></li>
+
                         </ul>
                     </li>
 
@@ -130,6 +180,17 @@
                         <ul class="submenu">
                             <li><a href="/kasir/pasien/list"
                                     class="{{ $title == 'Daftar Pasien' ? 'active' : '' }}">Daftar Pasien</a></li>
+                        </ul>
+                    </li>
+
+                    <li class="dropdown">
+                        <a href="javascript:;"
+                            class="dropdown-toggle {{ $title == 'Tambah Pasien' || $title == 'Daftar Pasien' ? 'active' : '' }}">
+                            <span class="micon icon-copy dw dw-group"></span><span class="mtext">Penjualan</span>
+                        </a>
+                        <ul class="submenu">
+                            <li><a href="/kasir/pasien/list"
+                                    class="{{ $title == 'Daftar Pasien' ? 'active' : '' }}">Riwayat Penjualan</a></li>
                         </ul>
                     </li>
 

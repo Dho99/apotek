@@ -19,7 +19,7 @@ class PenjualanController extends Controller
      */
     public function index()
     {
-        return view('apoteker.laporan.penjualan', [
+        return view('administrator.laporan.penjualan', [
             'title' => 'Laporan Penjualan',
             'yearOption' => Penjualan::orderBy('created_at','asc')->get()->groupBy(function($item){
                 return Carbon::parse($item->created_at)->format('Y');

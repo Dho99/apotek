@@ -10,4 +10,8 @@ class Kasir extends Model
     use HasFactory;
     protected $table = 'users';
     protected $guarded = ['id','no_rekam_medis','kategoriDokter', 'jamPraktek'];
+
+    protected function getAll(){
+        return $this->where('roleId', 4)->get();
+    }
 }

@@ -16,9 +16,10 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('vendors/styles/style.min.css') }}" />
     <link rel="stylesheet" type="text/css" href="{{ asset('src/plugins/datatables/css/dataTables.min.css') }}" />
     <link rel="stylesheet" type="text/css" href="{{ asset('src/plugins/sweetalert2/sweetalert2.min.css') }}" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
+    {{-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" /> --}}
     <link rel="stylesheet" href="{{ asset('vendors/styles/pagination.css') }}">
     <link rel="stylesheet" type="text/css" href="https://unpkg.com/trix@2.0.0/dist/trix.css">
+
     @yield('plugins')
 </head>
 
@@ -90,8 +91,8 @@
     <script src="{{ asset('src/plugins/sweetalert2/sweetalert2.all.min.js') }}"></script>
     <script src="{{ asset('src/plugins/apexcharts/apexcharts.min.js') }}"></script>
     <script src="{{ asset('vendors/scripts/myScript/jquery.mask.min.js') }}"></script>
-    <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
-    <script type="text/javascript" src="https://unpkg.com/trix@2.0.0/dist/trix.umd.min.js"></script>
+    {{-- <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/trix@2.0.0/dist/trix.umd.min.js"></script> --}}
 
     <script>
         function initSel2Tags(arg) {

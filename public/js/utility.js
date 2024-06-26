@@ -12,3 +12,5 @@ const formatDate = (dateString) => {
     });
     return formatter.format(new Date(dateString));
 }
+
+

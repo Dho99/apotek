@@ -49,7 +49,7 @@
             </div>
 
             <div class="container  m-auto row">
-                <div class="col-xl-6 d-flex">
+                <div class="col-xl-12 d-flex">
                     <div class="da-card m-auto rounded-circle border border-success">
                         <div class="da-card-photo">
                             <div class="account-img">
@@ -70,7 +70,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="my-3 col-xl-6">
+
                     @if($create_type == 'pasien')
 
                         <div class="col-xl-12 my-3">
@@ -84,7 +84,7 @@
                         </div>
 
                     @endif
-                    <div class="col-xl-12 my-3">
+                    <div class="col-xl-6 my-3">
                         <label for="username" class="font-weight-bold">Username</label>
                         <input type="text" class="form-control  @error('username') is-invalid @enderror" value="{{old('username')}}" name="username" required>
                         @error('username')
@@ -93,7 +93,7 @@
                             </div>
                         @enderror
                     </div>
-                    <div class="col-xl-12 my-3">
+                    <div class="col-xl-6 my-3">
                         <label for="nama" class="font-weight-bold">Nama Lengkap</label>
                         <input type="text" class="form-control @error('nama') is-invalid @enderror" name="nama" value="{{old('nama')}}" required>
                         @error('nama')
@@ -114,7 +114,7 @@
                     </div>
 
 
-                    <div class="col-xl-12 my-3">
+                    <div class="col-xl-3 my-3">
                         <label for="nama" class="font-weight-bold">Tanggal Lahir</label>
                         <input type="date" class="form-control @error('tanggal_lahir') is-invalid @enderror" name="tanggal_lahir" value="{{old('tanggal_lahir')}}" required>
                         @error('tanggal_lahir')
@@ -126,7 +126,7 @@
 
                     @if($create_type == 'dokter')
 
-                        <div class="col-xl-12 my-3">
+                        <div class="col-xl-3 my-3">
                             <label for="nama" class="font-weight-bold">Spesialis Dokter</label>
                             <input type="text" class="form-control @error('kategoriDokter') is-invalid @enderror" name="kategoriDokter" value="{{old('kategoriDokter')}}" required>
                             @error('kategoriDokter')
@@ -161,7 +161,7 @@
 
                     @endif
 
-                    <div class="col-xl-12 my-3">
+                    <div class="col-xl-3 my-3">
                         <label for="nama" class="font-weight-bold">Peran</label>
                         <select name="roleId" id="roleSelect" class="form-control" disabled>
                             <option value="">Choose Role</option>
@@ -173,7 +173,7 @@
 
 
 
-                    <div class="col-xl-12 my-3">
+                    <div class="col-xl-6 my-3">
                         <label for="nama" class="font-weight-bold">Email</label>
                         <input type="text" class="form-control @error('email') is-invalid @enderror" name="email" value="{{old('email')}}" required>
                         @error('email')
@@ -182,7 +182,7 @@
                             </div>
                         @enderror
                     </div>
-                    <div class="col-xl-12 my-3">
+                    <div class="col-xl-6 my-3">
                         <label for="nama" class="font-weight-bold">No Telephone</label>
                         <input type="tel" class="form-control @error('telp') is-invalid @enderror" name="telp" value="{{old('telp')}}" required>
                         @error('telp')
@@ -191,22 +191,16 @@
                             </div>
                         @enderror
                     </div>
-                    <div class="col-xl-12 my-3">
+                    <div class="col-xl-6 my-3">
                         <label for="nama" class="font-weight-bold">Password</label>
                         <input type="password" class="form-control  @error('password') is-invalid @enderror" name="password" id="pass1" required
                             oninput="validate1()" onblur="cancelValidate()">
                         <p id="vpass1" class="text-danger font-14"></p>
                     </div>
-
-                    {{-- <div id="forDoctorEl" class="d-none"> --}}
-
-                    {{-- </div> --}}
-
                     <div class="col-xl-12 mt-4 d-flex">
                         <button type="submit" class="btn btn-success w-75 m-auto" id="submitBtn"
                             disabled>Simpan</button>
                     </div>
-                </div>
             </div>
         </div>
         </form>
@@ -244,28 +238,6 @@
                 submitBtn.disabled = '';
             }
         }
-
-        // $('#submitBtn').on('click', function(event) {
-        //     if ($('#roleSelect').val() === '') {
-        //         errorAlert('Periksa Kembali data Anda !');
-        //         $('#roleSelect').addClass('is-invalid');
-        //         event.preventDefault();
-        //     } else {
-        //         $('form').submit();
-        //     }
-        // });
-
-        // $('#roleSelect').on('change', function(){
-        //     let practiceFormEl = $('#forDoctorEl');
-        //     let form = $('form');
-        //     if($(this).val() == '2'){
-        //         practiceFormEl.removeClass('d-none');
-        //         form.attr('action', '{{route("dokter.store")}}');
-        //     }else{
-        //         practiceFormEl.addClass('d-none');
-        //         form.attr('action','{{route("user.store")}}');
-        //     }
-        // });
 
 
 

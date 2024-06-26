@@ -13,8 +13,8 @@ class KategoriController extends Controller
      */
     public function index()
     {
-        return view('other.kategori-list', [
-            'title' => 'Kategori Obat',
+        return view('other.kategori.list', [
+            'title' => 'Kategori Produk',
             'kategori' => Kategori::all()
         ]);
     }
@@ -23,7 +23,7 @@ class KategoriController extends Controller
      * Show the form for creating a new resource.
      */
 
-    public function updateKategories(Request $request)
+    public function updateKategori(Request $request)
     {
         if($request->ajax()){
             $data = Kategori::where('golongan',$request->kategori)->first();
@@ -98,11 +98,12 @@ class KategoriController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function deleteKategori(Request $request, $golongan)
+    public function destroy(Request $request, $golongan)
     {
         if($request->ajax()){
             // event(new UserNotification(auth()->user()->nama.' Menghapus data kategori '.Kategori::where('golongan', $golongan)->pluck('golongan')->first(), auth()->user()));
-            Kategori::where('golongan', $golongan)->delete();
+            Kategori::where('id', $golongan)->delete();
+            // $golongan->delete();
             return response()->json(['message' => 'Data kategori '.$golongan.' berhasil dihapus']);
         }else{
             abort(400);

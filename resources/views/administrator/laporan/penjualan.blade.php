@@ -1,5 +1,45 @@
 @extends('layouts.main')
 @section('content')
+    <div class="container bg-white mt-3 py-3 px-2 rounded row mx-0">
+        <div class="col-12">
+            <h5 class="text-center py-3 border-bottom">Menampilkan data <span id="titleStatus">1 Tahun Terakhir</span></h5>
+        </div>
+        <div class="col-lg-2 col-md-3 col-4 d-flex ml-auto mt-3">
+            <button class="w-100 btn btn-sm btn-outline-success" onclick="openFilterModal()">Filter</button>
+        </div>
+        {{-- <div id="chart" class="my-4 col-12 border rounded py-3"></div> --}}
+        {{-- </div>
+
+<div class="container bg-white rounded py-3 px-2 mt-3"> --}}
+        <div class="col-12">
+            <table id="penjualanTable" class="table" style="width: 100%;">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Kode Penjualan</th>
+                        <th>Customer</th>
+                        <th>QTY</th>
+                        <th>Gerus</th>
+                        <th>Subtotal</th>
+                        <th>Apoteker</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($penjualan as $p)
+                        <tr>
+                            <td>{{ $loop->iteration }}</td>
+                            <td>{{ $p->kodePenjualan }}</td>
+                            <td>{{ $p->patientId }}</td>
+                            <td>{{ $p->produkId }}</td>
+                            <td>{{ $p->isGerus }}</td>
+                            <td>{{ $p->subtotal }}</td>
+                            <td>{{ $p->userId }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
     <div class="modal fade" id="filterModal" data-backdrop="static" data-keyboard="false" tabindex="-1"
         aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
@@ -37,11 +77,14 @@
                                             $monthRange = range(0, 11);
                                             $selectMonth = [];
                                             foreach ($monthRange as $mo) {
-                                                array_push($selectMonth, \Illuminate\Support\Carbon::now()->subMonth($mo)->monthName);
+                                                array_push(
+                                                    $selectMonth,
+                                                    \Illuminate\Support\Carbon::now()->subMonth($mo)->monthName,
+                                                );
                                             }
                                         @endphp
                                         @foreach ($selectMonth as $key => $m)
-                                            <option value="{{ $monthRange[$key] }}" month="{{$m}}">
+                                            <option value="{{ $monthRange[$key] }}" month="{{ $m }}">
                                                 {{ $m }}</option>
                                         @endforeach
                                     </select>
@@ -69,64 +112,22 @@
             </div>
         </div>
     </div>
-
-
-    <div class="container bg-white mt-3 py-3 px-2 rounded row mx-0">
-        <div class="col-12">
-            <h5 class="text-center py-3 border-bottom">Menampilkan data <span id="titleStatus">1 Tahun Terakhir</span></h5>
-        </div>
-        <div class="col-lg-2 col-md-3 col-4 d-flex ml-auto mt-3">
-            <button class="w-100 btn btn-sm btn-outline-success" onclick="openFilterModal()">Filter</button>
-        </div>
-        {{-- <div id="chart" class="my-4 col-12 border rounded py-3"></div> --}}
-        {{-- </div>
-
-    <div class="container bg-white rounded py-3 px-2 mt-3"> --}}
-        <div class="col-12">
-            <table id="kunjunganTable" class="table" style="width: 100%;">
-                <thead>
-                    <tr>
-                        <th>No</th>
-                        <th>No. Rekam Medis</th>
-                        <th>Nama</th>
-                        <th>Gender</th>
-                        <th>Status</th>
-                        <th>Diproses Oleh</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($kunjungan as $k)
-                        <tr>
-                            <td>{{ $loop->iteration }}</td>
-                            <td class="text-center">{{ $k->patient->no_rekam_medis }}</td>
-                            <td>{{ $k->patient->nama }}</td>
-                            <td>{{ $k->gender == 1 ? 'Pria' : 'Wanita' }}</td>
-                            <td>{{ isset($k->dokterId) ? 'Sudah Ditangani' : 'Belum Diproses' }}</td>
-                            <td>{{ isset($k->dokterId) ? $k->dokter->nama : 'Belum Diproses' }}</td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
-    </div>
     @php
-        $getOldest = \App\Models\Kunjungan::first();
-        if(isset($getOldest)){
-            $oldestYearData = $getOldest->created_at;
-            $parsedOldestYearData = \Illuminate\Support\Carbon::parse($oldestYearData)->format('Y');
+        $oldestYearData = \App\Models\Penjualan::first();
+        if(isset($oldestYearData)){
+            $firstYearData = $oldestYearData->created_at->format('Y');
         }else{
-            $parsedOldestYearData = now()->subYear(1)->format('Y');
+            $firstYearData = now()->format('Y');
         }
+        $parsedOldestYearData = \Illuminate\Support\Carbon::parse($firstYearData)->format('Y');
     @endphp
 @endsection
 @push('scripts')
-    <script src="{{ asset('js/utility.js') }}"></script>
     <script>
         let method;
 
         $(function() {
-            // renderChart();
-            $('#kunjunganTable').DataTable({
+            $('#penjualanTable').DataTable({
                 responsive: true,
                 destroy: true,
                 layout: {
@@ -145,62 +146,6 @@
             method = $('#filterMode').val();
         });
 
-        const yearPickerOptions = () => {
-            let currentYear = new Date().getFullYear();
-            for (let i = '{{ $parsedOldestYearData }}'; i <= currentYear; i++) {
-                $('#yearPicker, #yearMonthPicker').append(`
-                    <option value="${i}">${i}</option>
-                `);
-            }
-        };
-
-
-        const getChartTitle = () => {
-            let title = {
-                align: 'center'
-            };
-
-            let text = {};
-
-
-            if (typeof startDate === 'undefined' || typeof endDate === 'undefined') {
-                text = {
-                    text: 'Grafik Kunjungan sejak 1 Tahun terakhir'
-                };
-            } else {
-                text = {
-                    text: `Grafik Kunjungan sejak ${formatDate(startDate)} hingga ${formatDate(endDate)}`
-                }
-            }
-            Object.assign(title, text);
-            return title;
-        }
-
-        let options = {
-            title: getChartTitle(),
-            chart: {
-                type: 'area',
-                height: '400',
-                stacked: false,
-                zoom: false
-            },
-            stroke: {
-                curve: 'smooth'
-            },
-            noData: {
-                text: 'Loading ...'
-            },
-            series: [],
-        }
-
-        var chart = new ApexCharts(document.querySelector("#chart"), options);
-        chart.render();
-
-
-        const openFilterModal = () => {
-            $('#filterModal').modal('show');
-        }
-
         $('#filterMode').on('change', function() {
             $('#filterByDate, #filterByMonth, #filterByYear').hide();
             let selectedValue = $(this).val();
@@ -214,6 +159,18 @@
             }
         });
 
+        const yearPickerOptions = () => {
+            let currentYear = new Date().getFullYear();
+            for (let i = '{{ $parsedOldestYearData }}'; i <= currentYear; i++) {
+                $('#yearPicker, #yearMonthPicker').append(`
+                    <option value="${i}">${i}</option>
+                `);
+            }
+        };
+
+        function openFilterModal() {
+            $('#filterModal').modal('show');
+        }
 
         const filterLaporan = () => {
             let data = {
@@ -267,7 +224,7 @@
             }
 
             if (isGoFetch) {
-                asyncAjaxUpdate('{{ route('filterKunjungan') }}', 'GET', data).then((response) => {
+                asyncAjaxUpdate('{{ route('laporanPenjualan') }}', 'GET', data).then((response) => {
                     updatePageValues(response);
                 }).catch((error) => {
                     errorAlert(error);
@@ -276,36 +233,8 @@
 
         }
 
-        const callError = () => {
-            errorAlert('Silakan masukkan data yang diperlukan dengan benar');
-        };
-
-        // function renderChart() {
-        //     asyncAjaxUpdate('{{ url()->current() }}', 'GET', null).then((response) => {
-        //         chart.updateSeries([{
-        //                 name: 'Jumlah Kunjungan',
-        //                 data: response.yearKunjungan
-        //             },
-        //             {
-        //                 name: 'Pasien Lama',
-        //                 data: response.oldPatient
-        //             },
-        //             {
-        //                 name: 'Pasien Baru',
-        //                 data: response.newPatient
-        //             }
-        //         ]);
-        //         chart.updateOptions({
-        //             labels: response.monthName
-
-        //         });
-        //     }).catch((error) => {
-        //         errorAlerrt(error);
-        //     });
-        // }
-
         const updatePageValues = (params) => {
-            // console.log(params);
+            console.log(params);
             $('#filterModal').modal('hide');
             if (typeof params.data.error !== 'undefined') {
                 errorAlert(params.data.error);
@@ -379,17 +308,8 @@
             }
         }
 
-        // const updateChart = (params) => {
-        //     chart.updateOptions({
-        //         title: getChartTitle(),
-        //         labels: params.label
-        //     });
-        //     chart.updateSeries([
-        //         {
-        //             name: 'Pasien Lama',
-        //             data: params.countVisits
-        //         },
-        //     ]);
-        // }
+        const callError = () => {
+            errorAlert('Silakan masukkan data yang diperlukan dengan benar');
+        };
     </script>
 @endpush

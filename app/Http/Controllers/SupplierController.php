@@ -11,9 +11,9 @@ class SupplierController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function apotekerIndex()
+    public function index()
     {
-        return view('apoteker.pemasok.list', [
+        return view('other.supplier.list', [
             'title' => 'Daftar Pemasok',
             'data' => Supplier::all(),
         ]);

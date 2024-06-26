@@ -31,7 +31,7 @@
                             <div class="d-flex">
                                 <a href="{{route('pasien.show',[$d->id])}}" class="btn btn-sm btn-secondary"><i
                                         class="icon-copy dw dw-edit1 d-flex align-items-center"></i></a>
-                                <form class="d-inline-flex" method="POST" action="{{route('pasien.destroy',[$d->id])}}">
+                                <form class="d-inline-flex" method="POST" action="{{route('pasien.destroy',[$d->id])}}" onclick="return confirm('Apakah anda yakin menghapus data ini ?')">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-sm btn-danger"><i
